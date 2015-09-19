@@ -1,0 +1,176 @@
+"a''8 [fis''8] g''8 [e''8] cis''8 [e''8]","<fis,fis>4 <g,g>4 <a a,>4",,,1,0
+"r8 e'8 [gis'8 a'8] cis''8 [e''8]","{<<{\voiceOne r4 e4 a4} \new Voice {\voiceTwo cis2.}>>}",,,2,0
+"<fis'd''>4 <fis'd''>4 <fis'd''>4","d4 fis8 [a8] d'4",,,3,0
+"e''8. [b'16] a'8. [b'16] g'4","<g,g>4 <fis,fis>4 <e,e>4",,,4,0
+"a'2.","a,8 [cis8] e8 [a8] a,4",,,5,1
+"g''8 [d''8] b''8 [g''8] a''4","<b b,>4 <g,g>4 <fis,fis>4",,,6,0
+"bes'8 [a'8] a'4. a'8","r4 <e'cis'>4 <e'cis'>4",,,7,0
+"d''2.","r8 d8 [a,8 fis,8] d,4",,,8,1
+"a''8 [a'8] g''8 [g'8] fis''4","fis8 [fis'8] e8 [e'8] d8 [d'8]",,,9,0
+"g'4 g''8 [e''8] g''16 [fis''16 e''16 d''16]","<e,e>4 <cis,cis>4 <d,d>4",,,10,0
+"fis''8 [e''16 d''16] <a'cis''>4 <gis'b'>4","d'4 e'4 e4",,,11,0
+"b''4 b''16 [a''16 g''16 fis''16] e''16 [d''16 cis''16 b'16]","g,4 g4 r4",,,12,0
+"<a''fis''>4. <g''e''>8 <fis''d''>4","r4 a4 d'4",,,13,0
+"d''2.","d4 a,4 d,4",,,14,1
+"a'16 [b'16 cis''16 b'16] a'8 a''4 cis''8","r4 <e'g cis'>4 <e'cis'g>4",,,15,0
+"b'2 b''16 [a''16 g''16 fis''16]","\tuplet 3/2 {d8 [fis8 b8]} \tuplet 3/2 {d8 [fis8 b8]} \tuplet 3/2 {d8 [fis8 b8]}",,,16,0
+"dis''16 [e''8.] a''16 [cis''8.] d''16 [a'8.]","{<<{\voiceOne r4 a2} \new Voice {\voiceTwo s4 g4 fis4}>>}",,,17,0
+"a''16 [fis''16 cis''16 d''16] a'4 r4","r4 \tuplet 3/2 {fis8 [a8 d'8]} \tuplet 3/2 {fis8 [a8 d'8]}",,,18,0
+"cis''8 [e''8] r8 e''8 d''16 [cis''16 b'16 a'16]","{<<{\voiceOne r4 a4 a4} \new Voice {\voiceTwo s4 g4 g4}>>}",,,19,0
+"e''8 [fis''8] g''8 [a''8] b''4","r4 e8 [fis8] g4",,,20,0
+"b'8 [<fis''d''>8] <e''cis''>8 [<d''b'>8] <a'cis''>8 [<gis'b'>8]","d4 e4 e,4",,,21,0
+"g''16 [a''16 b''16 g''16] e''16 [fis''16 g''16 e''16] fis''4","<e,e>4 <cis'cis>4 <d'd>4",,,22,0
+"b'16 [b''16 a''16 g''16] <fis''d''>4 <e''cis''>4","g4 a4 a,4",,,23,0
+"a'2.","a4 e8. [cis16] a,4",,,24,1
+"a'4 a''16 [g''16 fis''16 e''16] dis''4","<fis,fis>4 r4 <b b,>4",,,25,0
+"g''8. [a''16] e''8. [g''16] cis''8. [e''16]","r4 <g,g>4 <a a,>4",,,26,0
+"d''8 [b''8] a''8 [g''8] fis''8 [e''8]","<g,g>4 <b b,>4 <g,g>4",,,27,0
+"fis''8 [d''8] ais'8 [b'8] cis''8 [d''8]","d4 d'4 r4",,,28,0
+"d''8 [e''8] fis''8 [g''8] a''4","r4 d8 [e8] fis4",,,29,0
+"a'2.","a4 e4 a,4",,,30,1
+"<e'cis''>2 <e'cis''>4","r8 bes ?8 [a8 g8] fis8 [e8]",,,31,0
+"fis''8. [g''16] e''8. [fis''16] d''4","{<<{\voiceOne a4 g4 fis4} \new Voice {\voiceTwo d2.}>>}",,,32,0
+"a'2.","r8 a8 e8 [cis8] a,4",,,33,1
+"a''8 [d''8] cis''16 [d''16 e''16 cis''16] d''4","{<<{\voiceOne a2.} \new Voice {\voiceTwo fis4 g4 a4}>>}",,,34,0
+"a''8. [c'''16] fis''8. [a''16] dis''8. [fis''16]","<a a,>4 r4 <b b,>4",,,35,0
+"fis''16 [a''16 fis''16 d''16] cis''4 b'4 ^\trill","{<<{\voiceOne a2 gis4} \new Voice {\voiceTwo d4 e2}>>}",,,36,0
+"e''8. [a''16] cis''8. [e''16] a'8. [a''16]","<cis'cis>4 <a a,>4 r4",,,37,0
+"a''8 [fis''8] g''8 [e''8] fis''8 [d''8]","fis8 [d'8] e8 [cis'8] d8 [d'8]",,,38,0
+"r8 b''8 r8 dis''8 r8 e''8","<gis e>8 r8 <a fis>8 r8 <b gis>8 r8",,,39,0
+"d''2 b''16 [a''16 gis''16 a''16]","\tuplet 3/2 {d8 [fis8 b8]} \tuplet 3/2 {d8 [fis8 b8]} \tuplet 3/2 {d8 [fis8 b8]}",,,40,0
+"cis''4 e''4 a''4","\tuplet 3/2 {a,8 [e8 a8]} \tuplet 3/2 {a,8 [e8 a8]} \tuplet 3/2 {a,8 [e8 a8]}",,,41,0
+"b'8. [d''16] cis''8. [e''16] d''8 [fis''16] s16","<g,g>4 <e,e>4 <fis,fis>4",,,42,0
+"b'16 [d''16 cis''16 b'16] cis''16 [e''16 d''16 cis''16] d''4","{<<{\voiceOne g4 e4 fis4} \new Voice {\voiceTwo d2 d4}>>}",,,43,0
+"a'8. [d''16] <fis''d''>4 <e''cis''>4","r4 a,8 [a8] a,8 [a8]",,,44,0
+"cis''16 [e''16 d''16 cis''16] cis''16 [b'16 a'16 gis'16] a'4","a,4 e4 a4",,,45,0
+"cis''8 [d''8] e''8 [fis''8] gis''8 [a''8]","<a a,>4 cis2",,,46,0
+"cis''16 [d''16 b'16 gis'16] e'8 [d''8] cis''4","r4 <gis, gis>4 <a a,>4",,,47,0
+"<e'g'>4 <g''e''>4 <e''cis''>4","\tuplet 3/2 {cis8 [e8 a8]} \tuplet 3/2 {cis8 [e8 a8]} \tuplet 3/2 {cis8 [e8 a8]}",,,48,0
+"a'4 <cis'''e''>4 <d'''fis''>4","r4 g'4 fis'4",,,49,0
+"cis''8 [d''8] e''16 [d''16 e''16 fis''16] d''4","{<<{\voiceOne r4 g'4 fis'4} \new Voice {\voiceTwo a2 d'4}>>}",,,50,0
+"b'8. [d''16] g''8. [d''16] b''4","<g,g>4 <b b,>4 <g,g>4",,,51,0
+"b''16 [fis''16 g''16 e''16] d''4 cis''4 ^\trill","{<<{\voiceOne r4 fis'4 e'4} \new Voice {\voiceTwo g4 a2}>>}",,,52,0
+"d''8 [cis''8] e''8 [cis''8] d''4","{<<{\voiceOne r4 g'4 fis'4} \new Voice {\voiceTwo a2 d'4}>>}",,,53,0
+"d'8 [a'8] fis'8 [d''8] a'8 [fis''8]","<d,d>4 <fis,fis>4 <a a,>4",,,54,0
+"r8 <cis''a'>8 [<d''b'>8 <e''cis''>8] <fis''d''>8 [<e''cis''>8]","<a a,>4 r4 s4",,,55,0
+"d''4 e''16 [d''16 e''16 g''16] fis''4","r4 <cis'a>4 <d'd>4",,,56,0
+"g'4 g''16 [fis''16 e''16 d''16] cis''4","<e,e>4 r4 <a a,>4",,,57,0
+"a''4 a''16 [g''16] fis''16 [g''16] fis''4","r4 <cis'a>4 <d'b>4",,,58,0
+"a'8 [a''8] a''8 ^\trill [g''8] g''8 ^\trill [fis''8]","<fis,fis>4 <e,e>4 <d,d>4",,,59,0
+"a'8. [cis''16] e''8. [g''16] fis''4","cis4 a,4 d4",,,60,0
+"<fis'a'>4 <e'g'>4 <d'fis'>4","r4 a,4 d4",,,61,0
+"\tuplet 3/2 {e''8 [a''8 gis''8]} \tuplet 3/2 {fis''8 [e''8 d''8]} \tuplet 3/2 {cis''8 [d''8 b'8]}","<cis'cis>4 <d'd>4 <e'e>4",,,62,0
+"cis''4 e''16 [d''16 b'16 gis'16] a'4","a4 e4 a,4",,,63,0
+"a'2 a''16 [g''16 fis''16 e''16]","\tuplet 3/2 {cis8 [e8 a8]} \tuplet 3/2 {cis8 [e8 a8]} \tuplet 3/2 {cis8 [e8 a8]}",,,64,0
+"b'16 [cis''16 dis''16 cis''16] b'8 b''4 dis''8","r4 <fis' dis' a>4 <fis'a dis'>4",,,65,0
+"dis''8 [fis''8] r8 fis''8 e''16 [dis''16 cis''16 b'16]","r4 <b a>4 <b a>4",,,66,0
+"b'16 [d''8.] d''2","\tuplet 3/2 {g8 [b8 d'8]} \tuplet 3/2 {g8 [b8 d'8]} \tuplet 3/2 {g8 [b8 d'8]}",,,67,0
+"e'4 e'16 [fis'16 gis'16 a'16] b'16 [cis''16 d''16] e''16","r4 <b d gis?>4 <a e cis>4",,,68,0
+"a''2 g''16 [fis''16 e''16 d''16]","d8 [a8] fis8 [a8] d8 [a8]",,,69,0
+"<b''dis''>2 <fis''dis''>4","r8 b,8 [dis ?8 fis8] b8 [b,8]",,,70,0
+"b''8 [b'8] a''8 [a'8] g''4","g8 [g'8] fis8 [fis'8] e8 [e'8]",,,71,0
+"b'8 [<b''g''>8] <a''fis''>8 [<g''e''>8] <fis''d''>8 [<e''cis''>8]","g4 a4 a,4",,,72,0
+"g'4 b'8 [d''8] g''8 [b''8]","<b b,>2 <a a,>4",,,73,0
+"d''8 [cis''8] a''8 [cis''8] d''4","<g,g>2 <fis,fis>4",,,74,0
+"fis''8. [a''16] d''8. [fis''16] a'8. [fis''16]","<d,d>4 <fis,fis>4 r4",,,75,0
+"r8 b''8 r8 g''8 r8 e''8","g8 r8 e8 r8 cis8 r8",,,76,0
+"e''8 [b'8] a'8 [g'8] fis'8 [e'8]","g8 [b8] a8 [g8] fis8 [e8]",,,77,0
+"d''2.","d4 fis8. [a16] d'4",,,78,1
+"d''2.","r8 d8 [fis8 a8] d'4",,,79,1
+"d''4 \tuplet 3/2 {d''8 [fis''8 e''8]} \tuplet 3/2 {d''8 [cis''8 b'8]}","{<<{\voiceOne b4 r4 e'4} \new Voice {\voiceTwo gis2.}>>}",,,80,0
+"a'2.","a,4 e4 a4",,,81,1
+"r8 a''8 r8 cis''8 r8 d''8","<fis d>8 r8 <g e>8 r8 <a fis>4",,,82,0
+"d''2.","d8 [fis8] a8 [d'8] d4",,,83,1
+"{<<{\voiceOne a''8. [b''16] g''8. [a''16] fis''4} \new Voice {\voiceTwo fis''4 e''4 d''4}>>}","r4 a4 d'4",,,84,0
+"cis''4 ~ cis''16 [b'16 cis''16 d''16] e''4","a4 e4 a,4",,,85,0
+"d''8. [fis''16] b'8. [d''16] cis''4","<b b,>4 <gis,? gis?>4 <a a,>4",,,86,0
+"<a''a'>4 a''16 [g''16 fis''16 e''16] fis''4","\tuplet 3/2 {cis8 [e8 a8]} \tuplet 3/2 {cis8 [e8 a8]} \tuplet 3/2 {d8 [fis8 a8]}",,,87,0
+"b''8 [e''8] dis''16 [e''16 fis''16 dis''16] e''4","{<<{\voiceOne b2.} \new Voice {\voiceTwo g4 a4 g4}>>}",,,88,0
+"r8 dis''8 e''8 [g''8] cis''8 [e''8]","<g,g>2 <a a,>4",,,89,0
+"a'4 <a''fis''>4 <fis''dis''>4","\tuplet 3/2 {d8 [fis8 a8]} \tuplet 3/2 {d8 [fis8 a8]} \tuplet 3/2 {b,8 [fis8 b8]}",,,90,0
+"a'2.","a,8 [a8] e8 [cis8] a,4",,,91,1
+"d''8. [fis''16] e''8. [g''16] fis''4","fis4 cis4 d4",,,92,0
+"d''2.","d4 fis8 [a8] d'4",,,93,1
+"a'2.","a4 e8 [cis8] a,4",,,94,1
+"d''4 e''16 [fis''16 g''16 e''16] fis''4","<fis,fis>4 <cis,cis>4 <d,d>4",,,95,0
+"a''8. [d'''16] fis''8. [a''16] d''8. [fis''16]","<a a,>4 <fis,fis>4 <d,d>4",,,96,0
+"r16 e'16 [fis'16 gis'16] a'16 [b'16 cis''16 d''16] e''16 [fis''16 gis''16 a''16]","<cis'cis>4 r4 r4",,,97,0
+"<fis'd''>4 cis''16 [d''8.] cis''16 [d''8.]","<d,d>4 <a fis>4 <a fis>4",,,98,0
+"fis''4 e''8 [d''8] cis''8 [b'8]","\tuplet 3/2 {d8 [fis8 b8]} \tuplet 3/2 {d8 [fis8 b8]} \tuplet 3/2 {d8 [fis8 b8]}",,,99,0
+"a'2.","a8 [e8] cis8 [e8] a,4",,,100,1
+"\tuplet 3/2 {b''8 [fis''8 g''8]} \tuplet 3/2 {b''8 [fis''8 g''8]} \tuplet 3/2 {b''8 [g''8 e''8]}","<g,g>4 r4 r4",,,101,0
+"<a''fis''>2 <g''e''>8 [<fis''dis''>8]","d8 [a8] fis8 [a8] b,8 [b8]",,,102,0
+"cis''8 [e''8] gis'8 [b'8] a'4","<a a,>4 <b b,>4 <cis'cis>4",,,103,0
+"<d'''fis''a''>4 d'''16 [cis'''16 b''16 a''16] g''16 [fis''16 e''16 d''16]","<d,d>4 <fis,fis>4 r4",,,104,0
+"\tuplet 3/2 {gis''8 [a''8 b''8]} <d''b'>4 <d''b'>4","r4 \tuplet 3/2 {e8 [gis ?8 b8]} \tuplet 3/2 {e8 [gis8 b8]}",,,105,0
+"a''16 [fis''16 e''16 d''16] cis''4 b'4 ^\trill","{<<{\voiceOne a2 gis4} \new Voice {\voiceTwo d4 e2}>>}",,,106,0
+"a'2.","r8 a8 [e8 cis8] a,4",,,107,1
+"<a''cis''>2 <e''cis''>4","r8 a,8 cis8 [e8] a8 [a,8]",,,108,0
+"\tuplet 3/2 {b'8 [g''8 b''8]} \tuplet 3/2 {a''8 [g''8 fis''8]} \tuplet 3/2 {e''8 [d''8 cis''8]}","<g,g>4 a4 a,4",,,109,0
+"\tuplet 3/2 {a'8 [cis''8 e''8]} <e'g'>4 fis'8. [d'16]","r4 cis4 d8. [fis16]",,,110,0
+"d''2.","d8 [d'8] a8 [fis8] d4",,,111,1
+"d''8. [g''16] g''8. ^\trill [fis''32 g''32] b''4","b8 [d'8] b8 [d'8] g8 [d'8]",,,112,0
+"e''16 [fis''16 g''16 e''16] fis''8 [a''8] g''16 [fis''16 e''16 d''16]","<cis,cis>4 <d,d>4 r4",,,113,0
+"a''8. ^\trill [g''32 a''32] b''8 [b'8] b''8 [b'8]","<fis,fis>4 <g,g>4 r4",,,114,0
+"a'8. [d''16] fis''8. [d''16] a''4","<fis,fis>4 <d,d>4 r8 fis8",,,115,0
+"\tuplet 3/2 {b'8 [g''8 e''8]} d''4 cis''4 ^\trill","{<<{\voiceOne r4 fis'4 e'4} \new Voice {\voiceTwo g4 a2}>>}",,,116,0
+"<fis'dis''>2 <fis'dis''>4","r8 c'?8 [b8 a8] g8 [fis8]",,,117,0
+"r8 ais'8 [b'8 d''8] gis'8 [b'8]","<d,d>2 <e,e>4",,,118,0
+"d''2 cis''16 [d''16 e''16 cis''16]","<d,d>4 <fis,fis>4 <a a,>4",,,119,0
+"c''8 [b'8] b'4. b''8","r4 <fis'dis'?>4 <fis'dis'>4",,,120,0
+"e''8. [g''16] fis''8. [a''16] g''4","<g,g>4 <dis,? dis?>4 <e,e>4",,,121,0
+"e''8. [a''16] fis''8. [a''16] e''8. [a''16]","<cis'cis>4 <d'd>4 <cis'cis>4",,,122,0
+"a'2.","a4 e4 a,4",,,123,1
+"a'16 [b'16 cis''16 d''16] e''16 [fis''16 g''16 e''16] fis''4","r4 <cis'cis>4 <d'd>4",,,124,0
+"e''8 [fis''8] d''2","\tuplet 3/2 {d8 [fis8 a8]} \tuplet 3/2 {d8 [fis8 a8]} \tuplet 3/2 {d8 [fis8 a8]}",,,125,0
+"<g''e''>2 <fis''d''>8 [<e''cis''>8]","a,8 [a8] cis8 [a8] a,8 [a8]",,,126,0
+"a'2.","a8 [a,8] cis8 [e8] a4",,,127,1
+"r8 b'8 dis''8 [e''8] g''8 [b''8]","<g,g>2 <e,e>4",,,128,0
+"a''8 [e''8] e''8\trill [d''8] d''8\trill [cis''8]","<cis'cis>4 <b b,>4 <a a,>4",,,129,0
+"\tuplet 3/2 {e''8 [gis''8 a''8]} a'4 r4","r4 <e'cis'>4 <e'cis'>4",,,130,0
+"d''2.","d8 [a,8] fis,8 [a,8] d,4",,,131,1
+"d''16 [a'16 b'16 cis''16] d''16 [e''16 fis''16 g''16] a''4","<fis,fis>4 r4 r4",,,132,0
+"\tuplet 3/2 {e''8 [a''8 gis''8]} \tuplet 3/2 {fis''8 [e''8 d''8]} \tuplet 3/2 {cis''8 [b'8 a'8]}","<cis'cis>4 r4 r4",,,133,0
+"a'4 g'8 ^\trill [fis'8] e'8 ^\trill [d'8]","a4 g8 [fis8] e8 [d8]",,,134,0
+"gis'8. [b'16] e''8. [b'16] gis''8. [e''16]","r4 <b d gis?>4 <b d gis>4",,,135,0
+"a'4 ~ a'16 [b'16 cis''16 d''16] e''16 [fis''16 g''16] a''16","r4 <e'g cis'>4 <d'fis a>4",,,136,0
+"r8 b'8 dis''8 [e''8] g''8 [b''8]","{<<{\voiceOne r4 b4 e'4} \new Voice {\voiceTwo g2.}>>}",,,137,0
+"a'8 [a''8] g''8 [fis''8] e''8 [dis''8]","r4 <cis'a>4 <cis'a>4",,,138,0
+"fis''16 [e''16 dis''16 e''16] b'2","r4 \tuplet 3/2 {g8 [b8 e'8]} \tuplet 3/2 {g8 [b8 e'8]}",,,139,0
+"d''2 b''8 [d''8]","gis ?8 [e'8] b8 [e'8] gis8 [e'8]",,,140,0
+"\tuplet 3/2 {fis'8 [a'8 d''8]} \tuplet 3/2 {fis''8 [a''8 g''8]} \tuplet 3/2 {fis''8 [e''8 d''8]}","r2.",,,141,0
+"a''8. ^\trill [g''32 a''32] b''8. [g''16] fis''4","cis8 [a8] e8 [a8] d8 [a8]",,,142,0
+"\tuplet 3/2 {e''8 [b'8 e''8]} \tuplet 3/2 {g''8 [e''8 g''8]} b''4","<g,g>4 r4 r4",,,143,0
+"e''16 [d''16 cis''16 d''16] b'2","r4 \tuplet 3/2 {g8 [b8 d'8]} \tuplet 3/2 {g8 [b8 d'8]}",,,144,0
+"fis''16 [e''16 g''16 e''16] d''4 cis''4","{<<{\voiceOne r4 fis'4 e'4} \new Voice {\voiceTwo g4 a2}>>}",,,145,0
+"r8 fis'8 ais'8 [b'8] d''8 [fis''8]","{<<{\voiceOne r4 fis4 b4} \new Voice {\voiceTwo d2.}>>}",,,146,0
+"\tuplet 3/2 {a'8 [cis''8 e''8]} g''8. [e''16] fis''8. [d''16]","r4 <cis'cis>4 <d'd>4",,,147,0
+"d''4 e''16 [d''16 e''16 fis''16] d''4","<fis'd'>4 <g'a>4 <fis'd'>4",,,148,0
+"b'16 [dis''16 e''16 g''16] b''4 cis''4","<g,g>2 <a a,>4",,,149,0
+"g'8 [g''8] fis''8 [e''8] d''8 [cis''8]","r4 <bes g>4 <bes g>4",,,150,0
+"d''2.","d4 a,8. [fis,16] d,4",,,151,1
+"\tuplet 3/2 {a''8 [fis''8 d''8]} a'4 d''4","r4 <fis,fis>4 <d,d>4",,,152,0
+"gis'8 [d''8] d''8 [cis''8] cis''8 [b'8]","r4 <d'b>4 <d'b>4",,,153,0
+"r8 fis''8 fis''8 [e''8] e''8 [d''8]","<d'd>4 <cis'cis>4 <b b,>4",,,154,0
+"e''4 fis''16 [e''16 fis''16 a''16] g''4","r4 <dis'b>4 <e'e>4",,,155,0
+"d''4 cis''4 d''4","{<<{\voiceOne fis'4 e'4 d'4} \new Voice {\voiceTwo a2 d4}>>}",,,156,0
+"b'8 [d''8] g''8 [b''8] a''4","<g,g>2 <fis,fis>4",,,157,0
+"b'4 \tuplet 3/2 {b''8 [a''8 g''8]} \tuplet 3/2 {fis''8 [e''8 d''8]}","g4 g,4 r4",,,158,0
+"cis''16 [b'16 d''16 b'16] a'4 gis'4","{<<{\voiceOne d'4 cis'4 b4} \new Voice {\voiceTwo d4 e2}>>}",,,159,0
+"\tuplet 3/2 {g'8 [g''8 e''8]} \tuplet 3/2 {cis''8 [e''8 g'8]} fis'4","r4 <e'a>4 <d'b>4",,,160,0
+"\tuplet 3/2 {d''8 [cis''8 d''8]} \tuplet 3/2 {b''8 [gis''8 e''8]} \tuplet 3/2 {b''8 [gis''8 d''8]}","<b b,>4 <gis,gis>4 <e,e>4",,,161,0
+"cis''8 [g''8] fis''8 [e''8] d''8 [cis''16 d''16]","<a a,>2 <b b,>4",,,162,0
+"d''4 e''8. ^\trill [d''32 e''32] fis''4","fis8 [a8] cis8 [a8] d8 [a8]",,,163,0
+"d''8. [a'16] g'8. [a'16] fis'4","<fis,fis>4 <e,e>4 <d,d>4",,,164,0
+"a''4 a''4 g''16 [fis''16 e''16 d''16]","d8 [a8] fis8 [a8] d8 [a8]",,,165,0
+"d''8 [a'8] g'8 [fis'8] e'8 [d'8]","fis8 [a8] g8 [fis8] e8 [d8]",,,166,0
+"a''8 [a'8] g''8 [g'8] fis''4","<fis,fis>4 <e,e>4 <d,d>4",,,167,0
+"r8 a'8 cis''8 [d''8] fis''8 [a''8]","{<<{\voiceOne r4 a4 d'4} \new Voice {\voiceTwo fis2.}>>}",,,168,0
+"e'8. [a'16] <a'cis''>4 <gis'b'>4","r4 e4 e,4",,,169,0
+"d''2.","d4 a4 d'4",,,170,1
+"g''4 g''8 [fis''16 e''16] fis''8 [e''16 d''16]","<b b,>4 <cis'cis>4 <d'd>4",,,171,0
+"d''2.","d4 a,8. [fis,16] d,4",,,172,1
+"b'16 [e''16 g''16 e''16] <a''fis''>4 <e'cis''>4","<g,g>4 r4 <a a,>4",,,173,0
+"r8 d''8 d''8 ^\trill [cis''8] cis''8 ^\trill [b'8]","<b b,>4 <a a,>4 <g,g>4",,,174,0
+"e''16 [d''16 cis''16 d''16] a'2","r4 \tuplet 3/2 {fis8 [a8 d'8]} \tuplet 3/2 {fis8 [a8 d'8]}",,,175,0
+"fis''8 [g''8] e''2  ","\tuplet 3/2 {e8 [g8 b8]} \tuplet 3/2 {e8 [g8 b8]} \tuplet 3/2 {e8 [g8 b8]}",,,176,0

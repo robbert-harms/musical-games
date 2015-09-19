@@ -1,0 +1,96 @@
+"{<<{\voiceOne bes'8 [a'8] a'8 [g'8] g'8 [f'8]} \new Voice {\voiceTwo g'8 [f'8] f'8 [bes8] bes8 [a8]}>>}","f4 f,4 r4",,,1,0
+"{<<{\voiceOne g''8 [f''8] f''8 [e''8] e''8 [d''8]} \new Voice {\voiceTwo e''8 [d''8] d''8 [g'8] g'8 [f'8]}>>}","d'4 d4 r4",,,2,0
+"{<<{\voiceOne r8 <g'bes'>8 <g'bes'>16 [<f'a'>16 <g'bes'>8] c'8 [<g'bes'>8]} \new Voice {\voiceTwo s2.}>>}","e2.",,,3,0
+"{<<{\voiceOne r8 <e''cis''>8 <e''cis''>16 [<d''b'>16 <e''cis''>8] a'8 [<g''e''>8]} \new Voice {\voiceTwo s2.}>>}","a2 cis'4",,,4,0
+"{<<{\voiceOne \tuplet 3/2 {bes'8 [a'8 g'8]} g'2 ^\trill} \new Voice {\voiceTwo g'4 d'2}>>}","g8 [g,8] bes,8 [d8] g8 [g,8]",,,5,0
+"{<<{\voiceOne \tuplet 3/2 {cis''8 [d''8 e''8]} a'2} \new Voice {\voiceTwo e'4 cis'2}>>}","a4. e8 cis8 [a,8]",,,6,0
+"{<<{\voiceOne c''8 [a''8] a''4. c''8} \new Voice {\voiceTwo a'8 [c''8] c''4. a'8}>>}","fis8 [d8] fis8 [a8] d'8 [fis8]",,,7,0
+"{<<{\voiceOne d'8 [f'8] e'8 [d'8] d''8 [d''8]} \new Voice {\voiceTwo d'2 a'8 [f'8]}>>}","d4. d8 f8 [d8]",,,8,0
+"{<<{\voiceOne d'2.} \new Voice {\voiceTwo d'2.}>>}","d4 a,4 d,4",,,9,1
+"{<<{\voiceOne \tuplet 3/2 {a'8 [g'8 f'8]} g'2 ^\trill} \new Voice {\voiceTwo f'2 e'4}>>}","f4 c4 c,4",,,10,0
+"{<<{\voiceOne \tuplet 3/2 {f'8 [e'8 d'8]} e'2 ^\trill} \new Voice {\voiceTwo d'2 cis'4}>>}","d4 a4 a,4",,,11,0
+"{<<{\voiceOne bes'4 bes'4. c''8} \new Voice {\voiceTwo g'4 g'2}>>}","g,8 [e8] e16 ^\trill [d16 e8] g8 [e8]",,,12,0
+"{<<{\voiceOne \tuplet 3/2 {cis''8 [e''8 cis''8]} \tuplet 3/2 {a'8 [e'8 cis'8]} \tuplet 3/2 {a8 [g'8 e'8]}} \new Voice {\voiceTwo s2.}>>}","<cis e>4 <cis e>2",,,13,0
+"{<<{\voiceOne a''4. f''8 d''8 [a'8]} \new Voice {\voiceTwo f''4. d''8 a'4}>>}","\tuplet 3/2 {d8 [f8 a8]} d'4 f4",,,14,0
+"{<<{\voiceOne r8 a'8 bes'8 ^\trill [a'8] d''8 [d''8]} \new Voice {\voiceTwo r8 f'8 g'8 [f'8] f'8 [f'8]}>>}","d2 d4",,,15,0
+"{<<{\voiceOne g''8 ^\trill [f''8] a''8 [d'''8] d''4} \new Voice {\voiceTwo e''8 [d''8] d''4 d''4}>>}","d'4 d4 r4",,,16,0
+"{<<{\voiceOne a'8 [f''8] f'2} \new Voice {\voiceTwo s2.}>>}","<a f>8 [<c' a>8] <c' a>8 [<bes g>8] <bes g>8 [<a f>8]",,,17,0
+"{<<{\voiceOne g'8 [bes''8] a''8 [f'8] e'8 [g''8]} \new Voice {\voiceTwo e'8 [g''8] f''8 [d'8] cis'8 [e''8]}>>}","r4 a4 a4",,,18,0
+"{<<{\voiceOne \tuplet 3/2 {bes'8 [g'8 f'8]} \tuplet 3/2 {e'8 [f'8 g'8]} c'8. [bes'16]} \new Voice {\voiceTwo g'4 r4 r4}>>}","e4. c8 e8 [c8]",,,19,0
+"{<<{\voiceOne f'2.} \new Voice {\voiceTwo f'2.}>>}","f,4 a8 [g8] f8 [e8]",,,20,1
+"{<<{\voiceOne cis''8 [e''8] a'8 [g'8] f'8 [e'8]} \new Voice {\voiceTwo e'4 e'4 cis'4}>>}","a4 cis'4 a4",,,21,0
+"{<<{\voiceOne f''8 [d''8] a'8 [f'8] d'4} \new Voice {\voiceTwo d''4 r4 r4}>>}","d'8 [d'8] a8 [f8] d4",,,22,0
+"{<<{\voiceOne <g'bes'>4 <f'a'>2} \new Voice {\voiceTwo s2.}>>}","f,8 [f8] f16 ^\trill [e16 f8] f,8 [f8]",,,23,0
+"{<<{\voiceOne \tuplet 3/2 {a'8 [g'8 f'8]} g'2 ^\trill} \new Voice {\voiceTwo f'2 e'4}>>}","f4 c4 c,4",,,24,0
+"{<<{\voiceOne \tuplet 3/2 {d'8 [f'8 a'8]} d''4 d''4} \new Voice {\voiceTwo d'4 a'4 f'4}>>}","d4 f4 d4",,,25,0
+"{<<{\voiceOne e''4. bes''8 a''8 [g''8]} \new Voice {\voiceTwo cis''4. g''8 f''8 [e''8]}>>}","\tuplet 3/2 {a8 [e8 cis8]} a,4 g4",,,26,0
+"{<<{\voiceOne \tuplet 3/2 {f'8 [e'8 d'8]} e'2 ^\trill} \new Voice {\voiceTwo d'2 cis'4}>>}","d4 a4 a,4",,,27,0
+"{<<{\voiceOne d''8 [cis''8 ~] cis''8 [d''8] e''4} \new Voice {\voiceTwo e'4 a'8 [b'8] cis''4}>>}","a4 a,4 r4",,,28,0
+"{<<{\voiceOne bes'4 a'2} \new Voice {\voiceTwo g'4 f'2}>>}","\tuplet 3/2 {f,8 [a,8 c8]} f8 [e8] d8 [cis8]",,,29,0
+"{<<{\voiceOne r4 g''4 g''4} \new Voice {\voiceTwo \tuplet 3/2 {a'8 [cis''8 e''8]} e''4 e''4}>>}","r8 a8 a16 ^\trill [gis16 a8] a,8 [a8]",,,30,0
+"{<<{\voiceOne r8 f''8 f''8 [e''8] e''8 [d''8]} \new Voice {\voiceTwo r8 a'8 a'8 [g'8] g'8 [f'8]}>>}","d4 d'4 g4",,,31,0
+"{<<{\voiceOne d'2.} \new Voice {\voiceTwo d'2.}>>}","d4 a,4 d,4",,,32,1
+"{<<{\voiceOne c''8 [bes'8] a'8 [g'8] g''8 [bes'8]} \new Voice {\voiceTwo d'2 r8 g'8}>>}","g,4 g4 e4",,,33,0
+"{<<{\voiceOne \tuplet 3/2 {f'8 [e'8 d'8]} e'2 ^\trill} \new Voice {\voiceTwo d'2 cis'4}>>}","d4 a4 a,4",,,34,0
+"{<<{\voiceOne f''8 [bes''8] a''8 [cis''8] d''4} \new Voice {\voiceTwo d''8 [g''8] f''8 [e'8] f'4}>>}","d4. a8 f8 [a8]",,,35,0
+"{<<{\voiceOne \tuplet 3/2 {cis''8 [d''8 e''8]} g'2} \new Voice {\voiceTwo e'4 e'2}>>}","a,8 [a8] a16 ^\trill [g16 a8] a,8 [a8]",,,36,0
+"{<<{\voiceOne a'8 [cis''8] b'8 [a'8] g''8 [g''8]} \new Voice {\voiceTwo a'2 e''8 [e''8]}>>}","a4. a8 cis'8 [a8]",,,37,0
+"{<<{\voiceOne \tuplet 3/2 {cis''8 [a'8 g'8]} \tuplet 3/2 {fis'8 [g'8 a'8]} d'8. [<a'cis''>16]} \new Voice {\voiceTwo g'4 r4 r8 r8}>>}","e4. d8 fis8 [d8]",,,38,0
+"{<<{\voiceOne a'8 [f''8] f''8 [e''8] e''8 [d''8]} \new Voice {\voiceTwo f'8 [a'8] a'8 [g'8] g'8 [f'8]}>>}","d4 d'4 g4",,,39,0
+"{<<{\voiceOne c''8 [es''8] es''8 [d''8] d''8 [c''8]} \new Voice {\voiceTwo a'8 [c''8] c''8 [bes'8] bes'8 [a'8]}>>}","fis2 fis4",,,40,0
+"{<<{\voiceOne bes'8 g''4 e''4 bes'8} \new Voice {\voiceTwo g'8 bes'4 g'4 g'8}>>}","g4 c4 e4",,,41,0
+"{<<{\voiceOne \tuplet 3/2 {f'8 [e'8 d'8]} e'2 ^\trill} \new Voice {\voiceTwo d'2 cis'4}>>}","d4 a4 a,4",,,42,0
+"{<<{\voiceOne r8 f''8 e''8 [d''8] a''8 [c''8]} \new Voice {\voiceTwo a'2 a'4}>>}","d2 f4",,,43,0
+"{<<{\voiceOne d''8 [cis''8] cis''8 [e''8] e''8 [g'8]} \new Voice {\voiceTwo f'8 [e'8] e'8 [g'8] g'8 [e'8]}>>}","a4 a,4. cis8",,,44,0
+"{<<{\voiceOne cis''8 [a'8] e'8 [cis'8] a4} \new Voice {\voiceTwo s2.}>>}","a,8 [a8] e8 [cis8] a,4",,,45,0
+"{<<{\voiceOne bes'8 [d''8] d''8 [c''8] c''8 [bes'8]} \new Voice {\voiceTwo g'8 [bes'8] bes'8 [a'8] a'8 [g'8]}>>}","e2 e4",,,46,0
+"{<<{\voiceOne c''8 [bes'8] d''8 [g''8] g'4} \new Voice {\voiceTwo d'4. bes8 d'8 [bes8]}>>}","g4. g8 bes8 [g8]",,,47,0
+"{<<{\voiceOne \tuplet 3/2 {f'8 [e'8 d'8]} e'2 ^\trill} \new Voice {\voiceTwo d'2 cis'4}>>}","d4 a4 a,4",,,48,0
+"{<<{\voiceOne <d'bes'>4. <g''e''>8 <e''c''>8 [<bes'g'>8]} \new Voice {\voiceTwo s2.}>>}","\tuplet 3/2 {g,8 [bes,8 d8]} g8 [e8] c8 [e8]",,,49,0
+"{<<{\voiceOne d'2.} \new Voice {\voiceTwo d'2.}>>}","d4 a,4 d,4",,,50,1
+"{<<{\voiceOne r8 <f''d''>8 <f''d''>16 [<e''cis''>16 <f''d''>8] <a''a'>8 [<f''d''>8]} \new Voice {\voiceTwo s2.}>>}","d4 d4 f4",,,51,0
+"{<<{\voiceOne \tuplet 3/2 {f'8 [e'8 d'8]} e'2 ^\trill} \new Voice {\voiceTwo d'2 cis'4}>>}","d4 a4 a,4",,,52,0
+"{<<{\voiceOne g''8 [e''8] e''4 f''4} \new Voice {\voiceTwo e''8 [cis''8] cis''4 d''4}>>}","d4. f8 a8 [d'8]",,,53,0
+"{<<{\voiceOne r8 <f'd''>8 <f'd''>16 [<e'cis''>16 <f'd''>8] d'8 [<f'd''>8]} \new Voice {\voiceTwo s2.}>>}","d2 d4",,,54,0
+"{<<{\voiceOne bes'8 [g''8] g'2} \new Voice {\voiceTwo s2.}>>}","<bes g>8 [<d' bes>8] <d' bes>8 [<c' a>8] <c' a>8 [<bes g>8]",,,55,0
+"{<<{\voiceOne f'2.} \new Voice {\voiceTwo f'2.}>>}","f,8 [f8] f16 ^\trill [e16 f8] f,4",,,56,1
+"{<<{\voiceOne <f'd''>4 <e'cis''>2} \new Voice {\voiceTwo s2.}>>}","a,8 [a8] a16 ^\trill [gis16 a8] a,4",,,57,0
+"{<<{\voiceOne r8 d'8 es'8 ^\trill [d'8] a'8 [c''8]} \new Voice {\voiceTwo s2.}>>}","<a fis>2 <a fis>4",,,58,0
+"{<<{\voiceOne a''4. e''8 f''8 [d''8]} \new Voice {\voiceTwo f''4. cis''8 d''8 [f'8]}>>}","\tuplet 3/2 {d8 [f8 a8]} d'4 d'4",,,59,0
+"{<<{\voiceOne \tuplet 3/2 {a'8 [g'8 f'8]} f'2} \new Voice {\voiceTwo c'4 c'2}>>}","f8 [f,8] a,8 [c8] f8 [f,8]",,,60,0
+"{<<{\voiceOne \tuplet 3/2 {a'8 [g'8 f'8]} g'2 ^\trill} \new Voice {\voiceTwo f'2 e'4}>>}","f4 c4 c,4",,,61,0
+"{<<{\voiceOne \tuplet 3/2 {bes'8 [g'8 e'8]} c'4 bes'4} \new Voice {\voiceTwo g'4 c'4 g'4}>>}","e2.",,,62,0
+"{<<{\voiceOne f'2.} \new Voice {\voiceTwo f'2.}>>}","f,4 c4 f4",,,63,1
+"{<<{\voiceOne \tuplet 3/2 {cis''8 [e''8 d''8]} \tuplet 3/2 {cis''8 [b'8 a'8]} \tuplet 3/2 {g'8 [f'8 e'8]}} \new Voice {\voiceTwo e'4 e'4 e'4}>>}","a4 a,4 cis4",,,64,0
+"{<<{\voiceOne g''4 f''2} \new Voice {\voiceTwo e''4 d''2}>>}","d8 [d'8] a8 [f8] d4",,,65,0
+"{<<{\voiceOne r8 c'8 d'8 ^\trill [c'8] g'8 [<g'bes'>8]} \new Voice {\voiceTwo s2.}>>}","<g e>2 <g e>4",,,66,0
+"{<<{\voiceOne r8 bes''8 bes''8 [a''8] a''8 [g''8]} \new Voice {\voiceTwo r8 g''8 g''8 [f''8] f''8 [e''8]}>>}","cis'2.",,,67,0
+"{<<{\voiceOne c''4 bes'2} \new Voice {\voiceTwo a'4 g'2}>>}","\tuplet 3/2 {g,8 [bes,8 d8]} g8 [f8] e8 [d8]",,,68,0
+"{<<{\voiceOne d''8 [cis''8] cis''8 [b'8] b'8 [a'8]} \new Voice {\voiceTwo f'8 [e'8] e'8 [d'8] d'8 [cis'8]}>>}","a4 a,4 r4",,,69,0
+"{<<{\voiceOne bes'8 [g''8] g''4. bes'8} \new Voice {\voiceTwo g'8 [bes'8] bes'4. g'8}>>}","e8 [c8] e8 [g8] c'8 [e8]",,,70,0
+"{<<{\voiceOne d''8 [cis''8] e''8 [a''8] a'4} \new Voice {\voiceTwo e'4 cis''4 r4}>>}","a,4 a4 r4",,,71,0
+"{<<{\voiceOne bes'8 [a'8] c''8 [f''8] f'4} \new Voice {\voiceTwo s2.}>>}","<a f>4. <a f>8 <c' a>8 [<a f>8]",,,72,0
+"{<<{\voiceOne f'2.} \new Voice {\voiceTwo f'2.}>>}","f,8 [f8] c8 [a,8] f,4",,,73,1
+"{<<{\voiceOne r8 a''4 e''8 f''8 [d''8]} \new Voice {\voiceTwo r8 f''4 cis''8 d''8 [f'8]}>>}","\tuplet 3/2 {d8 [f8 a8]} d'4 d'4",,,74,0
+"{<<{\voiceOne bes'8 [g''8] bes'2} \new Voice {\voiceTwo g'8 [bes'8] g'2}>>}","r8 g,8 g,8 [e8] e8 [c8]",,,75,0
+"{<<{\voiceOne d'2.} \new Voice {\voiceTwo d'2.}>>}","d4 a,4 d,4",,,76,1
+"{<<{\voiceOne \tuplet 3/2 {a'8 [g'8 f'8]} g'2 ^\trill} \new Voice {\voiceTwo f'2 e'4}>>}","f4 c4 c,4",,,77,0
+"{<<{\voiceOne r8 d''8 d''16 [cis''16 d''8] d'8 [d''8]} \new Voice {\voiceTwo r8 f'8 f'4. f'8}>>}","d2 d4",,,78,0
+"{<<{\voiceOne r8 <a'c''>8 <a'c''>16 [<g'bes'>16 <a'c''>8] d'8 [<a'c''>8]} \new Voice {\voiceTwo s2.}>>}","fis2.",,,79,0
+"{<<{\voiceOne \tuplet 3/2 {d''8 [f''8 e''8]} \tuplet 3/2 {d''8 [cis''8 d''8]} \tuplet 3/2 {d''8 [cis''8 d''8]}} \new Voice {\voiceTwo s2.}>>}","<d' d>4 <d' bes>4 <d' gis>4",,,80,0
+"{<<{\voiceOne \tuplet 3/2 {d'8 [f'8 a'8]} d''4 d''4} \new Voice {\voiceTwo r4 a'4 f'4}>>}","d4 f4 d4",,,81,0
+"{<<{\voiceOne d'2.} \new Voice {\voiceTwo d'2.}>>}","d4 a,4 d,4",,,82,1
+"{<<{\voiceOne \tuplet 3/2 {a'8 [g'8 f'8]} g'2 ^\trill} \new Voice {\voiceTwo f'2 e'4}>>}","f4 c4 c,4",,,83,0
+"{<<{\voiceOne a''4 f''4 d''4} \new Voice {\voiceTwo s2.}>>}","d4. e8 f8 [g8]",,,84,0
+"{<<{\voiceOne cis''16 [d''16] e''4 bes'8 a'8 [g'8]} \new Voice {\voiceTwo e'4. g'8 f'8 [e'8]}>>}","a4 cis4 cis4",,,85,0
+"{<<{\voiceOne \tuplet 3/2 {d''8 [f''8 a''8]} d'''8 [a''8] f''8 [d''8]} \new Voice {\voiceTwo s2.}>>}","<a f>2 <a d>4",,,86,0
+"{<<{\voiceOne d'2.} \new Voice {\voiceTwo d'2.}>>}","d4 a,4 d,4",,,87,1
+"{<<{\voiceOne \tuplet 3/2 {a'8 [g'8 f'8]} g'2 ^\trill} \new Voice {\voiceTwo f'2 e'4}>>}","f4 c4 c,4",,,88,0
+"{<<{\voiceOne r8 a'8 a'8 [f''8] f''8 [d''8]} \new Voice {\voiceTwo r8 f'8 f'8 [a'8] a'8 [f'8]}>>}","d2 d4",,,89,0
+"{<<{\voiceOne d''8 [d'8] d''4. c''8} \new Voice {\voiceTwo f'4 a'2}>>}","d4 f4 fis4",,,90,0
+"{<<{\voiceOne c''8 [bes'8] bes'8 [a'8] a'8 [g'8]} \new Voice {\voiceTwo a'8 [g'8] g'8 [c'8] c'8 [bes8]}>>}","g4 g,4 r4",,,91,0
+"{<<{\voiceOne f'2.} \new Voice {\voiceTwo f'2.}>>}","f,8 [f,8] a,8 [c8] f4",,,92,1
+"{<<{\voiceOne c''4 bes'2} \new Voice {\voiceTwo a'4 g'2}>>}","g,8 [g8] g16 [fis16 g8] f,8 [f8]",,,93,0
+"{<<{\voiceOne \tuplet 3/2 {c''8 [a'8 fis'8]} d'4 c''4} \new Voice {\voiceTwo a'4 d'4 a'4}>>}","fis2.",,,94,0
+"{<<{\voiceOne bes'8 [g''8] g''4. bes'8} \new Voice {\voiceTwo g'8 [bes'8] bes'4. g'8}>>}","g4. c8 d8 [e8]",,,95,0
+"{<<{\voiceOne f'2.} \new Voice {\voiceTwo f'2.}>>}","f,4. a16 [g16] f8 [e8]",,,96,1

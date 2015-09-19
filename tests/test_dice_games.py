@@ -13,7 +13,7 @@ import unittest
 import musical_games
 
 
-class TestMusical_games(unittest.TestCase):
+class TestDiceGames(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -23,6 +23,7 @@ class TestMusical_games(unittest.TestCase):
 
     def tearDown(self):
         pass
+
 
 if __name__ == '__main__':
     unittest.main()
