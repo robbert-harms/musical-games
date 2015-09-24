@@ -1,5 +1,5 @@
-from musical_games.dice_games.compositions import KirnbergerMenuetTrio, KirnbergerPolonaise, StadlerMenuetTrio, \
-    MozartWaltz
+from musical_games.dice_games.compositions import KirnbergerMenuetTrioInfo, KirnbergerPolonaiseInfo, \
+    StadlerMenuetTrioInfo, MozartWaltzInfo
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-18"
@@ -47,7 +47,7 @@ class Kirnberger(ComposerInfo):
         return 'kirnberger'
 
     def get_music_works(self):
-        return [KirnbergerMenuetTrio(), KirnbergerPolonaise()]
+        return [KirnbergerMenuetTrioInfo(), KirnbergerPolonaiseInfo()]
 
 
 class Stadler(ComposerInfo):
@@ -61,7 +61,7 @@ class Stadler(ComposerInfo):
         return 'stadler'
 
     def get_music_works(self):
-        return [StadlerMenuetTrio()]
+        return [StadlerMenuetTrioInfo()]
 
 
 class Mozart(ComposerInfo):
@@ -75,7 +75,7 @@ class Mozart(ComposerInfo):
         return 'mozart'
 
     def get_music_works(self):
-        return [MozartWaltz()]
+        return [MozartWaltzInfo()]
 
 
 composers = [Kirnberger(), Stadler(), Mozart()]

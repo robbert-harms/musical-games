@@ -10,10 +10,8 @@ Tests for `musical_games` module.
 
 import unittest
 
-import musical_games
 
-
-class TestDiceGames(unittest.TestCase):
+class TestDiceGame(unittest.TestCase):
 
     def setUp(self):
         pass
