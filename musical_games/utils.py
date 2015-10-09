@@ -1,4 +1,5 @@
 import os
+import itertools
 from musical_games.converters.audio import midi_to_wav, wav_to_mp3, wav_to_ogg
 from musical_games.converters.images import trim_image, concatenate_images
 from musical_games.converters.lilypond import lilypond
@@ -7,6 +8,49 @@ __author__ = 'Robbert Harms'
 __date__ = "2015-09-23"
 __maintainer__ = "Robbert Harms"
 __email__ = "robbert.harms@maastrichtuniversity.nl"
+
+
+def correct_indent(string, nmr_spaces):
+    """Remove the lowest nmr of spaces (> 0) from every string and then indent by the given number of tabs.
+
+    This will first convert all tabs to 4 spaces.
+
+    Args:
+        string (str): the string to correct the indentation
+        nmr_spaces (int): the number of spaces to indent by.
+
+    Returns:
+        string: the same string with the indent offset corrected
+    """
+    string = string.replace("\t", ' '*4)
+    lines = string.split("\n")
+
+    def nmr_front_tabs(line):
+        if len(line.strip()) == 0:
+            return None
+        return len(list(itertools.takewhile(lambda c: c == ' ', line)))
+
+    try:
+        offset_remove = min(filter(lambda v: v is not None, map(nmr_front_tabs, lines)))
+        lines = [' ' * nmr_spaces + line[offset_remove:] for line in lines]
+    except ValueError:
+        pass
+
+    return "\n".join(lines)
+
+
+def write_lilypond_file(filename, lilypond_str):
+    """Write the given lilypond string to the given file.
+
+    Args:
+        filename (str): the full path and name of the file to write
+        lilypond_str (str): the string with the lilypond content.
+    """
+    if not os.path.isdir(os.path.basename(filename)):
+        os.makedirs(os.path.basename(filename))
+
+    with open(filename, 'w') as f:
+        f.write(lilypond_str)
 
 
 def auto_convert_lilypond_file(lilypond_filename, soundfont, output_prefix=None):

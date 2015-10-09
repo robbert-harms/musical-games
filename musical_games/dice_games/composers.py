@@ -19,11 +19,11 @@ class ComposerInfo(object):
         return ''
 
     @property
-    def safe_name(self):
-        """Get a safe name of this composer. This should only contain alphanumeric signs and underscore.
+    def id(self):
+        """Get a id of this composer. This should only contain alphanumeric signs and underscore.
 
         Returns:
-            str: the safe name of this composer.
+            str: the id key of this composer.
         """
         return ''
 
@@ -43,7 +43,7 @@ class Kirnberger(ComposerInfo):
         return 'Kirnberger'
 
     @property
-    def safe_name(self):
+    def id(self):
         return 'kirnberger'
 
     def get_music_works(self):
@@ -57,7 +57,7 @@ class Stadler(ComposerInfo):
         return 'Stadler'
 
     @property
-    def safe_name(self):
+    def id(self):
         return 'stadler'
 
     def get_music_works(self):
@@ -71,7 +71,7 @@ class Mozart(ComposerInfo):
         return 'Mozart'
 
     @property
-    def safe_name(self):
+    def id(self):
         return 'mozart'
 
     def get_music_works(self):

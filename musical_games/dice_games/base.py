@@ -1,6 +1,6 @@
-import csv
-from musical_games.base import Bar
 import numpy as np
+
+from musical_games.base import Bar
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-19"
@@ -10,37 +10,41 @@ __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 class PieceInfo(object):
 
-    def __init__(self, name, bar_collections, key_signature, time_signature, tempo):
+    def __init__(self, name, tract_info, key_signature, time_signature, tempo):
         """Information about one of the pieces in a composition.
 
         Args:
             name: the name of this piece
         """
         self.name = name
-        self.bar_collections = bar_collections
+        self.tract_info = tract_info
         self.key_signature = key_signature
         self.time_signature = time_signature
         self.tempo = tempo
 
 
-class BarList(object):
+class TractInfo(object):
 
-    def __init__(self, name, bars):
-        """Listing of all bars for a single tract.
+    def __init__(self, name, clef, bars):
+        """Information about a single tract.
 
-        For example, use this for one BarList for the left hand of a piece and one for the right hand.
+        For example, you can have two of these, one for the left hand of a piece and one for the right hand
+        (in the case of a piano).
 
         Args:
             name (str): the name of this bar list
+            clef (str): lilypond clef notation string. Like 'treble' or 'bass'
             bars (list of Bar): the list of bars in this barlist.
         """
         self.name = name
+        self.clef = clef
         self.bars = bars
 
 
 class NumberedBar(Bar):
 
     def __init__(self, lilypond_code, bar_nmr, alternatives=None):
+        """Subclass of Bar, adds the bar number to the bar information."""
         super(NumberedBar, self).__init__(lilypond_code, alternatives=alternatives)
         self.bar_nmr = bar_nmr
 
@@ -93,44 +97,3 @@ class DiceTable(object):
             list of DiceTable: one per split
         """
         return DiceTable(self.name, self.table[:, 0:column]), DiceTable(self.name, self.table[:, column:])
-
-
-def load_bars_from_file(filename):
-    """Load bars from a given file.
-
-    The file is supposed to be a CSV file with as first column the list of positions this bar appears in
-    and the second column the lilypond code for that measure. The third and further columns can be alternatives
-    for that measure.
-
-    Args:
-        filename (str): the name of the file we will load.
-    """
-    bar_dict = {}
-
-    with open(filename, 'r') as csvfile:
-        csv_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-        for row in csv_reader:
-            if len(row) > 2:
-                alternatives = Bar(row[2:])
-            else:
-                alternatives = None
-
-            if ',' in row[0]:
-                doubles = row[0].split(',')
-
-                for position in doubles:
-                    bar_dict.update({int(position): NumberedBar(row[1], position, alternatives)})
-            else:
-                bar_dict.update({int(row[0]): NumberedBar(row[1], row[0], alternatives)})
-
-    positions = sorted(list(bar_dict.keys()))
-    return [bar_dict[ind] for ind in positions]
-
-
-def load_dice_table(filename):
-    """Load one of the dicetables from CSV format.
-
-    Args:
-        filename (str): the filename of the dice table
-    """
-    return np.genfromtxt(filename, dtype=np.int32, delimiter=',')
