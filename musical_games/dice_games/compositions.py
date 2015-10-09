@@ -2,7 +2,7 @@ from pkg_resources import resource_filename
 
 from musical_games.base import KeySignature, TimeSignature, TempoIndication
 from musical_games.dice_games.base import PieceInfo, TractInfo, DiceTable
-from musical_games.dice_games.lilypond.typeset_staff import NoRepeat
+from musical_games.dice_games.lilypond.typeset_staff import NoRepeat, MozartNoRepeat
 from musical_games.dice_games.utils import load_bars_from_file, load_dice_table
 from musical_games.dice_games.lilypond.base import MusicBookTypeset, PieceScores, MusicBookComment, VisualScore, Staff
 
@@ -202,7 +202,7 @@ class MozartWaltz(Composition):
         ]
 
     def typeset_measure_overview(self):
-        staffs = NoRepeat(self._pieces[0].tract_info, ).get_staffs()
+        staffs = MozartNoRepeat(self._pieces[0].tract_info).get_staffs()
 
         waltz_visual = VisualScore(
             staffs,
@@ -212,7 +212,7 @@ class MozartWaltz(Composition):
             self._pieces[0].tempo)
 
         waltz_visual.display_all_bar_numbers = True
-        waltz_visual.display_tempo_indication = True
+        waltz_visual.display_tempo_indication = False
         waltz_visual.title = None
 
         typesetter = MusicBookTypeset([waltz_visual])

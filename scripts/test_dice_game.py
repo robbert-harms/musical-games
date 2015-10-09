@@ -1,5 +1,5 @@
 from musical_games.dice_games.compositions import MozartWaltzInfo
-from musical_games.utils import write_lilypond_file
+from musical_games.utils import write_lilypond_file, auto_convert_lilypond_file
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-10-08"
@@ -12,6 +12,6 @@ composition = composition_info.get_composition('piano')
 lilypond = composition.typeset_measure_overview()
 
 write_lilypond_file('/tmp/test/test.ly', lilypond)
-
+auto_convert_lilypond_file('/tmp/test/test.ly')
 
 print(lilypond)

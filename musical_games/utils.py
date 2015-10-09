@@ -46,14 +46,14 @@ def write_lilypond_file(filename, lilypond_str):
         filename (str): the full path and name of the file to write
         lilypond_str (str): the string with the lilypond content.
     """
-    if not os.path.isdir(os.path.basename(filename)):
-        os.makedirs(os.path.basename(filename))
+    if not os.path.isdir(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
 
     with open(filename, 'w') as f:
         f.write(lilypond_str)
 
 
-def auto_convert_lilypond_file(lilypond_filename, soundfont, output_prefix=None):
+def auto_convert_lilypond_file(lilypond_filename, soundfont=None, output_prefix=None):
     """Converts a lilypond file to pdf, png, midi, wav, mp3 and ogg.
 
     The idea is that given a lilypond file you want to have some standard output. This wrapper function
@@ -61,7 +61,7 @@ def auto_convert_lilypond_file(lilypond_filename, soundfont, output_prefix=None)
 
     Args:
         lilypond_filename (str): the lilypond file name
-        soundfont (str): the path to the soundfont to use
+        soundfont (str): the path to the soundfont to use. If not given we will not convert to wav, mp3 and ogg.
         output_prefix (str): path + file prefix. If None we use the dir and basename of the lilypond file.
 
     Returns:
@@ -80,18 +80,19 @@ def auto_convert_lilypond_file(lilypond_filename, soundfont, output_prefix=None)
     mp3_list = []
     ogg_list = []
 
-    for midi_file in lilypond_conversion_results.midi_list:
-        wav_file = os.path.splitext(midi_file)[0] + '.wav'
-        mp3_file = os.path.splitext(midi_file)[0] + '.mp3'
-        ogg_file = os.path.splitext(midi_file)[0] + '.ogg'
+    if soundfont:
+        for midi_file in lilypond_conversion_results.midi_list:
+            wav_file = os.path.splitext(midi_file)[0] + '.wav'
+            mp3_file = os.path.splitext(midi_file)[0] + '.mp3'
+            ogg_file = os.path.splitext(midi_file)[0] + '.ogg'
 
-        midi_to_wav(midi_file, wav_file, soundfont)
-        wav_to_mp3(wav_file, mp3_file)
-        wav_to_ogg(wav_file, ogg_file)
+            midi_to_wav(midi_file, wav_file, soundfont)
+            wav_to_mp3(wav_file, mp3_file)
+            wav_to_ogg(wav_file, ogg_file)
 
-        wav_list.append(wav_file)
-        mp3_list.append(mp3_file)
-        ogg_list.append(ogg_file)
+            wav_list.append(wav_file)
+            mp3_list.append(mp3_file)
+            ogg_list.append(ogg_file)
 
     return ConvertLilypondResults(
         lilypond_conversion_results.pdf_list,

@@ -65,10 +65,10 @@ class MusicBookTypeset(LilypondTypesetInterface):
         if self.force_to_one_page:
             parts.append("\t" + 'page-count = 1')
 
-        parts.append(correct_indent('''
+        parts.append(correct_indent(r'''
             print-all-headers = ##t
             ragged-right = ##f
-            score-markup-spacing = #\'((basic-distance . 10))
+            score-markup-spacing = #'((basic-distance . 10))
             markup-system-spacing #'minimum-distance = 0
 
             scoreTitleMarkup = \markup {
@@ -76,30 +76,30 @@ class MusicBookTypeset(LilypondTypesetInterface):
                 \column {
                     \override #'(baseline-skip . 3.5)
                     \column {
-                        \huge \larger \\bold
-                        \\fill-line {
-                            \larger \\fromproperty #'header:title
+                        \huge \larger \bold
+                        \fill-line {
+                            \larger \fromproperty #'header:title
                         }
-                        \\fill-line {
-                            \large \smaller \\bold
-                            \larger \\fromproperty #'header:subtitle
+                        \fill-line {
+                            \large \smaller \bold
+                            \larger \fromproperty #'header:subtitle
                         }
-                        \\fill-line {
-                            \smaller \\bold
-                            \\fromproperty #'header:subsubtitle
+                        \fill-line {
+                            \smaller \bold
+                            \fromproperty #'header:subsubtitle
                         }
                     }
                     \override #'(baseline-skip . 3.5)
                     \column {
-                        \\fill-line {
-                            \\fromproperty #'header:poet
-                            { \large \\bold \\fromproperty #'header:instrument }
-                            \\fromproperty #'header:composer
+                        \fill-line {
+                            \fromproperty #'header:poet
+                            { \large \bold \fromproperty #'header:instrument }
+                            \fromproperty #'header:composer
                         }
-                        \\fill-line {
-                            \\fromproperty #'header:piece
-                            \\fromproperty #'header:meter
-                            \\fromproperty #'header:arranger
+                        \fill-line {
+                            \fromproperty #'header:piece
+                            \fromproperty #'header:meter
+                            \fromproperty #'header:arranger
                         }
                     }
                 }
@@ -127,17 +127,17 @@ class MusicBookComment(object):
 
 class Staff(object):
 
-    def __init__(self, notes, clef, instrument_name=''):
+    def __init__(self, notes, clef):
         """All information needed to render a staff.
 
-        Args:
+        Attributes:
             notes (str): the notes on this staff
             clef (str): the type of clef, lilypond string
             instrument_name (str): the instrument name, if not None we render it next to the staff
         """
         self.notes = notes
         self.clef = clef
-        self.instrument_name = instrument_name
+        self.instrument_name = ''
 
 
 class PieceScores(object):
@@ -220,7 +220,7 @@ class VisualScore(PieceScores):
         if self.display_staff_names:
             parts.append("\t\t" + '\set Staff.instrumentName = #"{} "'.format(staff.instrument_name))
 
-        parts.append(staff.notes)
+        parts.append(correct_indent(staff.notes, 8))
 
         parts.append("\t" + '}')
         parts.append('>>')
@@ -235,11 +235,11 @@ class VisualScore(PieceScores):
         if self.display_tempo_indication:
             tempo = '\\tempo ' + str(self.tempo)
 
-        return '''
+        return r'''
         {{
             {barnumbers}
             \key {key}
-            \\time {time}
+            \time {time}
             {tempo}
             \override Score.RehearsalMark.direction = #down
         }}'''.format(barnumbers=barnumbers, key=self.key_signature,

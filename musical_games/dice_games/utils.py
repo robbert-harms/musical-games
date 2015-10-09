@@ -25,7 +25,7 @@ def load_bars_from_file(filename):
         csv_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
         for row in csv_reader:
             if len(row) > 2:
-                alternatives = Bar(row[2:])
+                alternatives = [Bar(r) for r in row[2:]]
             else:
                 alternatives = None
 

@@ -19,20 +19,33 @@ class StaffBuilder(object):
 
 class NoRepeat(StaffBuilder):
 
-    def __init__(self, tracts_info, instrument_names=()):
-        """Concatenate all bars behind each other."""
+    def __init__(self, tracts_info):
+        """Concatenates all bars."""
         self.tracts_info = tracts_info
-        self.instrument_names = instrument_names
 
     def get_staffs(self):
         staffs = []
-        for ind, tract_info in enumerate(self.tracts_info):
-            instrument_name = ''
-            if ind in self.instrument_names:
-                instrument_name = self.instrument_names[ind]
-
-            notes = 'g4'
-
-            staffs.append(Staff(notes, tract_info.clef, instrument_name=instrument_name))
+        for tract_info in self.tracts_info:
+            notes = []
+            for bar in tract_info.bars:
+                notes.append(self._bar_to_notes(bar))
+            notes = "\n".join(notes)
+            staffs.append(Staff(notes, tract_info.clef))
 
         return staffs
+
+    def _bar_to_notes(self, bar):
+        return str(bar)
+
+
+class MozartNoRepeat(NoRepeat):
+    """The no repeat listing for the Mozart Waltz.
+
+    In the Mozart bar listing the alternative endings are superimposed on each other as two voices. We copied
+    that scheme using this class.
+    """
+    def _bar_to_notes(self, bar):
+        if bar.alternatives:
+            return r'<< {\voiceOne ' + str(bar.alternatives[0]) + r'} \new Voice { \voiceTwo ' + str(bar) + '} >>'
+        else:
+            return str(bar)
