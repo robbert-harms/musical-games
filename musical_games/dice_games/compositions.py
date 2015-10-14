@@ -2,7 +2,7 @@ from pkg_resources import resource_filename
 
 from musical_games.base import KeySignature, TimeSignature, TempoIndication
 from musical_games.dice_games.base import PieceInfo, TractInfo, DiceTable
-from musical_games.dice_games.lilypond.typeset_staff import NoRepeat, MozartNoRepeat
+from musical_games.dice_games.lilypond.typeset_staff import NoRepeat, MozartNoRepeat, MozartSingleMeasure, SingleMeasure
 from musical_games.dice_games.utils import load_bars_from_file, load_dice_table
 from musical_games.dice_games.lilypond.base import MusicBookTypeset, PieceScores, MusicBookComment, VisualScore, Staff
 
@@ -105,6 +105,66 @@ class Composition(object):
 
     def __init__(self, instrumental_setting):
         self.instrumental_setting = instrumental_setting
+        self._dice_tables = []
+        self._pieces = {}
+
+    def get_pieces_names(self):
+        """Get the names of the individual pieces in this composition.
+
+        Returns:
+            list of str: list of piece names
+        """
+        return self._pieces.keys()
+
+    def get_dice_tables(self):
+        """Get the dice tables used by this composition.
+
+        Returns:
+            list of DiceTable: list of all the available dice tables.
+        """
+        return self._dice_tables
+
+    def typeset_measure_overview(self, piece_name=None):
+        """Typeset the overview of the measures.
+
+        Args:
+            piece_name (str): the name of a piece we want to get the measures overview of. If not given,
+                a single lilypond string with all the pieces should be returned.
+
+        Returns:
+            str: lilypond code for the measures overview
+        """
+        pass
+
+    def typeset_single_measure(self, dice_table_name, measure_index):
+        """Typeset a single measure.
+
+        This is supposed to be used to illustrate a single measure referenced in one of the dice tables.
+
+        The default implementation assumes that there is a one-on-one match between the dice tables and the pieces and
+        that the pieces and the dice tables are named similar.
+
+        Args:
+            dice_table_name (str): the name of the dice table we reference
+            measure_index (int): the index (1 based) from the table.
+
+        Returns:
+            str: lilypond code for viewing just that single measure.
+        """
+        piece = self._pieces[dice_table_name]
+        waltz_visual = VisualScore(
+            SingleMeasure(piece.tract_info, measure_index).get_staffs(),
+            piece.name,
+            piece.key_signature,
+            piece.time_signature,
+            piece.tempo,
+            display_all_bar_numbers=False,
+            display_tempo_indication=False,
+            title=None
+        )
+        typesetter = MusicBookTypeset([waltz_visual])
+        typesetter.title = None
+        return typesetter.typeset()
 
 
 class KirnbergerMenuetTrio(Composition):
@@ -115,16 +175,16 @@ class KirnbergerMenuetTrio(Composition):
         super(KirnbergerMenuetTrio, self).__init__(instrumental_setting)
 
         self._dice_tables = [
-            DiceTable('Kirnberger Menuet',
-                      load_dice_table(resource_filename('musical_games',
-                                                        'data/kirnberger/menuet_trio/table_menuet.txt'))),
-            DiceTable('Kirnberger Trio',
-                      load_dice_table(resource_filename('musical_games',
-                                                        'data/kirnberger/menuet_trio/table_trio.txt'))),
+            DiceTable(
+                'Menuet',
+                load_dice_table(resource_filename('musical_games', 'data/kirnberger/menuet_trio/table_menuet.txt'))),
+            DiceTable(
+                'Trio',
+                load_dice_table(resource_filename('musical_games', 'data/kirnberger/menuet_trio/table_trio.txt'))),
         ]
 
-        self._pieces = [
-            PieceInfo(
+        self._pieces = {
+            'Menuet': PieceInfo(
                 'Menuet',
                 [TractInfo('Left hand', 'treble', load_bars_from_file(
                     resource_filename(
@@ -138,7 +198,7 @@ class KirnbergerMenuetTrio(Composition):
                 TimeSignature(3, 4),
                 TempoIndication(4, 100)
             ),
-            PieceInfo(
+            'Trio': PieceInfo(
                 'Trio',
                 [TractInfo('Left hand', 'treble', load_bars_from_file(
                     resource_filename(
@@ -152,73 +212,103 @@ class KirnbergerMenuetTrio(Composition):
                 TimeSignature(3, 4),
                 TempoIndication(4, 80)
             )
-        ]
+        }
 
-    def typeset_measure_overview(self):
-        # staffs = NoRepeat(self._pieces[0].tract_info).get_staffs()
-        #
-        # waltz_visual = VisualScore(
-        #     staffs,
-        #     'waltz',
-        #     self._pieces[0].key_signature,
-        #     self._pieces[0].time_signature,
-        #     self._pieces[0].tempo)
-        #
-        # waltz_visual.display_all_bar_numbers = True
-        # waltz_visual.display_tempo_indication = False
-        # waltz_visual.title = None
-        #
-        # typesetter = MusicBookTypeset([waltz_visual])
-        # typesetter.title = 'Mozart Measures'
-        # return typesetter.typeset()
-        #todo
-        pass
+    def typeset_measure_overview(self, piece_name=None):
+        scores = []
+        for piece in self._pieces.values():
+            if piece_name is None or piece_name == piece.name:
+                score = VisualScore(
+                    NoRepeat(piece.tract_info).get_staffs(),
+                    piece.name,
+                    piece.key_signature,
+                    piece.time_signature,
+                    piece.tempo,
+                    display_all_bar_numbers=True,
+                    display_tempo_indication=False,
+                    title=piece.name
+                )
+                scores.append(score)
+
+        typesetter = MusicBookTypeset(scores)
+        typesetter.title = 'Kirnberger Measures'
+
+        if piece_name is not None:
+            typesetter.page_limit = 2
+        else:
+            typesetter.page_limit = 4
+
+        return typesetter.typeset()
 
 
 class KirnbergerPolonaise(Composition):
-
-    def __init__(self):
-        super(KirnbergerPolonaise, self).__init__()
-        self.dice_tables = [
-            DiceTable('Kirnberger polonaise',
-                      load_dice_table(resource_filename('musical_games', 'data/stadler/polonaise/table.txt')))
-        ]
-
-    @property
-    def name(self):
-        return 'Polonaise'
-
-    @property
-    def id(self):
-        return 'polonaise'
-
-    def get_instrument_setting_names(self):
-        return [PianoSolo([PieceInfo('')]),
-                ChamberMusic([PieceInfo()])]
-
+    pass
 
 
 class StadlerMenuetTrio(Composition):
 
-    def __init__(self):
-        super(StadlerMenuetTrio, self).__init__()
-        self.dice_tables = [
-            DiceTable('Stadler Menuet',
+    supported_instrumental_settings = ['piano']
+
+    def __init__(self, instrumental_setting):
+        super(StadlerMenuetTrio, self).__init__(instrumental_setting)
+
+        self._dice_tables = [
+            DiceTable('Menuet',
                       load_dice_table(resource_filename('musical_games', 'data/stadler/menuet_trio/table_menuet.txt'))),
-            DiceTable('Stadler Trio',
+            DiceTable('Trio',
                       load_dice_table(resource_filename('musical_games', 'data/stadler/menuet_trio/table_trio.txt')))
         ]
 
-    @property
-    def name(self):
-        return 'Menuet / Trio'
+        self._pieces = {
+            'Menuet': PieceInfo(
+                'Menuet',
+                [TractInfo('Left hand', 'treble', load_bars_from_file(
+                    resource_filename(
+                        'musical_games',
+                        'data/stadler/menuet_trio/{}/bars_menuet_lh.txt'.format(self.instrumental_setting)))),
+                 TractInfo('Right hand', 'bass', load_bars_from_file(
+                     resource_filename(
+                         'musical_games',
+                         'data/stadler/menuet_trio/{}/bars_menuet_rh.txt'.format(self.instrumental_setting))))],
+                KeySignature('d', 'major'),
+                TimeSignature(3, 4),
+                TempoIndication(4, 100)
+            ),
+            'Trio': PieceInfo(
+                'Trio',
+                [TractInfo('Left hand', 'treble', load_bars_from_file(
+                    resource_filename(
+                        'musical_games',
+                        'data/stadler/menuet_trio/{}/bars_trio_lh.txt'.format(self.instrumental_setting)))),
+                 TractInfo('Right hand', 'bass', load_bars_from_file(
+                     resource_filename(
+                         'musical_games',
+                         'data/stadler/menuet_trio/{}/bars_trio_rh.txt'.format(self.instrumental_setting))))],
+                KeySignature('g', 'major'),
+                TimeSignature(3, 4),
+                TempoIndication(4, 80)
+            )
+        }
 
-    @property
-    def id(self):
-        return 'menuet_trio'
+    def typeset_measure_overview(self, piece_name=None):
+        scores = []
+        for piece in self._pieces.values():
+            if piece_name is None or piece_name == piece.name:
+                score = VisualScore(
+                    NoRepeat(piece.tract_info).get_staffs(),
+                    piece.name,
+                    piece.key_signature,
+                    piece.time_signature,
+                    piece.tempo,
+                    display_all_bar_numbers=True,
+                    display_tempo_indication=False,
+                    title=piece.name
+                )
+                scores.append(score)
 
-    def get_instrument_setting_names(self):
-        return [PianoSolo([PieceInfo(), PieceInfo()])]
+        typesetter = MusicBookTypeset(scores)
+        typesetter.title = 'Stadler Measures'
+        return typesetter.typeset()
 
 
 class MozartWaltz(Composition):
@@ -228,14 +318,15 @@ class MozartWaltz(Composition):
     def __init__(self, instrumental_setting):
         super(MozartWaltz, self).__init__(instrumental_setting)
 
+        self._waltz_name = 'Waltz'
+
         self._dice_tables = [
-            DiceTable('Mozart Waltz',
-                      load_dice_table(resource_filename('musical_games', 'data/mozart/waltz/table.txt')))
+            DiceTable(self._waltz_name, load_dice_table(resource_filename('musical_games', 'data/mozart/waltz/table.txt')))
         ]
 
-        self._pieces = [
-            PieceInfo(
-                'Waltz',
+        self._pieces = {
+            self._waltz_name: PieceInfo(
+                self._waltz_name,
                 [TractInfo('Left hand', 'treble', load_bars_from_file(
                     resource_filename('musical_games', 'data/mozart/waltz/piano/bars_lh.txt'))),
                  TractInfo('Right hand', 'bass', load_bars_from_file(
@@ -244,22 +335,37 @@ class MozartWaltz(Composition):
                 TimeSignature(3, 8),
                 TempoIndication(8, 110)
             )
-        ]
+        }
 
-    def typeset_measure_overview(self):
-        staffs = MozartNoRepeat(self._pieces[0].tract_info).get_staffs()
-
+    def typeset_single_measure(self, dice_table_name, measure_index):
+        piece = self._pieces[dice_table_name]
         waltz_visual = VisualScore(
-            staffs,
-            'waltz',
-            self._pieces[0].key_signature,
-            self._pieces[0].time_signature,
-            self._pieces[0].tempo)
+            MozartSingleMeasure(piece.tract_info, measure_index).get_staffs(),
+            piece.name,
+            piece.key_signature,
+            piece.time_signature,
+            piece.tempo,
+            display_all_bar_numbers=False,
+            display_tempo_indication=False,
+            title=None
+        )
+        typesetter = MusicBookTypeset([waltz_visual])
+        typesetter.title = None
+        return typesetter.typeset()
 
-        waltz_visual.display_all_bar_numbers = True
-        waltz_visual.display_tempo_indication = False
-        waltz_visual.title = None
-
+    def typeset_measure_overview(self, piece_name=None):
+        piece = self._pieces[self._waltz_name]
+        waltz_visual = VisualScore(
+            MozartNoRepeat(piece.tract_info).get_staffs(),
+            piece.name,
+            piece.key_signature,
+            piece.time_signature,
+            piece.tempo,
+            display_all_bar_numbers=True,
+            display_tempo_indication=False,
+            title=None
+        )
         typesetter = MusicBookTypeset([waltz_visual])
         typesetter.title = 'Mozart Measures'
         return typesetter.typeset()
+

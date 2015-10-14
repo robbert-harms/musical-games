@@ -61,7 +61,7 @@ class DiceTable(object):
         self.name = name
         self.table = table
 
-    def get_random_indice(self, column):
+    def random_index(self, column):
         """Get the index of a random row in the dice table given the given column.
 
         Args:
@@ -72,13 +72,13 @@ class DiceTable(object):
         """
         return self.table[np.random.randint(self.table.shape[0]), column]
 
-    def get_random_indices(self):
+    def random_indices(self):
         """Get a random list of indices, one for each column.
 
         Returns:
             list: list of indices, one per column
         """
-        return [self.get_random_indice(column) for column in range(self.table.shape[1])]
+        return [self.random_index(column) for column in range(self.table.shape[1])]
 
     def get_all_indices(self):
         """Get a sorted list of all the indices in this table.

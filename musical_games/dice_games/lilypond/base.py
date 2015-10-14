@@ -24,7 +24,8 @@ class MusicBookTypeset(LilypondTypesetInterface):
         self._pieces = pieces
         self._lilypond_version = '2.18.2'
         self.comments = []
-        self.force_to_one_page = False
+        self.page_limit = None
+        self.ragged_right = None
         self.title = ''
 
     def add_comment(self, comment):
@@ -53,8 +54,12 @@ class MusicBookTypeset(LilypondTypesetInterface):
         return "\n".join(parts)
 
     def _get_header(self):
+        title = self.title
+        if title is None:
+            title = ''
+
         parts = ['\header{',
-                 "\t title = \"{}\" ".format(self.title),
+                 "\t title = \"{}\" ".format(title),
                  "\t tagline = \"\" ",
                  '}']
         return "\n".join(parts)
@@ -62,12 +67,14 @@ class MusicBookTypeset(LilypondTypesetInterface):
     def _get_paper_settings(self):
         parts = ['\paper {']
 
-        if self.force_to_one_page:
-            parts.append("\t" + 'page-count = 1')
+        if self.page_limit is not None:
+            parts.append("\t" + 'page-count = {}'.format(self.page_limit))
+
+        if self.ragged_right is not None:
+            parts.append("\t" + 'ragged-right = ##{}'.format('t' if self.ragged_right else 'f'))
 
         parts.append(correct_indent(r'''
             print-all-headers = ##t
-            ragged-right = ##f
             score-markup-spacing = #'((basic-distance . 10))
             markup-system-spacing #'minimum-distance = 0
 
@@ -154,7 +161,7 @@ class PieceScores(object):
 
 class VisualScore(PieceScores):
 
-    def __init__(self, staffs, unique_id, key_signature, time_signature, tempo):
+    def __init__(self, staffs, unique_id, key_signature, time_signature, tempo, **kwargs):
         """Information of a single piece for use in the MusicBook typesetter.
 
         Attributes:
@@ -184,6 +191,9 @@ class VisualScore(PieceScores):
         self.title = ''
         self.main_staff_type = 'PianoStaff'
         self.main_staff_name = 'Piano'
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def typeset(self):
         parts = ['\score {',
