@@ -28,8 +28,11 @@ class MusicBookTypeset(LilypondTypesetInterface):
         self.ragged_right = None
         self.title = ''
 
-    def add_comment(self, comment):
-        self.comments.append(comment)
+    def add_comments(self, comments):
+        if isinstance(comments, MusicBookComment):
+            self.comments.append(comments)
+        else:
+            self.comments.extend(comments)
 
     def typeset(self):
         parts = []
@@ -158,8 +161,7 @@ class PieceScores(object):
             str: the typesetted information about a single piece.
         """
 
-
-class VisualScore(PieceScores):
+class SimplePieceScore(PieceScores):
 
     def __init__(self, staffs, unique_id, key_signature, time_signature, tempo, **kwargs):
         """Information of a single piece for use in the MusicBook typesetter.
@@ -195,34 +197,27 @@ class VisualScore(PieceScores):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def typeset(self):
-        parts = ['\score {',
-                 "\t \header {",
-                 "\t\t piece = \markup {{ \\fontsize #1 \"{}\"}}".format(self.title if self.title is not None else ' '),
-                 "\t\t title = \"\" ",
-                 "\t }",
-                 "\t \\new {}".format(self.main_staff_type)]
+    @classmethod
+    def create_from_piece(cls, staffs, piece, **kwargs):
+        """Create a piece score using information from a PieceInfo object.
 
-        if self.display_staff_names and self.display_main_staff_name:
-            parts.append("\t\t" + ' \with {{instrumentName = {} }}'.format(self.main_staff_name))
-        parts.append("\t\t" + '<<')
+        Args:
+            staffs (list of Staff): list of Staffs for each hand/instrument.
+            piece (PieceInfo): the piece info we use to fill the basic info
+            **kwargs: remaining arguments
+        """
+        return cls(staffs, piece.name, piece.key_signature, piece.time_signature, piece.tempo, **kwargs)
 
-        for staff in self.staffs:
-            parts.append(correct_indent(self._typeset_staff(staff), 4))
+    def _typeset_staff(self, staff, staff_options=None):
+        parts = ['\\new Staff ']
 
-        parts.append("\t" + '>>')
+        if staff_options:
+            parts.append("\t" + ' \with {')
+            parts.append("\t\t" + "\n\t\t".join(staff_options))
+            parts.append("\t" + '}')
 
-        if not self.display_staff_names:
-            parts.extend(["\t" + '\layout {',
-                          "\t\t" + 'indent = 0\mm',
-                          "\t" + '}'])
+        parts.append("\t" + '<<')
 
-        parts.append('}')
-        return "\n".join(parts)
-
-    def _typeset_staff(self, staff):
-        parts = []
-        parts.append('\\new Staff <<')
         parts.append(correct_indent(self._typeset_staff_options(), 4))
         parts.append("\t" + '{')
         parts.append("\t\t" + '\clef {}'.format(staff.clef))
@@ -254,3 +249,70 @@ class VisualScore(PieceScores):
             \override Score.RehearsalMark.direction = #down
         }}'''.format(barnumbers=barnumbers, key=self.key_signature,
                      time=self.time_signature, tempo=tempo)
+
+
+class VisualScore(SimplePieceScore):
+
+    def typeset(self):
+        parts = ['\score {',
+                 "\t \header {",
+                 "\t\t piece = \markup {{ \\fontsize #1 \"{}\"}}".format(self.title if self.title is not None else ' '),
+                 "\t\t title = \"\" ",
+                 "\t }",
+                 "\t \\new {}".format(self.main_staff_type)]
+
+        if self.display_staff_names and self.display_main_staff_name:
+            parts.append("\t\t" + ' \with {{instrumentName = {} }}'.format(self.main_staff_name))
+        parts.append("\t\t" + '<<')
+
+        for staff in self.staffs:
+            parts.append(correct_indent(self._typeset_staff(staff), 4))
+
+        parts.append("\t" + '>>')
+
+        if not self.display_staff_names:
+            parts.extend(["\t" + '\layout {',
+                          "\t\t" + 'indent = 0\mm',
+                          "\t" + '}'])
+
+        parts.append('}')
+        return "\n".join(parts)
+
+
+class MidiScore(SimplePieceScore):
+
+    def __init__(self, *args, **kwargs):
+        """The score for the midi output.
+
+        Attributes:
+            midi_instruments (list of str): per staff a midi instrument name
+            midi_min_volumes (list of float): per staff a minimum volume indication between 0 and 1
+            midi_max_volumes (list of float): per staff a maximum volume indication between 0 and 1
+        """
+        self.midi_instruments = None
+        self.midi_min_volumes = None
+        self.midi_max_volumes = None
+        super(MidiScore, self).__init__(*args, **kwargs)
+
+    def typeset(self):
+        parts = ['\score {',
+                 "\t \\unfoldRepeats",
+                 "\t \\articulate",
+                 "\t \\new {} <<".format(self.main_staff_type)]
+
+        for ind, staff in enumerate(self.staffs):
+            midi_instrument = self.midi_instruments[ind] if self.midi_instruments else 'acoustic grand'
+            midi_min_volume = self.midi_min_volumes[ind] if self.midi_min_volumes else '0.0'
+            midi_max_volume = self.midi_max_volumes[ind] if self.midi_max_volumes else '1'
+
+            staff_options = ['midiMinimumVolume = #{}'.format(midi_min_volume),
+                             'midiMaximumVolume = #{}'.format(midi_max_volume),
+                             'midiInstrument = #"{}" '.format(midi_instrument)]
+
+            parts.append(correct_indent(self._typeset_staff(staff, staff_options), 4))
+
+        parts.append("\t" + '>>')
+        parts.append(r'\midi { }')
+        parts.append('}')
+        return "\n".join(parts)
+

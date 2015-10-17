@@ -33,9 +33,9 @@ def load_bars_from_file(filename):
                 doubles = row[0].split(',')
 
                 for position in doubles:
-                    bar_dict.update({int(position): NumberedBar(row[1], position, alternatives)})
+                    bar_dict.update({int(position): NumberedBar(row[1], int(position), alternatives)})
             else:
-                bar_dict.update({int(row[0]): NumberedBar(row[1], row[0], alternatives)})
+                bar_dict.update({int(row[0]): NumberedBar(row[1], int(row[0]), alternatives)})
 
     positions = sorted(list(bar_dict.keys()))
     return [bar_dict[ind] for ind in positions]

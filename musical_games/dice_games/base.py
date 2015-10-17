@@ -10,17 +10,25 @@ __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 class PieceInfo(object):
 
-    def __init__(self, name, tract_info, key_signature, time_signature, tempo):
+    def __init__(self, name, tract_info, key_signature, time_signature, tempo, **kwargs):
         """Information about one of the pieces in a composition.
 
         Args:
-            name: the name of this piece
+            name (str): the name of this piece
+            tract_info (list of TractInfo): the information about the tracts
+            key_signature (KeySignature): the key signature
+            time_signature (TimeSignature): the time signature
+            tempo (TempoIndication): the tempo indication
+            **kwargs extra items added to this struct
         """
         self.name = name
         self.tract_info = tract_info
         self.key_signature = key_signature
         self.time_signature = time_signature
         self.tempo = tempo
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 
 class TractInfo(object):
@@ -40,13 +48,21 @@ class TractInfo(object):
         self.clef = clef
         self.bars = bars
 
+    def get_bars_dict(self):
+        """Get a dictionary in which the bars are indiced by their bar number.
+
+        Returns:
+            dict: mapping of bar numbers and bar objects
+        """
+        return {bar.bar_nmr: bar for bar in self.bars}
+
 
 class NumberedBar(Bar):
 
     def __init__(self, lilypond_code, bar_nmr, alternatives=None):
         """Subclass of Bar, adds the bar number to the bar information."""
         super(NumberedBar, self).__init__(lilypond_code, alternatives=alternatives)
-        self.bar_nmr = bar_nmr
+        self.bar_nmr = int(bar_nmr)
 
 
 class DiceTable(object):

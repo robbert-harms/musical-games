@@ -7,6 +7,5 @@ __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 
 lilypond_file = '/tmp/test/tester.ly'
-
-auto_convert_lilypond_file(lilypond_file, '/home/robbert/programming/www/opus-infinity.org/'
-                                          'soundfonts/steinway_grand_piano.sf2')
+soundfont = '/home/robbert/programming/www/opus-infinity.org/soundfonts/steinway_grand_piano.sf2'
+auto_convert_lilypond_file(lilypond_file, soundfont)
