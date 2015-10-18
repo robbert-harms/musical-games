@@ -1,4 +1,6 @@
+from collections import OrderedDict
 from pkg_resources import resource_filename
+import six
 
 from musical_games.base import KeySignature, TimeSignature, TempoIndication
 from musical_games.dice_games.base import PieceInfo, TractInfo, DiceTable
@@ -69,14 +71,43 @@ class BasicCompositionInfo(CompositionInfo):
         return self._instrumental_settings
 
     def get_composition(self, instrumental_setting):
+        """Load a composition for the given instrumental setting.
+
+        Args:
+            instrumental_setting (str of InstrumentalSetting): if it is a string we try to match it to the known
+                instrumental settings in this composition info class.
+
+        Returns:
+            Composition: the composition object, loaded for the given instrumental setting
+        """
+        if isinstance(instrumental_setting, six.string_types):
+            ins_setting = None
+            for ins_set in self._instrumental_settings:
+                if ins_set.id == instrumental_setting:
+                    ins_setting = ins_set
+                    break
+            if not ins_setting:
+                raise ValueError('The instrumental setting with the '
+                                 'id {} could not be found.'.format(instrumental_setting))
+            instrumental_setting = ins_setting
+
         return self._composition_base_class(instrumental_setting)
+
+
+class InstrumentalSetting(object):
+
+    def __init__(self, name, id):
+        """Structure for holding information about a instrumental setting."""
+        self.name = name
+        self.id = id
 
 
 class KirnbergerMenuetTrioInfo(BasicCompositionInfo):
 
     def __init__(self):
         super(KirnbergerMenuetTrioInfo, self).__init__(
-            'Menuet / Trio', 'menuet_trio',
+            'Menuet / Trio',
+            'menuet_trio',
             KirnbergerMenuetTrio.supported_instrumental_settings,
             KirnbergerMenuetTrio)
 
@@ -84,14 +115,21 @@ class KirnbergerMenuetTrioInfo(BasicCompositionInfo):
 class KirnbergerPolonaiseInfo(BasicCompositionInfo):
 
     def __init__(self):
-        super(KirnbergerPolonaiseInfo, self).__init__('Polonaise', 'polonaise',
-                                                      ['piano', 'chamber_ensemble'], KirnbergerPolonaise)
+        super(KirnbergerPolonaiseInfo, self).__init__(
+            'Polonaise',
+            'polonaise',
+            KirnbergerPolonaise.supported_instrumental_settings,
+            KirnbergerPolonaise)
 
 
 class StadlerMenuetTrioInfo(BasicCompositionInfo):
 
     def __init__(self):
-        super(StadlerMenuetTrioInfo, self).__init__('Menuet / Trio', 'menuet_trio', ['piano'], StadlerMenuetTrio)
+        super(StadlerMenuetTrioInfo, self).__init__(
+            'Menuet / Trio',
+            'menuet_trio',
+            StadlerMenuetTrio.supported_instrumental_settings,
+            StadlerMenuetTrio)
 
 
 class MozartWaltzInfo(BasicCompositionInfo):
@@ -108,7 +146,7 @@ class Composition(object):
     def __init__(self, instrumental_setting):
         self.instrumental_setting = instrumental_setting
         self._dice_tables = []
-        self._pieces = {}
+        self._pieces = OrderedDict()
 
     def get_pieces_names(self):
         """Get the names of the individual pieces in this composition.
@@ -223,7 +261,8 @@ class Composition(object):
 
 class KirnbergerMenuetTrio(Composition):
 
-    supported_instrumental_settings = ['piano', 'chamber_ensemble']
+    supported_instrumental_settings = (InstrumentalSetting('Piano', 'piano'),
+                                       InstrumentalSetting('Chamber ensemble', 'chamber_ensemble'))
 
     def __init__(self, instrumental_setting):
         super(KirnbergerMenuetTrio, self).__init__(instrumental_setting)
@@ -237,9 +276,9 @@ class KirnbergerMenuetTrio(Composition):
                 load_dice_table(resource_filename('musical_games', 'data/kirnberger/menuet_trio/table_trio.txt'))),
         ]
 
-        if self.instrumental_setting == 'piano':
-            self._pieces = {
-                'Menuet': PieceInfo(
+        if self.instrumental_setting.id == 'piano':
+            self._pieces = OrderedDict([
+                ('Menuet', PieceInfo(
                     'Menuet',
                     [TractInfo('Left hand', 'treble', load_bars_from_file(
                         resource_filename('musical_games', 'data/kirnberger/menuet_trio/piano/bars_menuet_lh.txt'))),
@@ -250,8 +289,8 @@ class KirnbergerMenuetTrio(Composition):
                     TempoIndication(4, 100),
                     repeat_moments=[8, 16],
                     midi_max_volumes=[1, 0.75],
-                ),
-                'Trio': PieceInfo(
+                )),
+                ('Trio', PieceInfo(
                     'Trio',
                     [TractInfo('Left hand', 'treble', load_bars_from_file(
                         resource_filename('musical_games', 'data/kirnberger/menuet_trio/piano/bars_trio_lh.txt'))),
@@ -262,8 +301,8 @@ class KirnbergerMenuetTrio(Composition):
                     TempoIndication(4, 80),
                     repeat_moments=[8, 16],
                     midi_max_volumes=[1, 0.75],
-                )
-            }
+                ))
+            ])
 
     def typeset_measure_overview(self, piece_name=None):
         scores = self._get_measure_overview_scores()
@@ -291,7 +330,7 @@ class KirnbergerPolonaise(Composition):
 
 class StadlerMenuetTrio(Composition):
 
-    supported_instrumental_settings = ['piano']
+    supported_instrumental_settings = (InstrumentalSetting('Piano', 'piano'),)
 
     def __init__(self, instrumental_setting):
         super(StadlerMenuetTrio, self).__init__(instrumental_setting)
@@ -303,9 +342,9 @@ class StadlerMenuetTrio(Composition):
                       load_dice_table(resource_filename('musical_games', 'data/stadler/menuet_trio/table_trio.txt')))
         ]
 
-        if self.instrumental_setting == 'piano':
-            self._pieces = {
-                'Menuet': PieceInfo(
+        if self.instrumental_setting.id == 'piano':
+            self._pieces = OrderedDict([
+                ('Menuet', PieceInfo(
                     'Menuet',
                     [TractInfo('Left hand', 'treble', load_bars_from_file(
                         resource_filename('musical_games', 'data/stadler/menuet_trio/piano/bars_menuet_lh.txt'))),
@@ -316,8 +355,8 @@ class StadlerMenuetTrio(Composition):
                     TempoIndication(4, 100),
                     repeat_moments=[8, 16],
                     midi_max_volumes=[1, 0.75],
-                ),
-                'Trio': PieceInfo(
+                )),
+                ('Trio', PieceInfo(
                     'Trio',
                     [TractInfo('Left hand', 'treble', load_bars_from_file(
                         resource_filename('musical_games', 'data/stadler/menuet_trio/piano/bars_trio_lh.txt'))),
@@ -328,8 +367,8 @@ class StadlerMenuetTrio(Composition):
                     TempoIndication(4, 80),
                     repeat_moments=[8, 16],
                     midi_max_volumes=[1, 0.75],
-                )
-            }
+                ))
+            ])
 
     def typeset_measure_overview(self, piece_name=None):
         scores = self._get_measure_overview_scores()
@@ -348,7 +387,7 @@ class StadlerMenuetTrio(Composition):
 
 class MozartWaltz(Composition):
 
-    supported_instrumental_settings = ('piano',)
+    supported_instrumental_settings = (InstrumentalSetting('Piano', 'piano'),)
 
     def __init__(self, instrumental_setting):
         super(MozartWaltz, self).__init__(instrumental_setting)
@@ -360,8 +399,8 @@ class MozartWaltz(Composition):
                       load_dice_table(resource_filename('musical_games', 'data/mozart/waltz/table.txt')))
         ]
 
-        self._pieces = {
-            self._waltz_name: PieceInfo(
+        self._pieces = OrderedDict([
+            (self._waltz_name, PieceInfo(
                 self._waltz_name,
                 [TractInfo('Left hand', 'treble', load_bars_from_file(
                     resource_filename('musical_games', 'data/mozart/waltz/piano/bars_lh.txt'))),
@@ -372,8 +411,8 @@ class MozartWaltz(Composition):
                 TempoIndication(8, 110),
                 repeat_moments=[8, 16],
                 midi_max_volumes=[1, 0.75],
-            )
-        }
+            ))
+        ])
 
     def typeset_single_measure(self, dice_table_name, measure_index):
         piece = self._pieces[dice_table_name]

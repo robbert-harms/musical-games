@@ -23,7 +23,7 @@ composition = composition_info.get_composition('piano')
 # dice_table = composition.get_dice_tables()[0]
 # lilypond = composition.typeset_single_measure(dice_table.name, dice_table.random_index(0))
 # write_lilypond_file('/tmp/musical_games/mozart_single_measure.ly', lilypond)
-# auto_convert_lilypond_file('/tmp/musical_games/mozart_single_measure.ly')
+# auto_convert_lilypond_file('/tmp/musical_games/mozart_single_measure.ly', pdf=False)
 
 
 # lilypond = composition.typeset_measure_overview()
@@ -45,19 +45,19 @@ composition = composition_info.get_composition('piano')
 # write_lilypond_file('/tmp/musical_games/kb_single_measure.ly', lilypond)
 # auto_convert_lilypond_file('/tmp/musical_games/kb_single_measure.ly')
 
-# lilypond = composition.typeset_measure_overview()#
-# write_lilypond_file('/tmp/musical_games/kbmt.ly', lilypond)
-# auto_convert_lilypond_file('/tmp/musical_games/kbmt.ly')
+lilypond = composition.typeset_measure_overview()
+write_lilypond_file('/tmp/musical_games/kbmt.ly', lilypond)
+auto_convert_lilypond_file('/tmp/musical_games/kbmt.ly')
 
 
 composition_info = StadlerMenuetTrioInfo()
 composition = composition_info.get_composition('piano')
 
-dice_tables = composition.get_dice_tables()
-indices = {table.name: table.random_indices() for table in dice_tables}
-lilypond = composition.typeset_composition(indices, comments=MusicBookComment('', '', 'Test'))
-write_lilypond_file('/tmp/musical_games/std.ly', lilypond)
-auto_convert_lilypond_file('/tmp/musical_games/std.ly', soundfont)
+# dice_tables = composition.get_dice_tables()
+# indices = {table.name: table.random_indices() for table in dice_tables}
+# lilypond = composition.typeset_composition(indices, comments=MusicBookComment('', '', 'Test'))
+# write_lilypond_file('/tmp/musical_games/std.ly', lilypond)
+# auto_convert_lilypond_file('/tmp/musical_games/std.ly', soundfont)
 
 # dice_table = composition.get_dice_tables()[0]
 # lilypond = composition.typeset_single_measure(dice_table.name, dice_table.random_index(0))

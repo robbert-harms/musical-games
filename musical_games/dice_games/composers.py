@@ -27,13 +27,32 @@ class ComposerInfo(object):
         """
         return ''
 
-    def get_music_works(self):
-        """Get the musical works from this composer.
+    def get_compositions_info(self):
+        """Get the information about the compositions from this composer.
 
         Returns:
-            list of MusickWork: the list of musical works we support
+            list of CompositionInfo: the list of musical compositions this object supports
         """
-        pass
+        return ()
+
+    def get_composition_info_by_id(self, composition_id):
+        """Get composition info by id key.
+
+        This searches the list of compositions for the composition information object that matches the given id.
+
+        Args:
+            composition_id (str): the composition id
+
+        Returns:
+            CompositionInfo: the composition information object for the requested composer.
+
+        Raises:
+            ValueError: if the given composition info object could not be found.
+        """
+        for composition_info in self.get_compositions_info():
+            if composition_info.id == composition_id:
+                return composition_info
+        raise ValueError('The composition information for id {} could not be found.'.format(composition_id))
 
 
 class Kirnberger(ComposerInfo):
@@ -46,8 +65,8 @@ class Kirnberger(ComposerInfo):
     def id(self):
         return 'kirnberger'
 
-    def get_music_works(self):
-        return [KirnbergerMenuetTrioInfo(), KirnbergerPolonaiseInfo()]
+    def get_compositions_info(self):
+        return [KirnbergerMenuetTrioInfo()] #, KirnbergerPolonaiseInfo()]
 
 
 class Stadler(ComposerInfo):
@@ -60,7 +79,7 @@ class Stadler(ComposerInfo):
     def id(self):
         return 'stadler'
 
-    def get_music_works(self):
+    def get_compositions_info(self):
         return [StadlerMenuetTrioInfo()]
 
 
@@ -74,12 +93,31 @@ class Mozart(ComposerInfo):
     def id(self):
         return 'mozart'
 
-    def get_music_works(self):
+    def get_compositions_info(self):
         return [MozartWaltzInfo()]
 
 
 composers = [Kirnberger(), Stadler(), Mozart()]
 
+
+def get_composer_info_by_id(composer_id):
+    """Get a composer by id key.
+
+    This searches the list of composers for the composer that matches the given id.
+
+    Args:
+        composer_id (str): the composer id
+
+    Returns:
+        ComposerInfo: the composer information object for the requested composer.
+
+    Raises:
+        ValueError: if the given composer could not be found.
+    """
+    for composer in composers:
+        if composer.id == composer_id:
+            return composer
+    raise ValueError('The composer with the id {} could not be found.'.format(composer_id))
 
 
 

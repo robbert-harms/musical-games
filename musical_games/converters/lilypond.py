@@ -7,7 +7,7 @@ __maintainer__ = "Robbert Harms"
 __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 
-def lilypond(lilypond_fname, output, png=True, ps=False):
+def lilypond(lilypond_fname, output, pdf=True, png=True, ps=False):
     """Typeset music and/or produce midi from file.
 
     This runs the shell command lilypond to on the inputs. Note that Midi output needs to be defined in the lilypond
@@ -16,6 +16,7 @@ def lilypond(lilypond_fname, output, png=True, ps=False):
     Args:
         lilypond_fname (str): the location of the lilypond file to convert.
         output (str): the location of the output file, suffixes will be added.
+        pdf (str): if we want pdf output
         png (boolean): if we want png output
         ps (boolean): if we want postscript output
 
@@ -28,9 +29,13 @@ def lilypond(lilypond_fname, output, png=True, ps=False):
     if not os.path.isdir(os.path.dirname(output)):
         os.makedirs(os.path.dirname(output))
 
-    kwargs = dict(output=output, lilypond=lilypond_fname, png='--png' if png else '', ps='--ps' if ps else '')
+    kwargs = dict(output=output,
+                  lilypond=lilypond_fname,
+                  png='--png' if png else '',
+                  ps='--ps' if ps else '',
+                  pdf='--pdf' if pdf else '')
 
-    command = 'lilypond --pdf {png} {ps} -o {output} {lilypond}'.format(**kwargs)
+    command = 'lilypond {pdf} {png} {ps} -o {output} {lilypond}'.format(**kwargs)
     process = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stderr = process.communicate()[1]
     rc = process.returncode
@@ -38,7 +43,7 @@ def lilypond(lilypond_fname, output, png=True, ps=False):
     if rc == 1:
         raise RuntimeError('Error converting lilypond file. Error message: ' + str(stderr))
 
-    pdf_list = [output + '.pdf']
+    pdf_list = [output + '.pdf'] if pdf else []
     png_list = _get_png_list(output, png)
     ps_list = [output + '.ps'] if ps else []
     midi_list = _get_midi_list(output)

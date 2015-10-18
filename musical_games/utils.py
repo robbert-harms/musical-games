@@ -53,7 +53,7 @@ def write_lilypond_file(filename, lilypond_str):
         f.write(lilypond_str)
 
 
-def auto_convert_lilypond_file(lilypond_filename, soundfont=None, output_prefix=None):
+def auto_convert_lilypond_file(lilypond_filename, soundfont=None, output_prefix=None, pdf=True, png=True, ps=False):
     """Converts a lilypond file to pdf, png, midi, wav, mp3 and ogg.
 
     The idea is that given a lilypond file you want to have some standard output. This wrapper function
@@ -63,13 +63,16 @@ def auto_convert_lilypond_file(lilypond_filename, soundfont=None, output_prefix=
         lilypond_filename (str): the lilypond file name
         soundfont (str): the path to the soundfont to use. If not given we will not convert to wav, mp3 and ogg.
         output_prefix (str): path + file prefix. If None we use the dir and basename of the lilypond file.
+        pdf (str): if we want pdf output
+        png (boolean): if we want png output
+        ps (boolean): if we want postscript output
 
     Returns:
         LilypondConvertOutput: all the filenames that were outputted
     """
     output_prefix = output_prefix or os.path.splitext(lilypond_filename)[0]
 
-    lilypond_conversion_results = lilypond(lilypond_filename, output_prefix)
+    lilypond_conversion_results = lilypond(lilypond_filename, output_prefix, pdf=pdf, png=png, ps=ps)
 
     list(map(trim_image, lilypond_conversion_results.png_list))
 
