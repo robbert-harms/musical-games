@@ -19,6 +19,15 @@ class Bar(object):
     def __str__(self):
         return self.lilypond_code
 
+    def __hash__(self):
+        alt_hashes = ()
+        if self.alternatives:
+            alt_hashes = (hash(alt) for alt in self.alternatives)
+        return (hash(self.lilypond_code) << 1) ^ hash(alt_hashes)
+
+    def __eq__(self, other):
+        return other.lilypond_code == self.lilypond_code and other.alternatives == self.alternatives
+
 
 class KeySignature(object):
 

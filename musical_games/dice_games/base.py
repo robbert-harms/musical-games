@@ -1,7 +1,5 @@
 import numpy as np
 
-from musical_games.base import Bar
-
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-19"
 __maintainer__ = "Robbert Harms"
@@ -47,22 +45,6 @@ class TractInfo(object):
         self.name = name
         self.clef = clef
         self.bars = bars
-
-    def get_bars_dict(self):
-        """Get a dictionary in which the bars are indiced by their bar number.
-
-        Returns:
-            dict: mapping of bar numbers and bar objects
-        """
-        return {bar.bar_nmr: bar for bar in self.bars}
-
-
-class NumberedBar(Bar):
-
-    def __init__(self, lilypond_code, bar_nmr, alternatives=None):
-        """Subclass of Bar, adds the bar number to the bar information."""
-        super(NumberedBar, self).__init__(lilypond_code, alternatives=alternatives)
-        self.bar_nmr = int(bar_nmr)
 
 
 class DiceTable(object):
@@ -113,3 +95,33 @@ class DiceTable(object):
             list of DiceTable: one per split
         """
         return DiceTable(self.name, self.table[:, 0:column]), DiceTable(self.name, self.table[:, column:])
+
+    def count_unique_combinations(self, doubles):
+        """Count the number of possible unique combinations over the columns.
+
+        Doubles in the same column will reduce the total number of combinations.
+
+        Args:
+            doubles (list of list of int): the list of double positions
+
+        Returns:
+            int: the total number of unique combinations possible
+        """
+        columns = self.table.shape[1]
+
+        total = 1
+
+        for column_ind in range(columns):
+            unique_counter = self._get_unique_in_row(self.table[:,column_ind], doubles)
+            total *= unique_counter
+
+        return total
+
+    def _get_unique_in_row(self, row, doubles):
+        #todo
+        counter = 0
+        for item in row:
+            if all(item not in double_list[1:] for double_list in doubles):
+                counter += 1
+        print(counter)
+        return counter

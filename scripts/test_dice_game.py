@@ -14,11 +14,14 @@ soundfont = '/home/robbert/programming/www/opus-infinity.org/soundfonts/steinway
 composition_info = MozartWaltzInfo()
 composition = composition_info.get_composition('piano')
 
+print(composition.count_unique_compositions())
+
+
 # dice_tables = composition.get_dice_tables()
 # indices = {table.name: [54, 95, 27, 63, 161, 46, 159, 24, 102, 20, 7, 82, 144, 49, 1, 79] for table in dice_tables}
 # lilypond = composition.typeset_composition(indices, comments=MusicBookComment('', '', 'Test'))
-# write_lilypond_file('/tmp/musical_games/mozart.ly', lilypond)
-# auto_convert_lilypond_file('/tmp/musical_games/mozart.ly', soundfont)
+# write_lilypond_file('/tmp/musical_games/mozart_composition.ly', lilypond)
+# auto_convert_lilypond_file('/tmp/musical_games/mozart_composition.ly', soundfont)
 
 # dice_table = composition.get_dice_tables()[0]
 # lilypond = composition.typeset_single_measure(dice_table.name, dice_table.random_index(0))
@@ -39,15 +42,15 @@ composition = composition_info.get_composition('piano')
 # lilypond = composition.typeset_composition(indices, comments=MusicBookComment('', '', 'Test'))
 # write_lilypond_file('/tmp/musical_games/kb.ly', lilypond)
 # auto_convert_lilypond_file('/tmp/musical_games/kb.ly', soundfont)
-
+#
 # dice_table = composition.get_dice_tables()[0]
 # lilypond = composition.typeset_single_measure(dice_table.name, dice_table.random_index(0))
 # write_lilypond_file('/tmp/musical_games/kb_single_measure.ly', lilypond)
 # auto_convert_lilypond_file('/tmp/musical_games/kb_single_measure.ly')
-
-lilypond = composition.typeset_measure_overview()
-write_lilypond_file('/tmp/musical_games/kbmt.ly', lilypond)
-auto_convert_lilypond_file('/tmp/musical_games/kbmt.ly')
+#
+# lilypond = composition.typeset_measure_overview()
+# write_lilypond_file('/tmp/musical_games/kbmt.ly', lilypond)
+# auto_convert_lilypond_file('/tmp/musical_games/kbmt.ly')
 
 
 composition_info = StadlerMenuetTrioInfo()

@@ -1,7 +1,7 @@
 import csv
+import collections
 import numpy as np
 from musical_games.base import Bar
-from musical_games.dice_games.base import NumberedBar
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-10-08"
@@ -18,6 +18,9 @@ def load_bars_from_file(filename):
 
     Args:
         filename (str): the name of the file we will load.
+
+    Returns:
+        dict: as key the indices, as values the Bar objects
     """
     bar_dict = {}
 
@@ -30,15 +33,14 @@ def load_bars_from_file(filename):
                 alternatives = None
 
             if ',' in row[0]:
-                doubles = row[0].split(',')
+                doubles = list(map(int, row[0].split(',')))
 
                 for position in doubles:
-                    bar_dict.update({int(position): NumberedBar(row[1], int(position), alternatives)})
+                    bar_dict.update({position: Bar(row[1], alternatives)})
             else:
-                bar_dict.update({int(row[0]): NumberedBar(row[1], int(row[0]), alternatives)})
+                bar_dict.update({int(row[0]): Bar(row[1], alternatives)})
 
-    positions = sorted(list(bar_dict.keys()))
-    return [bar_dict[ind] for ind in positions]
+    return bar_dict
 
 
 def load_dice_table(filename):
@@ -48,3 +50,40 @@ def load_dice_table(filename):
         filename (str): the filename of the dice table
     """
     return np.genfromtxt(filename, dtype=np.int32, delimiter=',')
+
+
+def find_double_bars(bar_dict_lists):
+    """Find the bars that are double in the given bar lists
+
+    This will find the positions in which all bars on a given position have the same data.
+    Suppose you have two bar lists with the following items:
+        ['a', 'b', 'a', 'b']
+        ['g', 'c', 'g', 'c']
+
+    This function will then return [[0, 2]] indicating that it has found one set of doubles at positions zero and two.
+
+    Args:
+        list of bar dicts: the bar dicts we use to find the doubles
+
+    Returns:
+        tuple of tuples: the tuples with information about the doubles
+    """
+    positions = bar_dict_lists[0].keys()
+    bar_pairs = []
+    for position in positions:
+        bar_pairs.append(hash(tuple(bdl[position] for bdl in bar_dict_lists)))
+
+    def duplicates(lst):
+        cnt = collections.Counter(lst)
+        return [key for key, val in cnt.items() if val > 1]
+
+    def duplicates_indices(lst):
+        dup = duplicates(lst)
+        ind = collections.defaultdict(list)
+        for i, v in enumerate(lst):
+            if v in dup:
+                ind[v].append(i)
+        return ind
+
+    dups = duplicates_indices(bar_pairs).values()
+    return [list(map(lambda v: v + 1, dup_list)) for dup_list in dups]

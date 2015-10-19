@@ -27,8 +27,9 @@ class NoRepeat(StaffBuilder):
         staffs = []
         for tract_info in self.tracts_info:
             notes = []
-            for bar in tract_info.bars:
-                notes.append(self._bar_to_notes(bar))
+            positions = sorted(list(tract_info.bars.keys()))
+            for position in positions:
+                notes.append(self._bar_to_notes(tract_info.bars[position]))
             staffs.append(Staff("\n".join(notes) + r' \bar "|."', tract_info.clef))
 
         return staffs
@@ -53,12 +54,7 @@ class SingleMeasure(StaffBuilder):
     def get_staffs(self):
         staffs = []
         for tract_info in self.tracts_info:
-            notes = []
-            for ind, bar in enumerate(tract_info.bars):
-                if ind == self.measure_ind - 1:
-                    notes.append(self._bar_to_notes(bar))
-            staffs.append(Staff("\n".join(notes) + r' \bar "|."', tract_info.clef))
-
+            staffs.append(Staff(self._bar_to_notes(tract_info.bars[self.measure_ind]) + r' \bar "|."', tract_info.clef))
         return staffs
 
     def _bar_to_notes(self, bar):
@@ -104,7 +100,7 @@ class WithRepeat(StaffBuilder):
     def get_staffs(self):
         staffs = []
 
-        bar_dicts = [ti.get_bars_dict() for ti in self.tracts_info]
+        bar_dicts = [ti.bars for ti in self.tracts_info]
 
         lines_total = [[] for i in range(len(self.tracts_info))]
         bars = [[] for i in range(len(self.tracts_info))]

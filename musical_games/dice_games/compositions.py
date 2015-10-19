@@ -6,7 +6,7 @@ from musical_games.base import KeySignature, TimeSignature, TempoIndication
 from musical_games.dice_games.base import PieceInfo, TractInfo, DiceTable
 from musical_games.dice_games.lilypond.typeset_staff import NoRepeat, MozartNoRepeat, MozartSingleMeasure, SingleMeasure, \
     WithRepeat
-from musical_games.dice_games.utils import load_bars_from_file, load_dice_table
+from musical_games.dice_games.utils import load_bars_from_file, load_dice_table, find_double_bars
 from musical_games.dice_games.lilypond.base import MusicBookTypeset, PieceScores, MusicBookComment, VisualScore, Staff, \
     MidiScore
 
@@ -164,6 +164,13 @@ class Composition(object):
         """
         return self._dice_tables
 
+    def count_unique_compositions(self):
+        """Get a count of the number of unique compositions possible from this composition.
+
+        Returns:
+            int: the number of unique compositions
+        """
+
     def typeset_measure_overview(self, piece_name=None):
         """Typeset the overview of the measures.
 
@@ -258,6 +265,9 @@ class Composition(object):
             scores.append(midi)
         return scores
 
+    def _load_bars(self, bar_file):
+        return load_bars_from_file(resource_filename('musical_games', bar_file))
+
 
 class KirnbergerMenuetTrio(Composition):
 
@@ -277,13 +287,24 @@ class KirnbergerMenuetTrio(Composition):
         ]
 
         if self.instrumental_setting.id == 'piano':
+            bar_dicts_menuet = list(map(self._load_bars, [
+                'data/kirnberger/menuet_trio/piano/bars_menuet_lh.txt',
+                'data/kirnberger/menuet_trio/piano/bars_menuet_rh.txt'
+            ]))
+
+            bar_dicts_trio = list(map(self._load_bars, [
+                'data/kirnberger/menuet_trio/piano/bars_trio_lh.txt',
+                'data/kirnberger/menuet_trio/piano/bars_trio_rh.txt'
+            ]))
+
+            self._doubles_list_menuet = find_double_bars(bar_dicts_menuet)
+            self._doubles_list_trio = find_double_bars(bar_dicts_trio)
+
             self._pieces = OrderedDict([
                 ('Menuet', PieceInfo(
                     'Menuet',
-                    [TractInfo('Left hand', 'treble', load_bars_from_file(
-                        resource_filename('musical_games', 'data/kirnberger/menuet_trio/piano/bars_menuet_lh.txt'))),
-                     TractInfo('Right hand', 'bass', load_bars_from_file(
-                         resource_filename('musical_games', 'data/kirnberger/menuet_trio/piano/bars_menuet_rh.txt')))],
+                    [TractInfo('Left hand', 'treble', bar_dicts_menuet[0]),
+                     TractInfo('Right hand', 'bass', bar_dicts_menuet[1])],
                     KeySignature('d', 'major'),
                     TimeSignature(3, 4),
                     TempoIndication(4, 100),
@@ -292,10 +313,8 @@ class KirnbergerMenuetTrio(Composition):
                 )),
                 ('Trio', PieceInfo(
                     'Trio',
-                    [TractInfo('Left hand', 'treble', load_bars_from_file(
-                        resource_filename('musical_games', 'data/kirnberger/menuet_trio/piano/bars_trio_lh.txt'))),
-                     TractInfo('Right hand', 'bass', load_bars_from_file(
-                         resource_filename('musical_games', 'data/kirnberger/menuet_trio/piano/bars_trio_rh.txt')))],
+                    [TractInfo('Left hand', 'treble', bar_dicts_trio[0]),
+                     TractInfo('Right hand', 'bass', bar_dicts_trio[1])],
                     KeySignature('f', 'major'),
                     TimeSignature(3, 4),
                     TempoIndication(4, 80),
@@ -343,13 +362,24 @@ class StadlerMenuetTrio(Composition):
         ]
 
         if self.instrumental_setting.id == 'piano':
+            bar_dicts_menuet = list(map(self._load_bars, [
+                'data/stadler/menuet_trio/piano/bars_menuet_lh.txt',
+                'data/stadler/menuet_trio/piano/bars_menuet_rh.txt'
+            ]))
+
+            bar_dicts_trio = list(map(self._load_bars, [
+                'data/stadler/menuet_trio/piano/bars_trio_lh.txt',
+                'data/stadler/menuet_trio/piano/bars_trio_rh.txt'
+            ]))
+
+            self._doubles_list_menuet = find_double_bars(bar_dicts_menuet)
+            self._doubles_list_trio = find_double_bars(bar_dicts_trio)
+
             self._pieces = OrderedDict([
                 ('Menuet', PieceInfo(
                     'Menuet',
-                    [TractInfo('Left hand', 'treble', load_bars_from_file(
-                        resource_filename('musical_games', 'data/stadler/menuet_trio/piano/bars_menuet_lh.txt'))),
-                     TractInfo('Right hand', 'bass', load_bars_from_file(
-                         resource_filename('musical_games', 'data/stadler/menuet_trio/piano/bars_menuet_rh.txt')))],
+                    [TractInfo('Left hand', 'treble', bar_dicts_menuet[0]),
+                     TractInfo('Right hand', 'bass', bar_dicts_menuet[1])],
                     KeySignature('d', 'major'),
                     TimeSignature(3, 4),
                     TempoIndication(4, 100),
@@ -358,10 +388,8 @@ class StadlerMenuetTrio(Composition):
                 )),
                 ('Trio', PieceInfo(
                     'Trio',
-                    [TractInfo('Left hand', 'treble', load_bars_from_file(
-                        resource_filename('musical_games', 'data/stadler/menuet_trio/piano/bars_trio_lh.txt'))),
-                     TractInfo('Right hand', 'bass', load_bars_from_file(
-                         resource_filename('musical_games', 'data/stadler/menuet_trio/piano/bars_trio_rh.txt')))],
+                    [TractInfo('Left hand', 'treble', bar_dicts_trio[0]),
+                     TractInfo('Right hand', 'bass', bar_dicts_trio[1])],
                     KeySignature('g', 'major'),
                     TimeSignature(3, 4),
                     TempoIndication(4, 80),
@@ -399,13 +427,16 @@ class MozartWaltz(Composition):
                       load_dice_table(resource_filename('musical_games', 'data/mozart/waltz/table.txt')))
         ]
 
+        bar_dicts = list(map(self._load_bars, ['data/mozart/waltz/piano/bars_lh.txt',
+                                               'data/mozart/waltz/piano/bars_rh.txt']))
+
+        self._doubles_list = find_double_bars(bar_dicts)
+
         self._pieces = OrderedDict([
             (self._waltz_name, PieceInfo(
                 self._waltz_name,
-                [TractInfo('Left hand', 'treble', load_bars_from_file(
-                    resource_filename('musical_games', 'data/mozart/waltz/piano/bars_lh.txt'))),
-                 TractInfo('Right hand', 'bass', load_bars_from_file(
-                     resource_filename('musical_games', 'data/mozart/waltz/piano/bars_rh.txt')))],
+                [TractInfo('Left hand', 'treble', bar_dicts[0]),
+                 TractInfo('Right hand', 'bass', bar_dicts[1])],
                 KeySignature('c', 'major'),
                 TimeSignature(3, 8),
                 TempoIndication(8, 110),
@@ -446,3 +477,6 @@ class MozartWaltz(Composition):
         typesetter.add_comments(comments)
         typesetter.title = None
         return typesetter.typeset()
+
+    def count_unique_compositions(self):
+        return self._dice_tables[0].count_unique_combinations(self._doubles_list)
