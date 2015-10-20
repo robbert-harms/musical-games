@@ -37,6 +37,8 @@ print(composition.count_unique_compositions())
 composition_info = KirnbergerMenuetTrioInfo()
 composition = composition_info.get_composition('piano')
 
+print(composition.count_unique_compositions())
+
 # dice_tables = composition.get_dice_tables()
 # indices = {table.name: table.random_indices() for table in dice_tables}
 # lilypond = composition.typeset_composition(indices, comments=MusicBookComment('', '', 'Test'))
@@ -55,6 +57,8 @@ composition = composition_info.get_composition('piano')
 
 composition_info = StadlerMenuetTrioInfo()
 composition = composition_info.get_composition('piano')
+
+print(composition.count_unique_compositions())
 
 # dice_tables = composition.get_dice_tables()
 # indices = {table.name: table.random_indices() for table in dice_tables}

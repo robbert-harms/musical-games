@@ -59,6 +59,33 @@ class DiceTable(object):
         self.name = name
         self.table = table
 
+    @property
+    def rows(self):
+        return self.table.shape[0]
+
+    @property
+    def columns(self):
+        return self.table.shape[1]
+
+    def get_row(self, row):
+        """Get the elements on the given row.
+
+        Args:
+            row (int): the row we want the elements of
+
+        Returns:
+            list: the list of elements on that row
+        """
+        return list(self.table[row, :])
+
+    def get_rows(self):
+        """Get a list of all the rows.
+
+        Returns:
+            list of list: the list of rows in the table, from top to bottom
+        """
+        return list(map(self.get_row, range(self.rows)))
+
     def random_index(self, column):
         """Get the index of a random row in the dice table given the given column.
 
@@ -108,20 +135,20 @@ class DiceTable(object):
             int: the total number of unique combinations possible
         """
         columns = self.table.shape[1]
-
         total = 1
-
         for column_ind in range(columns):
-            unique_counter = self._get_unique_in_row(self.table[:,column_ind], doubles)
-            total *= unique_counter
-
+            total *= self._get_unique_in_row(self.table[:, column_ind], doubles)
         return total
 
     def _get_unique_in_row(self, row, doubles):
-        #todo
-        counter = 0
-        for item in row:
-            if all(item not in double_list[1:] for double_list in doubles):
-                counter += 1
-        print(counter)
-        return counter
+        row_set = set(row)
+
+        doubles_removed = 0
+        for double_list in doubles:
+            s = row_set.intersection(double_list)
+            if len(s):
+                row = [v for v in row if v not in s]
+                row_set = set(row)
+                doubles_removed += 1
+
+        return len(row) + doubles_removed

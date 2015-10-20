@@ -171,6 +171,16 @@ class Composition(object):
             int: the number of unique compositions
         """
 
+    def get_similar_measures_list(self, dice_table):
+        """Get a list of the double/similar measures for this dice table.
+
+        Args:
+            dice_table (DiceTable): the dice table for which we want the list of similar measures
+
+        Returns:
+            list of list: the list of similar measures
+        """
+
     def typeset_measure_overview(self, piece_name=None):
         """Typeset the overview of the measures.
 
@@ -342,6 +352,16 @@ class KirnbergerMenuetTrio(Composition):
         typesetter.title = None
         return typesetter.typeset()
 
+    def count_unique_compositions(self):
+        return (self._dice_tables[0].count_unique_combinations(self._doubles_list_menuet)
+                * self._dice_tables[1].count_unique_combinations(self._doubles_list_trio))
+
+    def get_similar_measures_list(self, dice_table):
+        if dice_table.name == 'Menuet':
+            return self._doubles_list_menuet
+        else:
+            return self._doubles_list_trio
+
 
 class KirnbergerPolonaise(Composition):
     pass
@@ -412,6 +432,16 @@ class StadlerMenuetTrio(Composition):
         typesetter.page_limit = 1
         return typesetter.typeset()
 
+    def count_unique_compositions(self):
+        return (self._dice_tables[0].count_unique_combinations(self._doubles_list_menuet)
+                * self._dice_tables[1].count_unique_combinations(self._doubles_list_trio))
+
+    def get_similar_measures_list(self, dice_table):
+        if dice_table.name == 'Menuet':
+            return self._doubles_list_menuet
+        else:
+            return self._doubles_list_trio
+
 
 class MozartWaltz(Composition):
 
@@ -480,3 +510,6 @@ class MozartWaltz(Composition):
 
     def count_unique_compositions(self):
         return self._dice_tables[0].count_unique_combinations(self._doubles_list)
+
+    def get_similar_measures_list(self, dice_table):
+        return self._doubles_list
