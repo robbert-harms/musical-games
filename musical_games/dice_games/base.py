@@ -86,7 +86,7 @@ class DiceTable(object):
         """
         return list(map(self.get_row, range(self.rows)))
 
-    def random_index(self, column):
+    def random_index(self, column, seed=None):
         """Get the index of a random row in the dice table given the given column.
 
         Args:
@@ -95,14 +95,20 @@ class DiceTable(object):
         Returns:
             int: the index to a measure for one specific column and a random row
         """
+        if seed is not None:
+            np.random.seed(np.uint32(seed))
+
         return self.table[np.random.randint(self.table.shape[0]), column]
 
-    def random_indices(self):
+    def random_indices(self, seed=None):
         """Get a random list of indices, one for each column.
 
         Returns:
             list: list of indices, one per column
         """
+        if seed is not None:
+            np.random.seed(np.uint32(seed))
+
         return [self.random_index(column) for column in range(self.table.shape[1])]
 
     def get_all_indices(self):

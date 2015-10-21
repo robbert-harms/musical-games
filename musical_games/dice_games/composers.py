@@ -66,7 +66,7 @@ class Kirnberger(ComposerInfo):
         return 'kirnberger'
 
     def get_compositions_info(self):
-        return [KirnbergerMenuetTrioInfo()] #, KirnbergerPolonaiseInfo()]
+        return [KirnbergerMenuetTrioInfo(), KirnbergerPolonaiseInfo()]
 
 
 class Stadler(ComposerInfo):

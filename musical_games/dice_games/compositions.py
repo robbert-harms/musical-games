@@ -363,8 +363,11 @@ class KirnbergerMenuetTrio(Composition):
             return self._doubles_list_trio
 
 
-class KirnbergerPolonaise(Composition):
-    pass
+class KirnbergerPolonaise(KirnbergerMenuetTrio):# todo change base class to composition and implement
+
+    supported_instrumental_settings = (InstrumentalSetting('Chamber ensemble', 'chamber_ensemble'),)
+
+
 
 
 class StadlerMenuetTrio(Composition):
