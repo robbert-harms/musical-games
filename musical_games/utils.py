@@ -71,6 +71,8 @@ def auto_convert_lilypond_file(lilypond_filename, soundfont=None, output_prefix=
         LilypondConvertOutput: all the filenames that were outputted
     """
     output_prefix = output_prefix or os.path.splitext(lilypond_filename)[0]
+    if output_prefix[-1:] == '/':
+        output_prefix += 'lilypond'
 
     lilypond_conversion_results = lilypond(lilypond_filename, output_prefix, pdf=pdf, png=png, ps=ps)
 

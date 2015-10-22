@@ -97,7 +97,8 @@ class Mozart(ComposerInfo):
         return [MozartWaltzInfo()]
 
 
-composers = [Kirnberger(), Stadler(), Mozart()]
+composers_list = [Kirnberger(), Stadler(), Mozart()]
+composers_dict = {c.id: c for c in composers_list}
 
 
 def get_composer_info_by_id(composer_id):
@@ -110,14 +111,5 @@ def get_composer_info_by_id(composer_id):
 
     Returns:
         ComposerInfo: the composer information object for the requested composer.
-
-    Raises:
-        ValueError: if the given composer could not be found.
     """
-    for composer in composers:
-        if composer.id == composer_id:
-            return composer
-    raise ValueError('The composer with the id {} could not be found.'.format(composer_id))
-
-
-
+    return composers_dict[composer_id]

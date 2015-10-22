@@ -61,10 +61,20 @@ class DiceTable(object):
 
     @property
     def rows(self):
+        """Get the number of rows in this table.
+
+        Returns:
+            int: the number of rows in the table
+        """
         return self.table.shape[0]
 
     @property
     def columns(self):
+        """Get the number of columns in this table.
+
+        Returns:
+            int: the number of columns in the table
+        """
         return self.table.shape[1]
 
     def get_row(self, row):

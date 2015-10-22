@@ -54,6 +54,7 @@ class CompositionInfo(object):
 class BasicCompositionInfo(CompositionInfo):
 
     def __init__(self, name, id, instrumental_settings, composition_base_class):
+        """Abstract implementation class of CompositionInfo"""
         self._name = name
         self._id = id
         self._instrumental_settings = instrumental_settings
@@ -144,6 +145,7 @@ class MozartWaltzInfo(BasicCompositionInfo):
 class Composition(object):
 
     def __init__(self, instrumental_setting):
+        """Holds basic information about a composition and is able to create various views on the composition."""
         self.instrumental_setting = instrumental_setting
         self._dice_tables = []
         self._pieces = OrderedDict()
@@ -191,7 +193,6 @@ class Composition(object):
         Returns:
             str: lilypond code for the measures overview
         """
-        pass
 
     def typeset_composition(self, table_indices, comments=()):
         """Typeset a whole composition with all the pieces.
