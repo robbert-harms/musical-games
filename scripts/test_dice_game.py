@@ -14,7 +14,7 @@ soundfont = '/home/robbert/programming/www/opus-infinity.org/soundfonts/steinway
 composition_info = MozartWaltzInfo()
 composition = composition_info.get_composition('piano')
 
-print(composition.count_unique_compositions())
+# print(composition.count_unique_compositions())
 
 
 # dice_tables = composition.get_dice_tables()
@@ -37,14 +37,14 @@ print(composition.count_unique_compositions())
 composition_info = KirnbergerMenuetTrioInfo()
 composition = composition_info.get_composition('piano')
 
-print(composition.count_unique_compositions())
+# print(composition.count_unique_compositions())
 
-# dice_tables = composition.get_dice_tables()
-# indices = {table.name: table.random_indices() for table in dice_tables}
-# lilypond = composition.typeset_composition(indices, comments=MusicBookComment('', '', 'Test'))
-# write_lilypond_file('/tmp/musical_games/kb.ly', lilypond)
-# auto_convert_lilypond_file('/tmp/musical_games/kb.ly', soundfont)
-#
+dice_tables = composition.get_dice_tables()
+indices = {table.name: table.random_indices() for table in dice_tables}
+lilypond = composition.typeset_composition(indices, comments=MusicBookComment('', '', 'Test'))
+write_lilypond_file('/tmp/musical_games/kb.ly', lilypond)
+auto_convert_lilypond_file('/tmp/musical_games/kb.ly', soundfont)
+
 # dice_table = composition.get_dice_tables()[0]
 # lilypond = composition.typeset_single_measure(dice_table.name, dice_table.random_index(0))
 # write_lilypond_file('/tmp/musical_games/kb_single_measure.ly', lilypond)

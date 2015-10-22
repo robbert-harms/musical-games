@@ -4,11 +4,12 @@ import six
 
 from musical_games.base import KeySignature, TimeSignature, TempoIndication
 from musical_games.dice_games.base import PieceInfo, TractInfo, DiceTable
-from musical_games.dice_games.lilypond.typeset_staff import NoRepeat, MozartNoRepeat, MozartSingleMeasure, SingleMeasure, \
-    WithRepeat
+from musical_games.dice_games.lilypond.staff_builders import AllBarsConcatenated, MozartAllBarsConcatenated, \
+    MozartSingleMeasure, SingleMeasure, NoRepeat, WithRepeat
+from musical_games.dice_games.lilypond.staff_annotators import FineAtEnd, DaCapoAtEnd
 from musical_games.dice_games.utils import load_bars_from_file, load_dice_table, find_double_bars
-from musical_games.dice_games.lilypond.base import MusicBookTypeset, PieceScores, MusicBookComment, VisualScore, Staff, \
-    MidiScore
+from musical_games.dice_games.lilypond.base import MusicBookTypeset, PieceScores, MusicBookComment, VisualScore, \
+    Staff, MidiScore
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-19"
@@ -233,6 +234,13 @@ class Composition(object):
         typesetter.title = None
         return typesetter.typeset()
 
+    def get_composition_audio_names(self):
+        """Get the audio names for the midi sections in the composition typesets.
+
+        Returns:
+            list of str: the pretty print names of the audio files in the composition
+        """
+
     def _get_measure_overview_scores(self, piece_name=None):
         """Get the scores for an overview of the measures.
 
@@ -245,7 +253,7 @@ class Composition(object):
         for piece in self._pieces.values():
             if piece_name is None or piece_name == piece.name:
                 score = VisualScore.create_from_piece(
-                    NoRepeat(piece.tract_info).get_staffs(),
+                    AllBarsConcatenated(piece.tract_info).get_staffs(),
                     piece,
                     display_all_bar_numbers=True,
                     display_tempo_indication=False,
@@ -274,6 +282,44 @@ class Composition(object):
 
             midi = MidiScore.create_from_piece(staffs, piece, midi_max_volumes=piece.midi_max_volumes)
             scores.append(midi)
+        return scores
+
+    def _get_menuet_trio_scores(self, table_indices):
+        """Get the scores for a basic composition.
+
+        This is a helper method to save space in the implementations. This function has a few assumptions
+        about the information in the pieces. See the code for details.
+
+        This function adds da capo al fine messages between the menuet and trio, and adds the audio for the
+        menuet again, without the repetitions.
+
+        Returns:
+            scores: score objects to be used in a typesetter.
+        """
+        scores = []
+        for dice_table_name, indices in table_indices.items():
+            if dice_table_name == 'Menuet':
+                staff_annotator = FineAtEnd()
+            else:
+                staff_annotator = DaCapoAtEnd()
+
+            piece = self._pieces[dice_table_name]
+            staffs = WithRepeat(piece.tract_info, indices, piece.repeat_moments,
+                                staff_annotator=staff_annotator).get_staffs()
+
+            visual = VisualScore.create_from_piece(staffs, piece, display_all_bar_numbers=False,
+                                                   display_tempo_indication=True, title=piece.name)
+            scores.append(visual)
+
+            midi = MidiScore.create_from_piece(staffs, piece, midi_max_volumes=piece.midi_max_volumes)
+            scores.append(midi)
+
+        piece = self._pieces['Menuet']
+        indices = table_indices['Menuet']
+        staffs = NoRepeat(piece.tract_info, indices, piece.repeat_moments).get_staffs()
+        midi_no_repeat = MidiScore.create_from_piece(staffs, piece, midi_max_volumes=piece.midi_max_volumes)
+        scores.append(midi_no_repeat)
+
         return scores
 
     def _load_bars(self, bar_file):
@@ -347,7 +393,7 @@ class KirnbergerMenuetTrio(Composition):
         return typesetter.typeset()
 
     def typeset_composition(self, table_indices, comments=()):
-        scores = self._get_basic_composition_scores(table_indices)
+        scores = self._get_menuet_trio_scores(table_indices)
         typesetter = MusicBookTypeset(scores)
         typesetter.add_comments(comments)
         typesetter.title = None
@@ -362,6 +408,9 @@ class KirnbergerMenuetTrio(Composition):
             return self._doubles_list_menuet
         else:
             return self._doubles_list_trio
+
+    def get_composition_audio_names(self):
+        return ['Menuet', 'Trio', 'Menuet al Fine']
 
 
 class KirnbergerPolonaise(KirnbergerMenuetTrio):# todo change base class to composition and implement
@@ -429,7 +478,7 @@ class StadlerMenuetTrio(Composition):
         return typesetter.typeset()
 
     def typeset_composition(self, table_indices, comments=()):
-        scores = self._get_basic_composition_scores(table_indices)
+        scores = self._get_menuet_trio_scores(table_indices)
         typesetter = MusicBookTypeset(scores)
         typesetter.add_comments(comments)
         typesetter.title = None
@@ -446,6 +495,8 @@ class StadlerMenuetTrio(Composition):
         else:
             return self._doubles_list_trio
 
+    def get_composition_audio_names(self):
+        return ['Menuet', 'Trio', 'Menuet al Fine']
 
 class MozartWaltz(Composition):
 
@@ -495,7 +546,7 @@ class MozartWaltz(Composition):
     def typeset_measure_overview(self, piece_name=None):
         piece = self._pieces[self._waltz_name]
         waltz_visual = VisualScore.create_from_piece(
-            MozartNoRepeat(piece.tract_info).get_staffs(),
+            MozartAllBarsConcatenated(piece.tract_info).get_staffs(),
             piece,
             display_all_bar_numbers=True,
             display_tempo_indication=False,
@@ -517,3 +568,6 @@ class MozartWaltz(Composition):
 
     def get_similar_measures_list(self, dice_table):
         return self._doubles_list
+
+    def get_composition_audio_names(self):
+        return ['Waltz']

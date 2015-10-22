@@ -1,4 +1,5 @@
 from musical_games.dice_games.lilypond.base import Staff
+from musical_games.dice_games.lilypond.staff_annotators import NoOptAnnotator
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-10-08"
@@ -14,12 +15,12 @@ class StaffBuilder(object):
         Returns:
             list of Staff: list of staff objects to use during typesetting of a piece.
         """
-        pass
 
 
-class NoRepeat(StaffBuilder):
+class AllBarsConcatenated(StaffBuilder):
 
     def __init__(self, tracts_info):
+        super(AllBarsConcatenated, self).__init__()
         """Concatenates all bars."""
         self.tracts_info = tracts_info
 
@@ -38,6 +39,16 @@ class NoRepeat(StaffBuilder):
         return str(bar)
 
 
+class MozartAllBarsConcatenated(AllBarsConcatenated):
+    """The no repeat listing for the Mozart Waltz.
+
+    In the Mozart bar listing the alternative endings are superimposed on each other as two voices. We copied
+    that scheme using this class.
+    """
+    def _bar_to_notes(self, bar):
+        return _mozart_superimpose_voices(bar)
+
+
 class SingleMeasure(StaffBuilder):
 
     def __init__(self, tracts_info, measure_ind):
@@ -48,6 +59,7 @@ class SingleMeasure(StaffBuilder):
             measure_ind (int): the index (from the table) of the Bar we would like to view.
                 This is supposed to be 1 indiced.
         """
+        super(SingleMeasure, self).__init__()
         self.tracts_info = tracts_info
         self.measure_ind = measure_ind
 
@@ -61,16 +73,6 @@ class SingleMeasure(StaffBuilder):
         return str(bar)
 
 
-class MozartNoRepeat(NoRepeat):
-    """The no repeat listing for the Mozart Waltz.
-
-    In the Mozart bar listing the alternative endings are superimposed on each other as two voices. We copied
-    that scheme using this class.
-    """
-    def _bar_to_notes(self, bar):
-        return mozart_superimpose_voices(bar)
-
-
 class MozartSingleMeasure(SingleMeasure):
     """The single measure listing for the Mozart Waltz.
 
@@ -78,10 +80,10 @@ class MozartSingleMeasure(SingleMeasure):
     that scheme using this class for the single measure case.
     """
     def _bar_to_notes(self, bar):
-        return mozart_superimpose_voices(bar)
+        return _mozart_superimpose_voices(bar)
 
 
-def mozart_superimpose_voices(bar):
+def _mozart_superimpose_voices(bar):
     """Superimpose the alternative endings using voices."""
     if bar.alternatives:
         return r'<< {\voiceOne ' + str(bar.alternatives[0]) + r'} \new Voice { \voiceTwo ' + str(bar) + '} >>'
@@ -91,11 +93,13 @@ def mozart_superimpose_voices(bar):
 
 class WithRepeat(StaffBuilder):
 
-    def __init__(self, tracts_info, measure_indices, repeat_points):
+    def __init__(self, tracts_info, measure_indices, repeat_points, staff_annotator=None):
         """Concatenates all bars."""
+        super(WithRepeat, self).__init__()
         self.tracts_info = tracts_info
         self.measure_indices = measure_indices
         self.repeat_points = repeat_points
+        self.staff_annotator = staff_annotator or NoOptAnnotator()
 
     def get_staffs(self):
         staffs = []
@@ -105,12 +109,19 @@ class WithRepeat(StaffBuilder):
         lines_total = [[] for i in range(len(self.tracts_info))]
         bars = [[] for i in range(len(self.tracts_info))]
 
+        lines_total[-1].append(self.staff_annotator.annotate_begin())
+
         for count, measure_ind in enumerate(self.measure_indices):
             for tract_info_ind, bar_dict in enumerate(bar_dicts):
                 bars[tract_info_ind].append(bar_dict[measure_ind])
 
             if count+1 in self.repeat_points:
                 self._repeat_point(lines_total, bars)
+
+        if bars[-1]:
+            bars[-1].append(self.staff_annotator.annotate_end())
+        else:
+            lines_total[-1].append(self.staff_annotator.annotate_end())
 
         for ind, tract_info in enumerate(self.tracts_info):
             result_str = "\n".join(lines_total[ind])
@@ -147,3 +158,32 @@ class WithRepeat(StaffBuilder):
                 lines_total[tract_info_ind].extend([self._bar_to_notes(bar) for bar in bars[tract_info_ind]])
                 lines_total[tract_info_ind].append('}')
                 bars[tract_info_ind] = []
+
+
+class NoRepeat(StaffBuilder):
+
+    def __init__(self, tracts_info, measure_indices, repeat_points):
+        """Concatenates all bars."""
+        super(NoRepeat, self).__init__()
+        self.tracts_info = tracts_info
+        self.measure_indices = measure_indices
+        self.repeat_points = repeat_points
+
+    def get_staffs(self):
+        staffs = []
+
+        bar_dicts = [ti.bars for ti in self.tracts_info]
+        lines_total = [[] for i in range(len(self.tracts_info))]
+
+        for count, measure_ind in enumerate(self.measure_indices):
+            for tract_info_ind, bar_dict in enumerate(bar_dicts):
+                lines_total[tract_info_ind].append(self._bar_to_notes(bar_dict[measure_ind]))
+
+        for ind, tract_info in enumerate(self.tracts_info):
+            result_str = "\n".join(lines_total[ind]) + r' \bar "|."'
+            staffs.append(Staff(result_str, tract_info.clef))
+
+        return staffs
+
+    def _bar_to_notes(self, bar):
+        return str(bar)
