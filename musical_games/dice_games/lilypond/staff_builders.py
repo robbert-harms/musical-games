@@ -1,189 +1,188 @@
-from musical_games.dice_games.lilypond.base import Staff
-from musical_games.dice_games.lilypond.staff_annotators import NoOptAnnotator
-
 __author__ = 'Robbert Harms'
 __date__ = "2015-10-08"
 __maintainer__ = "Robbert Harms"
 __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 
-class StaffBuilder(object):
+class StaffTypeset(object):
 
-    def get_staffs(self):
-        """Get a list of Staffs to be used by the typesetter.
-
-        Returns:
-            list of Staff: list of staff objects to use during typesetting of a piece.
-        """
-
-
-class AllBarsConcatenated(StaffBuilder):
-
-    def __init__(self, tracts_info):
-        super(AllBarsConcatenated, self).__init__()
-        """Concatenates all bars."""
-        self.tracts_info = tracts_info
-
-    def get_staffs(self):
-        staffs = []
-        for tract_info in self.tracts_info:
-            notes = []
-            positions = sorted(list(tract_info.bars.keys()))
-            for position in positions:
-                notes.append(self._bar_to_notes(tract_info.bars[position]))
-            staffs.append(Staff("\n".join(notes) + r' \bar "|."', tract_info.clef))
-
-        return staffs
-
-    def _bar_to_notes(self, bar):
-        return str(bar)
-
-
-class MozartAllBarsConcatenated(AllBarsConcatenated):
-    """The no repeat listing for the Mozart Waltz.
-
-    In the Mozart bar listing the alternative endings are superimposed on each other as two voices. We copied
-    that scheme using this class.
-    """
-    def _bar_to_notes(self, bar):
-        return _mozart_superimpose_voices(bar)
-
-
-class SingleMeasure(StaffBuilder):
-
-    def __init__(self, tracts_info, measure_ind):
-        """Return the overview for a single bar.
+    def __init__(self, bars_lists):
+        """Typeset the given list of bar lists
 
         Args:
-            tracts_info
-            measure_ind (int): the index (from the table) of the Bar we would like to view.
-                This is supposed to be 1 indiced.
+            bars_lists (list of list of Bar): the list of Bars we will typeset
         """
-        super(SingleMeasure, self).__init__()
-        self.tracts_info = tracts_info
-        self.measure_ind = measure_ind
+        self.bars_lists = bars_lists
 
-    def get_staffs(self):
-        staffs = []
-        for tract_info in self.tracts_info:
-            staffs.append(Staff(self._bar_to_notes(tract_info.bars[self.measure_ind]) + r' \bar "|."', tract_info.clef))
-        return staffs
+    def typeset(self):
+        """Get the typeset music expression for the given Bars
 
-    def _bar_to_notes(self, bar):
+        Returns:
+            list of str: per list of Bars one typeset music expression
+        """
+
+
+class BarConverter(object):
+    """Bar converters are used when rendering a given bar for use the AllBarsConcatenated typesetter"""
+
+    def convert(self, bar):
+        """Convert the given bar to a string.
+
+        Args:
+            bar (Bar): the bar to convert to string
+
+        Returns:
+            str: the bar converted to a string
+        """
+
+
+class SimpleBarConverter(BarConverter):
+
+    def convert(self, bar):
         return str(bar)
 
 
-class MozartSingleMeasure(SingleMeasure):
-    """The single measure listing for the Mozart Waltz.
+class MozartBarConverter(BarConverter):
 
-    In the Mozart bar listing the alternative endings are superimposed on each other as two voices. We copied
-    that scheme using this class for the single measure case.
-    """
-    def _bar_to_notes(self, bar):
-        return _mozart_superimpose_voices(bar)
-
-
-def _mozart_superimpose_voices(bar):
-    """Superimpose the alternative endings using voices."""
-    if bar.alternatives:
-        return r'<< {\voiceOne ' + str(bar.alternatives[0]) + r'} \new Voice { \voiceTwo ' + str(bar) + '} >>'
-    else:
+    def convert(self, bar):
+        if bar.alternatives:
+            return r'<< {\voiceOne ' + str(bar.alternatives[0]) + r'} \new Voice { \voiceTwo ' + str(bar) + '} >>'
         return str(bar)
 
 
-class WithRepeat(StaffBuilder):
+class StaffAnnotator(object):
 
-    def __init__(self, tracts_info, measure_indices, repeat_points, staff_annotator=None):
-        """Concatenates all bars."""
-        super(WithRepeat, self).__init__()
-        self.tracts_info = tracts_info
-        self.measure_indices = measure_indices
-        self.repeat_points = repeat_points
-        self.staff_annotator = staff_annotator or NoOptAnnotator()
+    def annotate_begin(self):
+        """Return the annotations for at the beginning of the piece.
 
-    def get_staffs(self):
-        staffs = []
+        Returns:
+            str: lilypond code for the annotations at the beginning of the piece.
+        """
+        return ''
 
-        bar_dicts = [ti.bars for ti in self.tracts_info]
+    def annotate_end(self):
+        """Return the annotations for at the end of the piece.
 
-        lines_total = [[] for i in range(len(self.tracts_info))]
-        bars = [[] for i in range(len(self.tracts_info))]
+        Returns:
+            str: lilypond code for the annotations at the end of the piece.
+        """
+        return ''
 
-        lines_total[-1].append(self.staff_annotator.annotate_begin())
 
-        for count, measure_ind in enumerate(self.measure_indices):
-            for tract_info_ind, bar_dict in enumerate(bar_dicts):
-                bars[tract_info_ind].append(bar_dict[measure_ind])
+class NoneAnnotator(StaffAnnotator):
+    pass
 
-            if count+1 in self.repeat_points:
-                self._repeat_point(lines_total, bars)
 
-        if bars[-1]:
-            bars[-1].append(self.staff_annotator.annotate_end())
-        else:
-            lines_total[-1].append(self.staff_annotator.annotate_end())
+class FineAtEnd(StaffAnnotator):
 
-        for ind, tract_info in enumerate(self.tracts_info):
-            result_str = "\n".join(lines_total[ind])
-            if bars[tract_info_ind]:
-                result_str += "\n".join([self._bar_to_notes(bar) for bar in bars[ind]]) + r' \bar "|."'
+    def annotate_end(self):
+        return '\\once \\override Score.RehearsalMark #\'self-alignment-X = #right ' \
+               r'\mark \markup {\fontsize #-1 \italic "Fine"}'
 
-            staffs.append(Staff(result_str, tract_info.clef))
 
-        return staffs
+class DaCapoAtEnd(StaffAnnotator):
 
-    def _bar_to_notes(self, bar):
-        return str(bar)
+    def annotate_end(self):
+        return '\\once \\override Score.RehearsalMark #\'self-alignment-X = #right ' \
+               r'\mark \markup {\fontsize #-1 \italic "D.C. al Fine"}'
 
-    def _repeat_point(self, lines_total, bars):
-        if any(bars[i][len(bars[i]) - 1].alternatives for i in range(len(bars))):
-            for tract_info_ind in range(len(lines_total)):
-                lines_total[tract_info_ind].append(r'\repeat volta 2{')
-                lines_total[tract_info_ind].extend([self._bar_to_notes(bar) for bar in bars[tract_info_ind][:-1]])
-                lines_total[tract_info_ind].append('}')
 
-                last_bar = bars[tract_info_ind][len(bars[tract_info_ind])-1]
+class AllBarsConcatenated(StaffTypeset):
+
+    def __init__(self, bars_lists, bar_converter):
+        """Typeset the given list of bar lists
+
+        Args:
+            bars_lists (list of list of Bar): the list of Bars we will typeset
+            bar_converter (BarConverter): the bar converter to use for the conversions
+        """
+        super(AllBarsConcatenated, self).__init__(bars_lists)
+        self.bar_converter = bar_converter
+
+    def typeset(self):
+        music_expressions = []
+        for bar_list in self.bars_lists:
+            music_expressions.append("\n".join(self.bar_converter.convert(bar) for bar in bar_list) + r' \bar "|."')
+        return music_expressions
+
+
+class WithRepeat(StaffTypeset):
+
+    def __init__(self, bars_lists, repeats, staff_annotator):
+        """Typeset all the bars with the necessary repeats.
+
+        Args:
+            bars_lists (list of list of Bar): the list of Bars we will typeset
+            repeats (list of tuples of int): the bars we repeat. For example: [(0, 8), (8, 16)] indicates
+                two repeats, one in which 0 to 8 is repeated and one in which 8 to 16 is repeated.
+            staff_annotator (StaffAnnotator): the staff annotator to use for annotating the staff
+        """
+        super(WithRepeat, self).__init__(bars_lists)
+        self.repeats = repeats
+        self.staff_annotator = staff_annotator
+
+    def typeset(self):
+        nmr_staffs = len(self.bars_lists)
+        nmr_bars = len(self.bars_lists[0])
+
+        result_staffs = [[] for i in range(nmr_staffs)]
+        result_staffs[-1].append(self.staff_annotator.annotate_begin())
+
+        to_repeat = [[] for i in range(nmr_staffs)]
+        in_repeat = False
+
+        for bar_ind in range(nmr_bars):
+            begin_of_repeat = any(bar_ind == repeat[0] for repeat in self.repeats)
+            end_of_repeat = any(bar_ind == repeat[1] for repeat in self.repeats)
+
+            if end_of_repeat:
+                in_repeat = False
+                self._render_repeats(result_staffs, to_repeat)
+                to_repeat = [[] for i in range(nmr_staffs)]
+
+            if begin_of_repeat:
+                in_repeat = True
+
+            if in_repeat:
+                for staff_ind, bar_list in enumerate(self.bars_lists):
+                    to_repeat[staff_ind].append(bar_list[bar_ind])
+            else:
+                for staff_ind, bar_list in enumerate(self.bars_lists):
+                    result_staffs[staff_ind].append(str(bar_list[bar_ind]))
+
+        repeat_on_last = False
+        if in_repeat:
+            self._render_repeats(result_staffs, to_repeat)
+            repeat_on_last = True
+
+        result_staffs[-1].append(self.staff_annotator.annotate_end())
+
+        result = []
+        for staff in result_staffs:
+            expr = "\n".join(staff).rstrip()
+            if not repeat_on_last:
+                expr += r' \bar "|."'
+            result.append(expr)
+        return result
+
+    def _render_repeats(self, result_staffs, to_repeat):
+        for staff in result_staffs:
+            staff.append(r'\repeat volta 2{')
+
+        if any(staff[-1].alternatives for staff in to_repeat):
+            for staff_ind, bars in enumerate(to_repeat):
+                result_staffs[staff_ind].extend(map(str, bars[:-1]))
+                result_staffs[staff_ind].append('}')
+
+                last_bar = bars[-1]
 
                 if last_bar.alternatives:
-                    lines_total[tract_info_ind].append(r'\alternative {{' + self._bar_to_notes(last_bar) + '} {' +
-                                                        self._bar_to_notes(last_bar.alternatives[0]) + '}}')
+                    result_staffs[staff_ind].append(r'\alternative { {' + str(last_bar) + '} {' +
+                                                    str(last_bar.alternatives[0]) + '} }')
                 else:
-                    lines_total[tract_info_ind].append(r'\alternative {{' + self._bar_to_notes(last_bar) + '} {' +
-                                                        self._bar_to_notes(last_bar) + '}}')
-
-                bars[tract_info_ind] = []
+                    result_staffs[staff_ind].append(r'\alternative { {' + str(last_bar) + '} {' +
+                                                    str(last_bar) + '} }')
         else:
-            for tract_info_ind in range(len(lines_total)):
-                lines_total[tract_info_ind].append(r'\repeat volta 2{')
-                lines_total[tract_info_ind].extend([self._bar_to_notes(bar) for bar in bars[tract_info_ind]])
-                lines_total[tract_info_ind].append('}')
-                bars[tract_info_ind] = []
-
-
-class NoRepeat(StaffBuilder):
-
-    def __init__(self, tracts_info, measure_indices, repeat_points):
-        """Concatenates all bars."""
-        super(NoRepeat, self).__init__()
-        self.tracts_info = tracts_info
-        self.measure_indices = measure_indices
-        self.repeat_points = repeat_points
-
-    def get_staffs(self):
-        staffs = []
-
-        bar_dicts = [ti.bars for ti in self.tracts_info]
-        lines_total = [[] for i in range(len(self.tracts_info))]
-
-        for count, measure_ind in enumerate(self.measure_indices):
-            for tract_info_ind, bar_dict in enumerate(bar_dicts):
-                lines_total[tract_info_ind].append(self._bar_to_notes(bar_dict[measure_ind]))
-
-        for ind, tract_info in enumerate(self.tracts_info):
-            result_str = "\n".join(lines_total[ind]) + r' \bar "|."'
-            staffs.append(Staff(result_str, tract_info.clef))
-
-        return staffs
-
-    def _bar_to_notes(self, bar):
-        return str(bar)
+            for staff_ind, bars in enumerate(to_repeat):
+                result_staffs[staff_ind].extend(map(str, bars))
+                result_staffs[staff_ind].append('}')

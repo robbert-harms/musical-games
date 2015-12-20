@@ -2,6 +2,7 @@ import csv
 import collections
 import numpy as np
 from musical_games.base import Bar
+from musical_games.dice_games.base import Bars, DiceTable
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-10-08"
@@ -20,12 +21,12 @@ def load_bars_from_file(filename):
         filename (str): the name of the file we will load.
 
     Returns:
-        dict: as key the indices, as values the Bar objects
+        Bars: the bars object holding the list of Bar objects
     """
     bar_dict = {}
 
-    with open(filename, 'r') as csvfile:
-        csv_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+    with open(filename, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',', quotechar='"')
         for row in csv_reader:
             if len(row) > 2:
                 alternatives = [Bar(r) for r in row[2:]]
@@ -40,38 +41,47 @@ def load_bars_from_file(filename):
             else:
                 bar_dict.update({int(row[0]): Bar(row[1], alternatives)})
 
-    return bar_dict
+    return Bars(list(bar_dict[k] for k in sorted(bar_dict.keys())))
 
 
 def load_dice_table(filename):
     """Load one of the dicetables from CSV format.
 
     Args:
-        filename (str): the filename of the dice table
+        filename (str): the filename of the dice table (in CSV format)
+
+    Returns:
+        DiceTable: the dice table with the data loaded from the given file
     """
-    return np.genfromtxt(filename, dtype=np.int32, delimiter=',')
+    return DiceTable(np.genfromtxt(filename, dtype=np.int32, delimiter=','))
 
 
-def find_double_bars(bar_dict_lists):
+def find_double_bars(bars_list):
     """Find the bars that are double in the given bar lists
 
     This will find the positions in which all bars on a given position have the same data.
-    Suppose you have two bar lists with the following items:
-        ['a', 'b', 'a', 'b']
+    Suppose you have two Bars with the following items:
+        ['a', 'b', 'a', 'e']
         ['g', 'c', 'g', 'c']
 
-    This function will then return [[0, 2]] indicating that it has found one set of doubles at positions zero and two.
+    This function will then return [[0, 2]] indicating that it has found one set of doubles and
+    that set of doubles occurs at positions zero and two.
+
+    Positions 1 and 3 are not doubles since they are not equal over all Bars.
 
     Args:
-        list of bar dicts: the bar dicts we use to find the doubles
+        bars_list (list of Bars): the list of Bars from which we want to find the overall doubles
 
     Returns:
-        tuple of tuples: the tuples with information about the doubles
+        list of list of int: the tuples with information about the doubles.
+            This returns a list holding lists with per similar measures the positions of that measure. The indices
+            returned are in Dice Table space (that is 1-based).
     """
-    positions = bar_dict_lists[0].keys()
+    positions = range(bars_list[0].length())
+
     bar_pairs = []
     for position in positions:
-        bar_pairs.append(hash(tuple(bdl[position] for bdl in bar_dict_lists)))
+        bar_pairs.append(hash(tuple(bars.get_at_index(position) for bars in bars_list)))
 
     def duplicates(lst):
         cnt = collections.Counter(lst)

@@ -11,7 +11,7 @@ class Bar(object):
 
         Args:
             lilypond_code (str): the lilypond code for this single bar
-            alternative (list of Bar): list of alternative bars (used for repeats, like in part 1, repeat, part 2).
+            alternatives (list of Bar): list of alternative bars (used for repeats, like in part 1, repeat, part 2).
         """
         self.lilypond_code = lilypond_code
         self.alternatives = alternatives
@@ -35,7 +35,7 @@ class KeySignature(object):
         """The key signature for a single tract.
 
         Args:
-            note (str): the base note of this key
+            note (str): the base note of this key, for example 'g'
             major_minor (str): either 'major' or 'minor'
         """
         self.note = note
@@ -72,10 +72,25 @@ class TempoIndication(object):
 
         Args:
             beat_value (int): the beat that we indicate the tempo for. Example: (2, 4, 8, ...)
-            mm_tempo (int): the Malzel Metronome value (for example: 120)
+            mm_tempo (int): the Metzels Metronome value (for example: 120)
         """
         self.beat_value = beat_value
         self.mm_tempo = mm_tempo
 
     def __str__(self):
         return str(self.beat_value) + ' = ' + str(self.mm_tempo)
+
+
+class MidiOptions(object):
+
+    def __init__(self, instrument, min_volume, max_volume):
+        """Container for the midi options
+
+        Args:
+            instrument (str): the lilypond midi instrument type
+            min_volume (float): the minimum volume of a staff
+            max_volume (float): the maximum volume of a staff
+        """
+        self.instrument = instrument
+        self.min_volume = min_volume
+        self.max_volume = max_volume

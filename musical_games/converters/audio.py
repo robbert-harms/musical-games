@@ -27,7 +27,8 @@ def wav_to_mp3(wav_fname, mp3_fname):
         wav_fname (str): where to place the output wav file.
         mp3_fname (str): the path to the output mp3 file
     """
-    _auto_convert_wav(wav_fname, mp3_fname, 'to_mp3')
+    converter = _get_first_available_converter([FFMpeg(), AVConv()])
+    converter.to_mp3(wav_fname, mp3_fname)
 
 
 def wav_to_ogg(wav_fname, ogg_fname):
@@ -37,18 +38,13 @@ def wav_to_ogg(wav_fname, ogg_fname):
         wav_fname (str): where to place the output wav file.
         mp3_fname (str): the path to the output mp3 file
     """
-    _auto_convert_wav(wav_fname, ogg_fname, 'to_ogg')
-
-
-def _auto_convert_wav(wav_fname, output_fname, function_name):
     converter = _get_first_available_converter([FFMpeg(), AVConv()])
-    function = getattr(converter, function_name)
-    function(wav_fname, output_fname)
+    converter.to_ogg(wav_fname, ogg_fname)
 
 
 def _get_first_available_converter(converters):
     if not any([converter.is_available() for converter in converters]):
-        raise RuntimeError('No suitable wav to mp3 converter found.')
+        raise RuntimeError('No suitable converter found.')
     return next(dropwhile(lambda c: not c.is_available(), converters))
 
 

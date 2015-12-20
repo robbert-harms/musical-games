@@ -32,6 +32,9 @@ def bash_function_exists(function_name):
 
     Runs the command 'which <function_name>' to check if the function exists.
 
+    Args:
+        function_name (str): the function name to check for existence
+
     Returns:
         boolean: if the command exists
     """

@@ -15,7 +15,7 @@ def lilypond(lilypond_fname, output, pdf=True, png=True, ps=False):
 
     Args:
         lilypond_fname (str): the location of the lilypond file to convert.
-        output (str): the location of the output file, suffixes will be added.
+        output (str): the location for the output files, suffixes will be added.
         pdf (str): if we want pdf output
         png (boolean): if we want png output
         ps (boolean): if we want postscript output
@@ -24,7 +24,7 @@ def lilypond(lilypond_fname, output, pdf=True, png=True, ps=False):
         RuntimeError: if the compilation of the lilypond file failed somehow.
 
     Returns:
-        LilypondResultSet: the result set with the location of the output files.
+        TypesetResults: the result set with the location of the output files.
     """
     if not os.path.isdir(os.path.dirname(output)):
         os.makedirs(os.path.dirname(output))
@@ -37,21 +37,21 @@ def lilypond(lilypond_fname, output, pdf=True, png=True, ps=False):
 
     command = 'lilypond {pdf} {png} {ps} -o {output} {lilypond}'.format(**kwargs)
     process = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stderr = process.communicate()[1]
+    std_err = process.communicate()[1]
     rc = process.returncode
 
     if rc == 1:
-        raise RuntimeError('Error converting lilypond file. Error message: ' + str(stderr))
+        raise RuntimeError('Error converting lilypond file. Error message: ' + str(std_err))
 
     pdf_list = [output + '.pdf'] if pdf else []
     png_list = _get_png_list(output, png)
     ps_list = [output + '.ps'] if ps else []
     midi_list = _get_midi_list(output)
 
-    return LilypondResultSet(pdf_list, png_list, ps_list, midi_list)
+    return TypesetResults(pdf_list, png_list, ps_list, midi_list)
 
 
-class LilypondResultSet(object):
+class TypesetResults(object):
 
     def __init__(self, pdf_list, png_list, ps_list, midi_list):
         """Result set for the output of the lilypond function.
