@@ -6,13 +6,15 @@ __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 class StaffTypeset(object):
 
-    def __init__(self, bars_lists):
+    def __init__(self, bars_lists, end_bar='|.'):
         """Typeset the given list of bar lists
 
         Args:
             bars_lists (list of list of Bar): the list of Bars we will typeset
+            end_bar (str): the end bar we will use (lilypond string). Only used if the last bar is not a repeat bar.
         """
         self.bars_lists = bars_lists
+        self.end_bar = end_bar
 
     def typeset(self):
         """Get the typeset music expression for the given Bars
@@ -89,26 +91,28 @@ class DaCapoAtEnd(StaffAnnotator):
 
 class AllBarsConcatenated(StaffTypeset):
 
-    def __init__(self, bars_lists, bar_converter):
+    def __init__(self, bars_lists, bar_converter, end_bar='|.'):
         """Typeset the given list of bar lists
 
         Args:
             bars_lists (list of list of Bar): the list of Bars we will typeset
             bar_converter (BarConverter): the bar converter to use for the conversions
+            end_bar (str): the end bar we will use (lilypond string). Only used if the last bar is not a repeat bar.
         """
-        super(AllBarsConcatenated, self).__init__(bars_lists)
+        super(AllBarsConcatenated, self).__init__(bars_lists, end_bar=end_bar)
         self.bar_converter = bar_converter
 
     def typeset(self):
         music_expressions = []
         for bar_list in self.bars_lists:
-            music_expressions.append("\n".join(self.bar_converter.convert(bar) for bar in bar_list) + r' \bar "|."')
+            music_expressions.append("\n".join(self.bar_converter.convert(bar) for bar in bar_list) +
+                                     (r' \bar "{}"'.format(self.end_bar)))
         return music_expressions
 
 
 class WithRepeat(StaffTypeset):
 
-    def __init__(self, bars_lists, repeats, staff_annotator):
+    def __init__(self, bars_lists, repeats, staff_annotator, end_bar='|.'):
         """Typeset all the bars with the necessary repeats.
 
         Args:
@@ -116,8 +120,9 @@ class WithRepeat(StaffTypeset):
             repeats (list of tuples of int): the bars we repeat. For example: [(0, 8), (8, 16)] indicates
                 two repeats, one in which 0 to 8 is repeated and one in which 8 to 16 is repeated.
             staff_annotator (StaffAnnotator): the staff annotator to use for annotating the staff
+            end_bar (str): the end bar we will use (lilypond string). Only used if the last bar is not a repeat bar.
         """
-        super(WithRepeat, self).__init__(bars_lists)
+        super(WithRepeat, self).__init__(bars_lists, end_bar=end_bar)
         self.repeats = repeats
         self.staff_annotator = staff_annotator
 
@@ -161,7 +166,7 @@ class WithRepeat(StaffTypeset):
         for staff in result_staffs:
             expr = "\n".join(staff).rstrip()
             if not repeat_on_last:
-                expr += r' \bar "|."'
+                expr += r' \bar "{}"'.format(self.end_bar)
             result.append(expr)
         return result
 

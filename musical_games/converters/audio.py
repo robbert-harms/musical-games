@@ -36,7 +36,7 @@ def wav_to_ogg(wav_fname, ogg_fname):
 
     Args:
         wav_fname (str): where to place the output wav file.
-        mp3_fname (str): the path to the output mp3 file
+        ogg_fname (str): the path to the output mp3 file
     """
     converter = _get_first_available_converter([FFMpeg(), AVConv()])
     converter.to_ogg(wav_fname, ogg_fname)
@@ -79,7 +79,7 @@ class FluidSynth(MidiToWav):
     def convert(self, midi_fname, wav_fname):
         ensure_dir_exists(wav_fname)
         run_command('fluidsynth -F {wav} {soundfont} {midi}'.format(wav=wav_fname, soundfont=self._sound_font,
-                                                                  midi=midi_fname))
+                                                                    midi=midi_fname))
 
     def is_available(self):
         return bash_function_exists('fluidsynth')

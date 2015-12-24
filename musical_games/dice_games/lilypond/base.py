@@ -69,6 +69,9 @@ class LilypondScore(object):
         self.score = score
         self.is_midi_score = is_midi_score
 
+    def __str__(self):
+        return self.score
+
 
 class LilypondBook(object):
 
@@ -88,3 +91,6 @@ class LilypondBook(object):
         self.scores = scores
         self.title = title
         self.book = book
+
+    def __str__(self):
+        return self.book

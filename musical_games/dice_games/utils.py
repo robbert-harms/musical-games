@@ -56,7 +56,7 @@ def load_dice_table(filename):
     return DiceTable(np.genfromtxt(filename, dtype=np.int32, delimiter=','))
 
 
-def find_double_bars(bars_list):
+def find_duplicate_bars(bars_list):
     """Find the bars that are double in the given bar lists
 
     This will find the positions in which all bars on a given position have the same data.

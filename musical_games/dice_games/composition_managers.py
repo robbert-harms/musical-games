@@ -1,6 +1,6 @@
 from musical_games.dice_games.lilypond.base import TypesetStaffInfo
-from musical_games.dice_games.lilypond.staff_builders import AllBarsConcatenated, WithRepeat, NoneAnnotator, FineAtEnd, \
-    DaCapoAtEnd
+from musical_games.dice_games.lilypond.staff_builders import AllBarsConcatenated, WithRepeat, NoneAnnotator, \
+    FineAtEnd, DaCapoAtEnd
 from musical_games.dice_games.lilypond.typesetters import VisualScoreTypeset, MidiScoreTypeset
 
 __author__ = 'Robbert Harms'

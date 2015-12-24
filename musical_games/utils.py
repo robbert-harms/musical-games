@@ -108,3 +108,19 @@ class ConvertLilypondResults(object):
         self.wav_list = wav_list
         self.mp3_list = mp3_list
         self.ogg_list = ogg_list
+
+    @property
+    def pdf_list(self):
+        return self.typeset_results.pdf_list
+
+    @property
+    def png_list(self):
+        return self.typeset_results.png_list
+
+    @property
+    def ps_list(self):
+        return self.typeset_results.ps_list
+
+    @property
+    def midi_list(self):
+        return self.typeset_results.midi_list

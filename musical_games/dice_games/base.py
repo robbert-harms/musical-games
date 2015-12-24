@@ -1,4 +1,5 @@
 import numbers
+from collections import OrderedDict
 from functools import reduce
 from operator import mul
 import numpy as np
@@ -14,21 +15,38 @@ __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 class Composition(object):
 
-    def __init__(self, name, parts, composition_manager, page_limit_composition, page_limit_measure_overview):
+    def __init__(self, name, composer_name, parts, composition_manager, page_limit_composition,
+                 page_limit_measure_overview):
         """Holds basic information about a composition and is able to create various views on the composition.
 
         Args:
             name (str): the name of the composition
+            composer_name (str): the name of the composer
             parts (list of CompositionPart): the list of parts, in the order of appearance
             composition_manager (CompositionManager): the composition manager for managing the composition scores
             page_limit_composition (int or None): if not None it indicates the page limit for compositions
             page_limit_measure_overview (int or None): if not None it indicates the page limit for the measure overviews
         """
         self.name = name
+        self.composer_name = composer_name
         self.parts = parts
         self.composition_manager = composition_manager
         self.page_limit_composition = page_limit_composition
         self.page_limit_measure_overview = page_limit_measure_overview
+
+    def get_composition_info(self):
+        """Get the info necessary to recreate this composition using the composition factory.
+
+        Returns:
+            dict: with keys: composer, composition, instruments. If the instruments are all the same for all the parts
+                we return a string for that single instrument
+        """
+        instruments = [part.instrument.name for part in self.parts]
+        if len(set(instruments)) == 1:
+            instruments = instruments[0]
+
+        return {'composer': self.composer_name, 'composition': self.name,
+                'instruments': instruments}
 
     def count_unique_compositions(self):
         """Get a count of the number of unique compositions possible from this composition.
@@ -53,7 +71,7 @@ class Composition(object):
         """Typeset a whole composition with all the pieces.
 
         Args:
-            table_indices (dict): per musical part and per dice table the list of indices we want to use for that part.
+            table_indices (dict): per musical part and per staff the list of indices we want to use for that part.
             comments (list of MusicBookComment): the list of comments we append at the end of the composition
 
         Returns:
@@ -67,10 +85,38 @@ class Composition(object):
         """Get the dice tables used to create compositions.
 
         Returns:
-            dict: as keys the names of the composition parts and as values the list of dice tables to be used
-                for that composition
+            OrderedDict: as keys composition parts and as values the list of dice tables to be used
+                for that composition part. The order is in the order of appearance of the parts.
         """
-        return {part.name: part.get_dice_tables() for part in self.parts}
+        return OrderedDict([(part.name, part.get_dice_tables()) for part in self.parts])
+
+    def typeset_single_measure(self, part_name, table_measure_ids):
+        """Typeset a single measure in this composition.
+
+        Args:
+            part_name (str): the composition part for which we want the single measure
+            table_measure_ids (dict): for one or more staffs the id of the measure we want to return
+
+        Returns:
+            LilypondBook: the lilypond score for the single measure
+        """
+        for part in self.parts:
+            if part.name == part_name:
+                return part.typeset_single_measure(table_measure_ids)
+
+    def get_duplicates(self, part_name, staff=None):
+        """Get the duplicate measures in the given composition part when using the given staffs to find the duplicates.
+
+        Args:
+            part_name (str): the composition part for which we want the single measure
+            staff (str): the staff to use when finding the duplicates. If None we use all the staffs.
+
+        Returns:
+            list of list of int: the duplicate measures the list of dice table ids in which that measure occurs
+        """
+        for part in self.parts:
+            if part.name == part_name:
+                return part.get_duplicates(staff=staff)
 
 
 class CompositionPart(object):
@@ -89,9 +135,20 @@ class CompositionPart(object):
         """Get the dice tables for the staffs (in the instrument) in this composition part
 
         Returns:
-            list of DiceTable: the dice tables to be used for creating compositions
+            dict: as keys the staffs as values the dice tables to be used for creating compositions
         """
         return self.instrument.get_dice_tables()
+
+    def get_duplicates(self, staff=None):
+        """Get the duplicate measures using the given staffs to find the duplicates.
+
+        Args:
+            staff (str): the staff to use when finding the duplicates. If None we use all the staffs.
+
+        Returns:
+            list of list of int: the duplicate measures the list of dice table ids in which that measure occurs
+        """
+        return self.instrument.get_duplicates(staff=staff)
 
     def count_unique_compositions(self):
         """Get a count of the number of unique compositions possible from this composition part.
@@ -105,8 +162,7 @@ class CompositionPart(object):
         """Get the score used in a composition.
 
         Args:
-            indices (list of list of int): the list of the list of indices to the measures
-                we want to use for this composition. This needs one list of ints per staff
+            indices (dict): per staff the list of the indices to the measures we want to use for this composition.
             part_manager (CompositionPartManager): the manager we use when we want to create a composition
 
         Returns:
@@ -122,37 +178,25 @@ class CompositionPart(object):
         """
         return self.instrument.get_measure_overview_score(self.name)
 
-    def typeset_single_measure(self, measure_indices):
-        """Typeset a single measure.
-
-        This is supposed to be used to illustrate a single measure referenced in one of the dice tables. This
-        function calls the instrument to actually compute the single measure lilypond score.
-
-        If the dice tables are equal one measure index suffices. If the dice tables are not equal this function needs
-        a measure index per tract.
-
-        The given measure indices should be in Dice Table space, that is, 1-based.
+    def typeset_single_measure(self, table_measure_ids):
+        """Typeset a single measure in this composition.
 
         Args:
-            measure_indices (int or list of int): the indices (1-based) from the dice table. If the dice tables of
-                all the tracts are equal you only need to provide one index. Else, multiple indices (one per tract)
-                are required.
+            table_measure_ids (dict): for one or more staffs the id of the measure we want to return
 
         Returns:
-            LilypondBook: the lilypond book containing the visual score for one measure
-
-        Raises:
-            ValueError: if only one measure index was given while the dice tables are not equal
+            LilypondBook: the lilypond score for the single measure
         """
-        return self.instrument.typeset_single_measure(measure_indices)
+        return self.instrument.typeset_single_measure(table_measure_ids)
 
 
 class Instrument(object):
 
-    def __init__(self, staffs, tempo_indication, repeats, show_instrument_names, bar_converter):
+    def __init__(self, name, staffs, tempo_indication, repeats, show_instrument_names, bar_converter):
         """Create an instruments information object for the given tracts.
 
         Args:
+            name (str): the name of this instrument
             staffs (list of Staff): the list of staffs for this instrument
             tempo_indication (TempoIndication): the tempo indication for this instrument
             repeats (list of tuples of int): the bars we repeat. For example: [(0, 8), (8, 16)] indicates
@@ -160,6 +204,7 @@ class Instrument(object):
             show_instrument_names (boolean): if we by default show the staff instrument names or not
             bar_converter (BarConverter): the bar converter to use when typesetting the staffs
         """
+        self.name = name
         self.staffs = staffs
         self.tempo_indication = tempo_indication
         self.repeats = repeats
@@ -171,11 +216,29 @@ class Instrument(object):
         """Get the dice tables for the staffs in this instrument
 
         Returns:
-            list of DiceTable: the dice tables to be used for creating compositions
+            dict: as keys the staff name as values the dice tables to be used for creating compositions
         """
-        if self.dice_tables_equal:
-            return [self.staffs[0].dice_table]
-        return [staff.dice_table for staff in self.staffs]
+        return {staff.name: staff.dice_table for staff in self.staffs}
+
+    def get_duplicates(self, staff=None):
+        """Get the duplicate measures using the given staffs to find the duplicates.
+
+        This is useful if you want to mark in the dice table all measures that have duplicates somewhere.
+
+        Args:
+            staff (str): the staff to use when finding the duplicates. If None we use all the staffs.
+
+        Returns:
+            list of list of int: the duplicate measures the list of dice table ids in which that measure occurs
+        """
+        from musical_games.dice_games.utils import find_duplicate_bars
+
+        if staff:
+            for st in self.staffs:
+                if st.name == staff:
+                    return find_duplicate_bars([st.bars])
+        else:
+            return find_duplicate_bars(list(s.bars for s in self.staffs))
 
     def count_unique_compositions(self):
         """Get a count of the number of unique compositions possible from the tracts in this instrument.
@@ -183,15 +246,15 @@ class Instrument(object):
         Returns:
             int: the number of unique compositions
         """
-        from musical_games.dice_games.utils import find_double_bars
+        from musical_games.dice_games.utils import find_duplicate_bars
 
         if self.dice_tables_equal:
-            doubles = find_double_bars(list(t.bars for t in self.staffs))
-            return self.staffs[0].dice_table.count_unique_combinations(doubles)
+            duplicates = find_duplicate_bars(list(t.bars for t in self.staffs))
+            return self.staffs[0].dice_table.count_unique_combinations(duplicates)
         else:
             prod = 1
             for tract in self.staffs:
-                prod *= tract.dice_table.count_unique_combinations(find_double_bars([tract.bars]))
+                prod *= tract.dice_table.count_unique_combinations(find_duplicate_bars([tract.bars]))
             return prod
 
     def get_composition_scores(self, title, indices, part_manager):
@@ -199,21 +262,15 @@ class Instrument(object):
 
         Args:
             title (str): the title of this part
-            indices (list of list of int): the list of the list of indices to the measures
-                we want to use for this composition. This needs one list of ints per staff
+            indices (dict): per staff the list of the indices to the measures we want to use for this composition.
             part_manager (CompositionPartManager): the manager we use when we want to create a composition
 
         Returns:
             list of LilypondScore: the visual and midi score for a composition with the given indices
         """
         bars = []
-        for staff_ind, staff in enumerate(self.staffs):
-            if self.dice_tables_equal:
-                staff_bars = [staff.bars.get_dice_table_indexed(measure_index) for measure_index in indices[0]]
-            else:
-                staff_bars = [staff.bars.get_dice_table_indexed(measure_index) for measure_index in indices[staff_ind]]
-            bars.append(staff_bars)
-
+        for staff in self.staffs:
+            bars.append([staff.bars.get_dice_table_indexed(measure_index) for measure_index in indices[staff.name]])
         return part_manager.get_scores(self, title, bars)
 
     def get_measure_overview_score(self, title):
@@ -226,7 +283,7 @@ class Instrument(object):
             LilypondScore: the lilypond score for this composition part
         """
         bars = list(staff.bars.bars for staff in self.staffs)
-        music_expressions = AllBarsConcatenated(bars, self.bar_converter).typeset()
+        music_expressions = AllBarsConcatenated(bars, self.bar_converter, end_bar='|').typeset()
 
         staffs = []
         for ind, staff in enumerate(self.staffs):
@@ -249,41 +306,32 @@ class Instrument(object):
         ).typeset()
         return score
 
-    def typeset_single_measure(self, measure_indices):
+    def typeset_single_measure(self, table_measure_ids):
         """Typeset a single measure.
 
-        This is supposed to be used to illustrate a single measure referenced in one of the dice tables.
+        This is supposed to be used to illustrate a single measure referenced in one of the dice tables. The given
+        argument should contain a dictionary with as key the table we want to index and as value the id of the bars.
 
-        If the dice tables are equal one measure index suffices. If the dice tables are not equal this function needs
-        one measure index per tract.
+        If there are more staffs in this instrument than those defined in the given argument we will only render
+        measures for which we have an index defined.
 
-        The given measure indices should be in Dice Table space, that is, 1-based.
+        The given measure ids should be in Dice Table space, that is, 1-based.
 
         Args:
-            measure_indices (int or list of int): the indices (1-based) from the dice table. If the dice tables of
-                all the tracts are equal you only need to provide one index. Else, multiple indices (one per tract)
-                are required.
+            table_measure_ids (dice): per dice table the indices (1-based) from the dice table.
 
         Returns:
-            LilypondBook: the lilypond book containing the visual score for one measure
+            LilypondBook: the lilypond book containing the visual score for one measure.
 
         Raises:
             ValueError: if only one measure index was given while the dice tables are not equal
         """
-        if isinstance(measure_indices, numbers.Number):
-            measure_indices = [measure_indices]
-
-        if len(measure_indices) < len(self.staffs):
-            if self.dice_tables_equal:
-                measure_indices *= len(self.staffs)
-            else:
-                raise ValueError('The dice tables are not equal and only one measure index is given.')
-
-        bars = list(staff.bars.get_dice_table_indexed(measure_indices[ind]) for ind, staff in enumerate(self.staffs))
-        music_expressions = AllBarsConcatenated([[bars[0]], [bars[1]]], self.bar_converter).typeset()
+        used_staffs = list(filter(lambda st: st.name in table_measure_ids, self.staffs))
+        bars = [[staff.bars.get_dice_table_indexed(table_measure_ids[staff.name])] for staff in used_staffs]
+        music_expressions = AllBarsConcatenated(bars, self.bar_converter).typeset()
 
         staffs = []
-        for ind, staff in enumerate(self.staffs):
+        for ind, staff in enumerate(used_staffs):
             staffs.append(TypesetStaffInfo(
                 music_expressions[ind],
                 staff.clef,
@@ -293,7 +341,7 @@ class Instrument(object):
                 midi_options=staff.midi_options))
 
         score = VisualScoreTypeset(
-            'Single measure: {}'.format(', '.join(map(str, measure_indices))),
+            'Single measure',
             staffs,
             self.tempo_indication,
             show_instrument_names=self.show_instrument_names,
@@ -474,13 +522,13 @@ class DiceTable(object):
         """
         return DiceTable(self.table[:, 0:column]), DiceTable(self.table[:, column:])
 
-    def count_unique_combinations(self, doubles):
+    def count_unique_combinations(self, duplicates):
         """Count the number of possible unique combinations over the columns.
 
-        Doubles in the same column will reduce the total number of combinations.
+        Duplicates in the same column will reduce the total number of combinations.
 
         Args:
-            doubles (list of list of int): the list of double positions. This contains
+            duplicates (list of list of int): the list of double positions. This contains
                 a list holding lists with per similar measures the index of that measure
 
         Returns:
@@ -489,29 +537,29 @@ class DiceTable(object):
         columns = self.table.shape[1]
         total = 1
         for column_ind in range(columns):
-            total *= self._get_unique_in_column(self.table[:, column_ind], doubles)
+            total *= self._get_unique_in_column(self.table[:, column_ind], duplicates)
         return total
 
-    def _get_unique_in_column(self, column, doubles):
+    def _get_unique_in_column(self, column, duplicates):
         """Get a count of all the unique rows in a given column.
 
-        The idea is that doubles only count as one since if multiple indices in a column represent the same measure/bar,
+        The idea is that duplicates only count as one since if multiple indices in a column represent the same measure/bar,
         the composition that results is the same no matter which of those indices was chosen.
 
         It is possible that a same measure appears in multiple columns. These do not count as 1 since they occur
         at different positions in the final composition.
 
         As an implementation note, what this function does is to loop through the list of double lists
-        and remove present doubles from the given column. Every time it removes one or more doubles it increases a
+        and remove present duplicates from the given column. Every time it removes one or more duplicates it increases a
         counter. In the end it returns the sum of the length of the remaining column values and the count of the
         number of times we removed a double.
 
-        This count of number of times we remove one or more measures is a good indicator for the number of doubles. If
+        This count of number of times we remove one or more measures is a good indicator for the number of duplicates. If
         we now remove one value or more, the unique count is still incremented by one.
 
         Args:
             column (ndarray): the column from which to count only the unique values
-            doubles (list of list of int): the list of doubles. The main list contains a number of lists that
+            duplicates (list of list of int): the list of duplicates. The main list contains a number of lists that
                 contain the indices of double measures.
 
         Returns:
@@ -520,7 +568,7 @@ class DiceTable(object):
         nmr_double_pairs = 0
 
         unique_values = set(column)
-        for double_list in doubles:
+        for double_list in duplicates:
             s = unique_values.intersection(double_list)
             if len(s):
                 column = [v for v in column if v not in s]

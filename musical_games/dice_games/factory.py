@@ -63,7 +63,7 @@ class ComposerInfo(object):
             composition (str): the name of the composition
 
         Returns:
-            list of list of str: the list of instruments available per music part
+            list of str or list of list of str: the list of instruments available per music part.
         """
 
 
@@ -98,8 +98,10 @@ class SimpleComposerInfo(ComposerInfo):
         instruments = []
 
         for part in part_info:
+            part_instruments = []
             for instrument in part['instruments']:
-                instruments.append(list(instrument.keys()))
+                part_instruments.extend(instrument.keys())
+            instruments.append(part_instruments)
 
         return instruments
 
@@ -128,12 +130,12 @@ class SimpleComposerInfo(ComposerInfo):
 
         composition_info = self._get_composition_info(composition_name)
         page_limit_composition = composition_info.get('page_limit_composition', None)
-        page_limit_measure_overview= composition_info.get('page_limit_measure_overview', None)
+        page_limit_measure_overview = composition_info.get('page_limit_measure_overview', None)
 
         composition_manager_module = importlib.import_module('musical_games.dice_games.composition_managers')
         composition_manager = getattr(composition_manager_module, composition_info['composition_manager'])()
 
-        return Composition(composition_name, self._load_composition(composition_info, instruments_name),
+        return Composition(composition_name, composer_name, self._load_composition(composition_info, instruments_name),
                            composition_manager, page_limit_composition, page_limit_measure_overview)
 
     def _get_composition_info(self, composition_name):
@@ -178,8 +180,8 @@ class SimpleComposerInfo(ComposerInfo):
 
         return parts
 
-    def _load_instrument(self, relative_path, instruments, instruments_name):
-        instrument_info = self._find_instrument(instruments, instruments_name)
+    def _load_instrument(self, relative_path, instruments, instrument_name):
+        name, instrument_info = self._find_instrument(instruments, instrument_name)
 
         staffs = self._load_staffs(relative_path + '/' + instrument_info['dir'], instrument_info['staffs'])
         tempo_indication = TempoIndication(*instrument_info['tempo_indication'])
@@ -188,13 +190,14 @@ class SimpleComposerInfo(ComposerInfo):
         converter_module = importlib.import_module('musical_games.dice_games.lilypond.staff_builders')
         bar_converter = getattr(converter_module, instrument_info['bar_converter'])()
 
-        return Instrument(staffs, tempo_indication, repeats, instrument_info['show_instrument_names'], bar_converter)
+        return Instrument(name, staffs, tempo_indication, repeats,
+                          instrument_info['show_instrument_names'], bar_converter)
 
-    def _find_instrument(self, instruments_list, instruments_name):
+    def _find_instrument(self, instruments_list, instrument_name):
         for item in instruments_list:
             name, instrument_info = list(item.items())[0]
-            if name == instruments_name:
-                return instrument_info
+            if name == instrument_name:
+                return name, instrument_info
         raise NotFoundException('One of the requested instruments could not be found.')
 
     def _load_staffs(self, relative_path, staffs_list):
@@ -226,14 +229,26 @@ class NotFoundException(Exception):
 class DiceGameFactory(object):
 
     composers_info = []
+    instance = None
+
+    @staticmethod
+    def get_instance():
+        """Get the singleton instance of this factory.
+
+        Returns:
+            DiceGameFactory: the dice game factory to use
+        """
+        if DiceGameFactory.instance is None:
+            DiceGameFactory.instance = DiceGameFactory()
+        return DiceGameFactory.instance
 
     def get_composers(self):
         """Get a list of available composers
 
         Args:
-            list of str: the list of available composers
+            list of str: the list of available composers sorted alphabetically
         """
-        return [info.get_composer_name() for info in self.composers_info]
+        return list(sorted(info.get_composer_name() for info in self.composers_info))
 
     def get_compositions(self, composer):
         """Get a list of available compositions for the given composer.
@@ -262,19 +277,19 @@ class DiceGameFactory(object):
             if info.get_composer_name() == composer:
                 return info.get_instruments(composition)
 
-    def get_composition(self, composer_name, composition_name, instruments_name):
+    def get_composition(self, composer, composition, instruments):
         """Get a Composition object for a composition of the given composer with the given instruments.
 
         Args:
-            composer_name (str): the name of the composer
-            composition_name (str): the name of the composition
-            instruments_name (str or list of str): the instrument name or a list of names with one name per
+            composer (str): the name of the composer
+            composition(str): the name of the composition
+            instruments (str or list of str): the instrument name or a list of names with one name per
                 compositional part.
 
         Returns:
             Composition: the composition object
         """
-        args = [composer_name, composition_name, instruments_name]
+        args = [composer, composition, instruments]
         for info in self.composers_info:
             if info.is_applicable(*args):
                 return info.get_composition(*args)
