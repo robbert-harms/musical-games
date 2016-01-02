@@ -63,7 +63,17 @@ class ComposerInfo(object):
             composition (str): the name of the composition
 
         Returns:
-            list of str or list of list of str: the list of instruments available per music part.
+            list of list of str: the list of instruments available per music part.
+        """
+
+    def get_composition_parts(self, composition):
+        """Get a list of the composition parts in the given composition.
+
+        Args:
+            composition (str): the name of the composition
+
+        Returns:
+            list of str: the list of composition parts in the asked composition.
         """
 
 
@@ -104,6 +114,11 @@ class SimpleComposerInfo(ComposerInfo):
             instruments.append(part_instruments)
 
         return instruments
+
+    def get_composition_parts(self, composition):
+        composition_info = self._get_composition_info(composition)
+        part_info = [list(part.items())[0][0] for part in composition_info['parts']]
+        return part_info
 
     @classmethod
     def from_internal(cls, dir_name):
@@ -170,6 +185,9 @@ class SimpleComposerInfo(ComposerInfo):
         if isinstance(instruments_name, six.string_types):
             instruments_choice = [instruments_name] * len(composition_info['parts'])
 
+        if len(instruments_choice) < len(composition_info['parts']):
+            instruments_choice *= len(composition_info['parts'])
+
         for ind, part in enumerate(composition_info['parts']):
             name, part_info = list(part.items())[0]
 
@@ -229,18 +247,6 @@ class NotFoundException(Exception):
 class DiceGameFactory(object):
 
     composers_info = []
-    instance = None
-
-    @staticmethod
-    def get_instance():
-        """Get the singleton instance of this factory.
-
-        Returns:
-            DiceGameFactory: the dice game factory to use
-        """
-        if DiceGameFactory.instance is None:
-            DiceGameFactory.instance = DiceGameFactory()
-        return DiceGameFactory.instance
 
     def get_composers(self):
         """Get a list of available composers
@@ -271,11 +277,27 @@ class DiceGameFactory(object):
             composition (str): the name of the composition
 
         Returns:
-            list of str: the list of instruments available for this composition
+            list of list of str: the list of instruments available for this composition
         """
         for info in self.composers_info:
             if info.get_composer_name() == composer:
                 return info.get_instruments(composition)
+
+    def get_composition_parts(self, composer, composition):
+        """Get a list of the names of the composition parts in this composition.
+
+        The order of the list is the same as that in the 'get_instruments' function.
+
+        Args:
+            composer (str): the name of the composer
+            composition (str): the name of the composition
+
+        Returns:
+            list of str: the list of composition parts in this composition
+        """
+        for info in self.composers_info:
+            if info.get_composer_name() == composer:
+                return info.get_composition_parts(composition)
 
     def get_composition(self, composer, composition, instruments):
         """Get a Composition object for a composition of the given composer with the given instruments.

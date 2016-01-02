@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import glob
 import re
 from setuptools import setup, find_packages
 
@@ -48,5 +48,6 @@ setup(
         "Topic :: Scientific/Engineering"
     ],
     test_suite="tests",
-    tests_require=requirements_tests
+    tests_require=requirements_tests,
+    scripts=glob.glob('bin/mg-*')
 )

@@ -10,6 +10,23 @@ __email__ = "robbert.harms@maastrichtuniversity.nl"
 factory = DiceGameFactory()
 
 print(factory.get_instruments('Stadler', 'Menuet Trio'))
+print(factory.get_composition_parts('Stadler', 'Menuet Trio'))
+
+
+def print_info_tree(factory):
+    for composer in factory.get_composers():
+        print(composer)
+
+        for composition in factory.get_compositions(composer):
+            print('\t' + composition)
+
+            instruments = factory.get_instruments(composer, composition)
+            composition_parts = factory.get_composition_parts(composer, composition)
+
+            for instr_part in zip(composition_parts, instruments):
+                print(instr_part)
+
+print_info_tree(factory)
 
 # composition = factory.get_composition('Stadler', 'Menuet Trio', 'Piano')
 # print(composition.get_dice_tables())

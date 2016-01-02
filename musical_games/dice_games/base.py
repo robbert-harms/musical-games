@@ -1,4 +1,3 @@
-import numbers
 from collections import OrderedDict
 from functools import reduce
 from operator import mul
@@ -554,8 +553,8 @@ class DiceTable(object):
         counter. In the end it returns the sum of the length of the remaining column values and the count of the
         number of times we removed a double.
 
-        This count of number of times we remove one or more measures is a good indicator for the number of duplicates. If
-        we now remove one value or more, the unique count is still incremented by one.
+        This count of number of times we remove one or more measures is a good indicator for the number of duplicates.
+        If we now remove one value or more, the unique count is still incremented by one.
 
         Args:
             column (ndarray): the column from which to count only the unique values
