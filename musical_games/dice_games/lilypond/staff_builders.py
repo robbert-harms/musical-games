@@ -191,3 +191,64 @@ class WithRepeat(StaffTypeset):
             for staff_ind, bars in enumerate(to_repeat):
                 result_staffs[staff_ind].extend(map(str, bars))
                 result_staffs[staff_ind].append('}')
+
+
+class KirnbergerPolonaiseStaffTypesetVisual(StaffTypeset):
+
+    def __init__(self, bars_lists, end_bar='|.'):
+        """Typeset the given list of bar lists
+
+        Args:
+            bars_lists (list of list of Bar): the list of Bars we will typeset
+            end_bar (str): the end bar we will use (lilypond string). Only used if the last bar is not a repeat bar.
+        """
+        super(KirnbergerPolonaiseStaffTypesetVisual, self).__init__(bars_lists, end_bar=end_bar)
+
+    def typeset(self):
+        music_expressions = []
+        for bar_list in self.bars_lists:
+            expr = ''
+            for ind, bar in enumerate(bar_list):
+                expr += '\n{}'.format(str(bar))
+
+                if ind == 1:
+                    expr += "\n"
+                    expr += r'\mark \markup { \musicglyph #"scripts.segno" }'
+                elif ind == 5:
+                    expr += "\n"
+                    expr += r'\bar "||"' + "\n"
+                    expr += '\\once \\override Score.RehearsalMark #\'self-alignment-X = #right ' \
+                             r'\mark \markup {\fontsize #-1 \italic "Fine"}' + "\n"
+                elif ind == 6:
+                    expr += "\n"
+                    expr += r"\break"
+
+            expr += '\\once \\override Score.RehearsalMark #\'self-alignment-X = #right ' \
+                     r'\mark \markup {\fontsize #-1 \italic "D.S. al Fine"}' + "\n"
+            expr += r' \bar "{}"'.format(self.end_bar)
+
+            music_expressions.append(expr)
+
+        return music_expressions
+
+
+class KirnbergerPolonaiseStaffTypesetMidi(StaffTypeset):
+
+    def __init__(self, bars_lists, end_bar='|.'):
+        """Typeset the given list of bar lists
+
+        Args:
+            bars_lists (list of list of Bar): the list of Bars we will typeset
+            end_bar (str): the end bar we will use (lilypond string). Only used if the last bar is not a repeat bar.
+        """
+        super(KirnbergerPolonaiseStaffTypesetMidi, self).__init__(bars_lists, end_bar=end_bar)
+
+    def typeset(self):
+        music_expressions = []
+        for bar_list in self.bars_lists:
+            expr = "\n".join(str(bar) for bar in bar_list) + "\n"
+            expr += "\n".join(str(bar) for bar in bar_list[2:6])
+            expr += r' \bar "{}"'.format(self.end_bar)
+            music_expressions.append(expr)
+
+        return music_expressions

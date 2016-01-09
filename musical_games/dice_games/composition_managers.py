@@ -1,6 +1,7 @@
 from musical_games.dice_games.lilypond.base import TypesetStaffInfo
 from musical_games.dice_games.lilypond.staff_builders import AllBarsConcatenated, WithRepeat, NoneAnnotator, \
-    FineAtEnd, DaCapoAtEnd
+    FineAtEnd, DaCapoAtEnd, KirnbergerPolonaiseStaffTypesetMidi, \
+    KirnbergerPolonaiseStaffTypesetVisual
 from musical_games.dice_games.lilypond.typesetters import VisualScoreTypeset, MidiScoreTypeset
 
 __author__ = 'Robbert Harms'
@@ -25,7 +26,20 @@ class SimpleCompositionManager(CompositionManager):
     """This composition manager uses the SimpleCompositionPartManager for every composition part."""
 
     def get_scores(self, parts, table_indices):
-        part_manager = SimpleCompositionPartManager()
+        part_manager = SimpleCompositionPartManager(NoneAnnotator())
+
+        scores = []
+        for part in parts:
+            scores.extend(part.get_composition_scores(table_indices[part.name], part_manager))
+
+        return scores
+
+
+class KirnbergerPolonaiseCompositionManager(CompositionManager):
+    """This composition manager uses the KirnbergerPolonaisePartManager for rendering the composition."""
+
+    def get_scores(self, parts, table_indices):
+        part_manager = KirnbergerPolonaisePartManager()
 
         scores = []
         for part in parts:
@@ -42,7 +56,8 @@ class SimpleTwoPiece(CompositionManager):
     """
 
     def get_scores(self, parts, table_indices):
-        part_managers = [WithFine(), WithDCAlFine()]
+        part_managers = [SimpleCompositionPartManager(FineAtEnd()),
+                         SimpleCompositionPartManager(DaCapoAtEnd())]
 
         scores = []
         for ind, part in enumerate(parts):
@@ -77,8 +92,12 @@ class CompositionPartManager(object):
 class SimpleCompositionPartManager(CompositionPartManager):
     """This composition part manager will render one visual and one midi score with repeats."""
 
+    def __init__(self, staff_annotator):
+        super(SimpleCompositionPartManager, self).__init__()
+        self._staff_annotator = staff_annotator
+
     def get_scores(self, instrument_info, title, bars):
-        music_expressions = WithRepeat(bars, instrument_info.repeats, self._get_staff_annotator()).typeset()
+        music_expressions = WithRepeat(bars, instrument_info.repeats, self._staff_annotator).typeset()
 
         staffs = []
         for ind, staff in enumerate(instrument_info.staffs):
@@ -108,22 +127,55 @@ class SimpleCompositionPartManager(CompositionPartManager):
 
         return [score, midi_score]
 
-    def _get_staff_annotator(self):
-        return NoneAnnotator()
 
+class KirnbergerPolonaisePartManager(CompositionPartManager):
+    """This composition part manager will render one visual and one midi score with repeats."""
 
-class WithFine(SimpleCompositionPartManager):
-    """This composition manager will render one visual and one midi score with at the end a 'Fine'."""
+    def get_scores(self, instrument_info, title, bars):
+        return [self._get_visual_score(instrument_info, title, bars),
+                self._get_midi_score(instrument_info, title, bars)]
 
-    def _get_staff_annotator(self):
-        return FineAtEnd()
+    def _get_visual_score(self, instrument_info, title, bars):
+        music_expressions = KirnbergerPolonaiseStaffTypesetVisual(bars).typeset()
 
+        staffs = []
+        for ind, staff in enumerate(instrument_info.staffs):
+            staffs.append(TypesetStaffInfo(
+                music_expressions[ind],
+                staff.clef,
+                staff.key_signature,
+                staff.time_signature,
+                instrument_name=staff.instrument_name,
+                midi_options=staff.midi_options))
 
-class WithDCAlFine(SimpleCompositionPartManager):
-    """This composition manager will render one visual and one midi score with at the end a 'D.C al Fine'."""
+        return VisualScoreTypeset(
+            title,
+            staffs,
+            instrument_info.tempo_indication,
+            staff_layout=instrument_info.staff_layout,
+            show_tempo_indication=True,
+            show_title=True,
+            show_bar_numbers=False
+        ).typeset()
 
-    def _get_staff_annotator(self):
-        return DaCapoAtEnd()
+    def _get_midi_score(self, instrument_info, title, bars):
+        music_expressions = KirnbergerPolonaiseStaffTypesetMidi(bars).typeset()
+
+        staffs = []
+        for ind, staff in enumerate(instrument_info.staffs):
+            staffs.append(TypesetStaffInfo(
+                music_expressions[ind],
+                staff.clef,
+                staff.key_signature,
+                staff.time_signature,
+                instrument_name=staff.instrument_name,
+                midi_options=staff.midi_options))
+
+        return MidiScoreTypeset(
+            title,
+            staffs,
+            instrument_info.tempo_indication,
+        ).typeset()
 
 
 class OnlyMidi(CompositionPartManager):
