@@ -49,19 +49,19 @@ factory = DiceGameFactory()
 composition = factory.get_composition('Kirnberger', 'Polonaise', 'Chamber ensemble')
 # composition = factory.get_composition('Mozart', 'Waltz', 'Piano')
 
-book = composition.typeset_measure_overview()
-write_lilypond_book('/tmp/test/measure_overview.ly', book)
+# book = composition.typeset_measure_overview()
+# write_lilypond_book('/tmp/test/measure_overview.ly', book)
 #
 # book = composition.parts[0].instrument.typeset_single_measure({'Right hand': 5})
 # write_lilypond_book('/tmp/test/single_measure.ly', book)
 #
-# dice_tables = composition.get_dice_tables()
-# indices = {}
-# for part, tables in dice_tables.items():
-#     indices.update({part: {staff_name: table.random_indices() for staff_name, table in tables.items()}})
-#
-# book = composition.typeset_composition(indices)
-# write_lilypond_book('/tmp/test/composition.ly', book)
+dice_tables = composition.get_dice_tables()
+indices = {}
+for part, tables in dice_tables.items():
+    indices.update({part: {staff_name: table.random_indices() for staff_name, table in tables.items()}})
+
+book = composition.typeset_composition(indices)
+write_lilypond_book('/tmp/test/composition.ly', book)
 # sound_font = '/home/robbert/programming/www/opus-infinity.org/soundfonts/steinway_grand_piano.sf2'
 # auto_convert_lilypond_file('/tmp/test/composition.ly', sound_font=sound_font)
 
