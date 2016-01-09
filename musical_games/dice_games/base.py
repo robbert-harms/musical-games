@@ -191,7 +191,7 @@ class CompositionPart(object):
 
 class Instrument(object):
 
-    def __init__(self, name, staffs, tempo_indication, repeats, show_instrument_names, bar_converter):
+    def __init__(self, name, staffs, tempo_indication, repeats, staff_layout, bar_converter):
         """Create an instruments information object for the given tracts.
 
         Args:
@@ -200,14 +200,14 @@ class Instrument(object):
             tempo_indication (TempoIndication): the tempo indication for this instrument
             repeats (list of tuples of int): the bars we repeat. For example: [(0, 8), (8, 16)] indicates
                 two repeats, one in which 0 to 8 is repeated and one in which 8 to 16 is repeated.
-            show_instrument_names (boolean): if we by default show the staff instrument names or not
+            staff_layout (StaffLayout): the staff layout used when rendering the staffs
             bar_converter (BarConverter): the bar converter to use when typesetting the staffs
         """
         self.name = name
         self.staffs = staffs
         self.tempo_indication = tempo_indication
         self.repeats = repeats
-        self.show_instrument_names = show_instrument_names
+        self.staff_layout = staff_layout
         self.bar_converter = bar_converter
         self.dice_tables_equal = all(tract.dice_table == self.staffs[0].dice_table for tract in self.staffs)
 
@@ -298,7 +298,7 @@ class Instrument(object):
             title,
             staffs,
             self.tempo_indication,
-            show_instrument_names=self.show_instrument_names,
+            staff_layout=self.staff_layout,
             show_tempo_indication=False,
             show_title=True,
             show_bar_numbers=True
@@ -343,7 +343,7 @@ class Instrument(object):
             'Single measure',
             staffs,
             self.tempo_indication,
-            show_instrument_names=self.show_instrument_names,
+            staff_layout=self.staff_layout,
             show_tempo_indication=False,
             show_title=False
         ).typeset()

@@ -14,7 +14,7 @@ class TypesetStaffInfo(object):
             clef (str): the type of clef, lilypond string
             key_signature (KeySignature): the key signature
             time_signature (TimeSignature): the time signature
-            instrument_name (str): the instrument name (lilypond instrument type)
+            instrument_name (str): the instrument name
             midi_options (MidiOptions): the container for the midi options
         """
         self.music_expr = music_expr
@@ -52,22 +52,27 @@ class MusicBookComment(object):
 
 class LilypondScore(object):
 
-    def __init__(self, title, score, is_midi_score=False):
+    def __init__(self, title, score, is_midi_score=False, midi_instruments=()):
         """Container for a single score.
 
         Args:
             title (str): the title of the score
             score (str): the score itself in string format
             is_midi_score (boolean): if this score is a midi score (if True) or a visual score (if False)
+            midi_instruments (list of str): the list of midi instruments, one per staff.
+                Only useful if it is a midi score.
 
         Attributes:
             title (str): the title of the score
             score (str): the score itself in string format
             is_midi_score (boolean): if this score is a midi score (if True) or a visual score (if False)
+            midi_instruments (list of str): the list of midi instruments, one per staff.
+                Only useful if it is a midi score.
         """
         self.title = title
         self.score = score
         self.is_midi_score = is_midi_score
+        self.midi_instruments = midi_instruments
 
     def __str__(self):
         return self.score

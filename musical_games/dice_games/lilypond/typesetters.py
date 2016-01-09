@@ -1,4 +1,7 @@
+import textwrap
+
 from musical_games.dice_games.lilypond.base import LilypondScore, MusicBookComment, LilypondBook
+from musical_games.dice_games.lilypond.staff_layouts import AutoLayout, StaffInfo
 from musical_games.utils import correct_indent
 
 __author__ = 'Robbert Harms'
@@ -144,7 +147,7 @@ class SimpleScoreTypeset(object):
 
 class VisualScoreTypeset(SimpleScoreTypeset):
 
-    def __init__(self, title, staffs, tempo_indication, show_instrument_names=False, show_bar_numbers=False,
+    def __init__(self, title, staffs, tempo_indication, staff_layout=None, show_bar_numbers=False,
                  show_tempo_indication=True, show_title=True):
         """Information of a single piece for use in the MusicBook typesetter.
 
@@ -152,23 +155,20 @@ class VisualScoreTypeset(SimpleScoreTypeset):
             title (str): the title for this score
             staffs (list of TypesetStaffInfo): list of Staffs for each instrument.
             tempo_indication (TempoIndication): the tempo indication
-            show_instrument_names (bool): if we want to show the instrument names next to the staffs
+            staff_layout (StaffLayout): the layout mechanism for displaying the staffs
             show_bar_numbers  (bool): if we want to display all bar numbers
             show_tempo_indication (bool): if we want to display the tempo indication
             show_title (bool): if we want to show the title or not
         """
         super(VisualScoreTypeset, self).__init__(title, staffs, tempo_indication)
-        self.show_instrument_names = show_instrument_names
+        self.staff_layout = staff_layout or AutoLayout()
         self.show_bar_numbers = show_bar_numbers
         self.show_tempo_indication = show_tempo_indication
         self.show_title = show_title
 
     def typeset(self):
-        staffs = "\n".join(correct_indent(self._typeset_staff(staff), 20) for staff in self.staffs)
-
-        layout = ''
-        if not self.show_instrument_names:
-            layout = 'indent = 0\mm'
+        staff_infos = [self._get_staff_info(staff) for staff in self.staffs]
+        staff = self.staff_layout.typeset_staffs(staff_infos)
 
         title = ' '
         if self.show_title:
@@ -180,39 +180,20 @@ class VisualScoreTypeset(SimpleScoreTypeset):
                     piece = \markup {{ \fontsize #1 "{title}" }}
                     title = ""
                 }}
-                \new GrandStaff
-                <<
-                    {staffs}
-                >>
-                \layout {{
-                    {layout}
-                }}
+
+                {staff}
             }}
-        '''.format(title=title, staffs=staffs[20:], layout=layout)
+        '''.format(title=title, staff=staff)
+
         return LilypondScore(self._title, typeset)
 
-    def _typeset_staff(self, staff, staff_options=None):
-        parts = ['\\new Staff ']
-
-        if staff_options:
-            parts.append("\t" + ' \with {')
-            parts.append("\t\t" + "\n\t\t".join(staff_options))
-            parts.append("\t" + '}')
-
-        parts.append('<<')
-
-        parts.append(correct_indent(self._typeset_staff_options(staff), 8))
-        parts.append("\t" + '{')
-        parts.append("\t" + '\clef {}'.format(staff.clef))
-
-        if self.show_instrument_names:
-            parts.append("\t\t" + '\set Staff.instrumentName = #"{} "'.format(staff.instrument_name))
-
-        parts.append(correct_indent(staff.music_expr, 12))
-
-        parts.append("\t" + '}')
-        parts.append('>>')
-        return "\n".join(parts)
+    def _get_staff_info(self, staff):
+        options_block = correct_indent(self._typeset_staff_options(staff), 0)
+        parts = ['{',
+                 " "*4 + '\clef {}'.format(staff.clef),
+                 correct_indent(staff.music_expr, 4),
+                 '}']
+        return StaffInfo('\n'.join(parts), staff.instrument_name, options_block=options_block)
 
     def _typeset_staff_options(self, staff):
         barnumbers = ''
@@ -248,7 +229,11 @@ class MidiScoreTypeset(SimpleScoreTypeset):
 
     def typeset(self):
         staffs = []
+        midi_instrument_names = []
+
         for staff in self.staffs:
+            midi_instrument_names.append(staff.midi_options.instrument)
+
             staff_options = ['midiMinimumVolume = #{}'.format(staff.midi_options.min_volume),
                              'midiMaximumVolume = #{}'.format(staff.midi_options.max_volume),
                              'midiInstrument = #"{}" '.format(staff.midi_options.instrument)]
@@ -266,7 +251,7 @@ class MidiScoreTypeset(SimpleScoreTypeset):
             }}
         '''.format(staffs="\n".join(staffs)[20:])
 
-        return LilypondScore(self._title, typeset, is_midi_score=True)
+        return LilypondScore(self._title, typeset, is_midi_score=True, midi_instruments=midi_instrument_names)
 
     def _typeset_staff(self, staff, staff_options=None):
         options = ''

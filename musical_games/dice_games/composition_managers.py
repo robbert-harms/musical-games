@@ -94,7 +94,7 @@ class SimpleCompositionPartManager(CompositionPartManager):
             title,
             staffs,
             instrument_info.tempo_indication,
-            show_instrument_names=instrument_info.show_instrument_names,
+            staff_layout=instrument_info.staff_layout,
             show_tempo_indication=True,
             show_title=True,
             show_bar_numbers=False

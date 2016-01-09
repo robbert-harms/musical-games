@@ -206,10 +206,12 @@ class SimpleComposerInfo(ComposerInfo):
         repeats = instrument_info['repeats']
 
         converter_module = importlib.import_module('musical_games.dice_games.lilypond.staff_builders')
-        bar_converter = getattr(converter_module, instrument_info['bar_converter'])()
+        bar_converter = getattr(converter_module, instrument_info.get('bar_converter', 'SimpleBarConverter'))()
 
-        return Instrument(name, staffs, tempo_indication, repeats,
-                          instrument_info['show_instrument_names'], bar_converter)
+        staff_layout_module = importlib.import_module('musical_games.dice_games.lilypond.staff_layouts')
+        staff_layout = getattr(staff_layout_module, instrument_info.get('staff_layout', 'AutoLayout'))()
+
+        return Instrument(name, staffs, tempo_indication, repeats, staff_layout, bar_converter)
 
     def _find_instrument(self, instruments_list, instrument_name):
         for item in instruments_list:

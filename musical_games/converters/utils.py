@@ -1,5 +1,6 @@
 import os
 import subprocess
+import six
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-23"
@@ -11,7 +12,7 @@ def run_command(command):
     """Run a shell command.
 
     Args:
-        command (str): the shell command to run
+        command (str or list): the shell command to run
 
     Raises:
         RuntimeError: if the command returned with exit code -1
@@ -19,7 +20,10 @@ def run_command(command):
     Returns:
         str: the stdout of the command
     """
-    process = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if isinstance(command, six.string_types):
+        command = command.split(' ')
+
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
     rc = process.returncode
     if rc == 1:
