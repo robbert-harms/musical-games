@@ -13,24 +13,27 @@ __email__ = "robbert.harms@maastrichtuniversity.nl"
 class CompositionManager(object):
     """Composition managers take care of the order of the scores in the final composition."""
 
-    def get_scores(self, parts, table_indices):
+    def get_scores(self, parts, table_indices, midi_instruments=None):
         """Get the scores for all the parts.
 
         Args:
             parts (list of CompositionPart): the list of parts we want to get the scores from
             table_indices (dict): per musical part and per dice table the list of indices we want to use for that part.
+            midi_instruments (dict with list): if set, a list with the instruments to use per tracts for each part.
         """
 
 
 class SimpleCompositionManager(CompositionManager):
     """This composition manager uses the SimpleCompositionPartManager for every composition part."""
 
-    def get_scores(self, parts, table_indices):
+    def get_scores(self, parts, table_indices, midi_instruments=None):
         part_manager = SimpleCompositionPartManager(NoneAnnotator())
 
         scores = []
         for part in parts:
-            scores.extend(part.get_composition_scores(table_indices[part.name], part_manager))
+            part_instruments = midi_instruments[part.name] if part.name in midi_instruments else None
+            scores.extend(part.get_composition_scores(table_indices[part.name], part_manager,
+                                                      midi_instruments=part_instruments))
 
         return scores
 
@@ -38,12 +41,14 @@ class SimpleCompositionManager(CompositionManager):
 class KirnbergerPolonaiseCompositionManager(CompositionManager):
     """This composition manager uses the KirnbergerPolonaisePartManager for rendering the composition."""
 
-    def get_scores(self, parts, table_indices):
-        part_manager = KirnbergerPolonaisePartManager()
+    def get_scores(self, parts, table_indices, midi_instruments=None):
+        part_manager = KirnbergerPolonaisePartManager(NoneAnnotator())
 
         scores = []
         for part in parts:
-            scores.extend(part.get_composition_scores(table_indices[part.name], part_manager))
+            part_instruments = midi_instruments[part.name] if part.name in midi_instruments else None
+            scores.extend(part.get_composition_scores(table_indices[part.name], part_manager,
+                                                      midi_instruments=part_instruments))
 
         return scores
 
@@ -55,15 +60,17 @@ class SimpleTwoPiece(CompositionManager):
     Next to that, we will add one extra midi score for the first part without repeats.
     """
 
-    def get_scores(self, parts, table_indices):
+    def get_scores(self, parts, table_indices, midi_instruments=None):
         part_managers = [SimpleCompositionPartManager(FineAtEnd()),
                          SimpleCompositionPartManager(DaCapoAtEnd())]
 
         scores = []
         for ind, part in enumerate(parts):
-            scores.extend(part.get_composition_scores(table_indices[part.name], part_managers[ind]))
+            part_instruments = midi_instruments[part.name] if part.name in midi_instruments else None
+            scores.extend(part.get_composition_scores(table_indices[part.name], part_managers[ind],
+                                                      midi_instruments=part_instruments))
 
-        scores.extend(parts[0].get_composition_scores(table_indices[parts[0].name], OnlyMidi()))
+        scores.extend(parts[0].get_composition_scores(table_indices[parts[0].name], MidiAlFine()))
 
         return scores
 
@@ -75,13 +82,14 @@ class CompositionPartManager(object):
     midi scores.
     """
 
-    def get_scores(self, instrument_info, title, bars):
+    def get_scores(self, instrument_info, title, bars, midi_instruments=None):
         """Get the scores rendered by this composition part manager.
 
         Args:
             instrument_info (Instrument): the instrumental information
             title (str): the title of this part
             bars (list of list of Bars): the list of Bars we use per staff
+            midi_instruments (list): if set, a list with the instruments to use per tract
 
         Returns:
             list of LilypondScore: the list of scores, returned by this manager. Can contain one or more visual and/or
@@ -96,47 +104,16 @@ class SimpleCompositionPartManager(CompositionPartManager):
         super(SimpleCompositionPartManager, self).__init__()
         self._staff_annotator = staff_annotator
 
-    def get_scores(self, instrument_info, title, bars):
-        music_expressions = WithRepeat(bars, instrument_info.repeats, self._staff_annotator).typeset()
+    def get_scores(self, instrument_info, title, bars, midi_instruments=None):
+        return [self._get_visual_score(
+                    instrument_info, title, bars,
+                    WithRepeat(bars, instrument_info.repeats, self._staff_annotator)),
+                self._get_midi_score(
+                    instrument_info, title, bars,
+                    WithRepeat(bars, instrument_info.repeats, self._staff_annotator), midi_instruments),]
 
-        staffs = []
-        for ind, staff in enumerate(instrument_info.staffs):
-            staffs.append(TypesetStaffInfo(
-                music_expressions[ind],
-                staff.clef,
-                staff.key_signature,
-                staff.time_signature,
-                instrument_name=staff.instrument_name,
-                midi_options=staff.midi_options))
-
-        score = VisualScoreTypeset(
-            title,
-            staffs,
-            instrument_info.tempo_indication,
-            staff_layout=instrument_info.staff_layout,
-            show_tempo_indication=True,
-            show_title=True,
-            show_bar_numbers=False
-        ).typeset()
-
-        midi_score = MidiScoreTypeset(
-            title,
-            staffs,
-            instrument_info.tempo_indication,
-        ).typeset()
-
-        return [score, midi_score]
-
-
-class KirnbergerPolonaisePartManager(CompositionPartManager):
-    """This composition part manager will render one visual and one midi score with repeats."""
-
-    def get_scores(self, instrument_info, title, bars):
-        return [self._get_visual_score(instrument_info, title, bars),
-                self._get_midi_score(instrument_info, title, bars)]
-
-    def _get_visual_score(self, instrument_info, title, bars):
-        music_expressions = KirnbergerPolonaiseStaffTypesetVisual(bars).typeset()
+    def _get_visual_score(self,  instrument_info, title, bars, staff_builder):
+        music_expressions = staff_builder.typeset()
 
         staffs = []
         for ind, staff in enumerate(instrument_info.staffs):
@@ -158,8 +135,8 @@ class KirnbergerPolonaisePartManager(CompositionPartManager):
             show_bar_numbers=False
         ).typeset()
 
-    def _get_midi_score(self, instrument_info, title, bars):
-        music_expressions = KirnbergerPolonaiseStaffTypesetMidi(bars).typeset()
+    def _get_midi_score(self, instrument_info, title, bars, staff_builder, midi_instruments):
+        music_expressions = staff_builder.typeset()
 
         staffs = []
         for ind, staff in enumerate(instrument_info.staffs):
@@ -175,13 +152,24 @@ class KirnbergerPolonaisePartManager(CompositionPartManager):
             title,
             staffs,
             instrument_info.tempo_indication,
+            midi_instruments=midi_instruments
         ).typeset()
 
 
-class OnlyMidi(CompositionPartManager):
+class KirnbergerPolonaisePartManager(SimpleCompositionPartManager):
+    """This composition part manager will render one visual and one midi score with repeats."""
+
+    def get_scores(self, instrument_info, title, bars, midi_instruments=None):
+        return [self._get_visual_score(instrument_info, title, bars,
+                                       KirnbergerPolonaiseStaffTypesetVisual(bars)),
+                self._get_midi_score(instrument_info, title, bars,
+                                     KirnbergerPolonaiseStaffTypesetMidi(bars), midi_instruments)]
+
+
+class MidiAlFine(CompositionPartManager):
     """This composition manager only renders a midi score"""
 
-    def get_scores(self, instrument_info, title, bars):
+    def get_scores(self, instrument_info, title, bars, midi_instruments=None):
         music_expressions = AllBarsConcatenated(bars, instrument_info.bar_converter).typeset()
 
         staffs = []
@@ -198,6 +186,7 @@ class OnlyMidi(CompositionPartManager):
             title + ' Al Fine',
             staffs,
             instrument_info.tempo_indication,
+            midi_instruments=midi_instruments
         ).typeset()
 
         return [midi_score]

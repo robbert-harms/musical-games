@@ -48,7 +48,7 @@ factory = DiceGameFactory()
 
 composition = factory.get_composition('Kirnberger', 'Polonaise', 'Chamber ensemble')
 # composition = factory.get_composition('Mozart', 'Waltz', 'Piano')
-
+#
 # book = composition.typeset_measure_overview()
 # write_lilypond_book('/tmp/test/measure_overview.ly', book)
 #
@@ -62,8 +62,8 @@ for part, tables in dice_tables.items():
 
 book = composition.typeset_composition(indices)
 write_lilypond_book('/tmp/test/composition.ly', book)
-# sound_font = '/home/robbert/programming/www/opus-infinity.org/soundfonts/steinway_grand_piano.sf2'
-# auto_convert_lilypond_file('/tmp/test/composition.ly', sound_font=sound_font)
+sound_font = '/home/robbert/programming/www/opus-infinity.org/soundfonts/steinway_grand_piano.sf2'
+auto_convert_lilypond_file('/tmp/test/composition.ly', sound_font=sound_font)
 
 #
 #

@@ -1,5 +1,3 @@
-import textwrap
-
 from musical_games.dice_games.lilypond.base import LilypondScore, MusicBookComment, LilypondBook
 from musical_games.dice_games.lilypond.staff_layouts import AutoLayout, StaffInfo
 from musical_games.utils import correct_indent
@@ -217,26 +215,32 @@ class VisualScoreTypeset(SimpleScoreTypeset):
 
 class MidiScoreTypeset(SimpleScoreTypeset):
 
-    def __init__(self, title, staffs, tempo_indication):
+    def __init__(self, title, staffs, tempo_indication, midi_instruments=None):
         """The score typesetter for the midi output.
 
         Args:
             title (str): the title for this score
             staffs (list of TypesetStaffInfo): list of Staffs for each instrument.
             tempo_indication (TempoIndication): the tempo indication
+            midi_instruments (list): if set, a list with the instruments to use per tract
         """
         super(MidiScoreTypeset, self).__init__(title, staffs, tempo_indication)
+        self.midi_instruments = midi_instruments
 
     def typeset(self):
         staffs = []
         midi_instrument_names = []
 
-        for staff in self.staffs:
-            midi_instrument_names.append(staff.midi_options.instrument)
+        for ind, staff in enumerate(self.staffs):
+            instrument_name = staff.midi_options.instrument
+            if self.midi_instruments and len(self.midi_instruments) > ind:
+                instrument_name = self.midi_instruments[ind]
+
+            midi_instrument_names.append(instrument_name)
 
             staff_options = ['midiMinimumVolume = #{}'.format(staff.midi_options.min_volume),
                              'midiMaximumVolume = #{}'.format(staff.midi_options.max_volume),
-                             'midiInstrument = #"{}" '.format(staff.midi_options.instrument)]
+                             'midiInstrument = #"{}" '.format(instrument_name)]
             staffs.append(correct_indent(self._typeset_staff(staff, staff_options), 20))
 
         typeset = r'''

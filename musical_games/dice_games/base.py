@@ -66,17 +66,20 @@ class Composition(object):
         return MusicBookTypeset(self.name, scores, show_title=True,
                                 page_limit=self.page_limit_measure_overview).typeset()
 
-    def typeset_composition(self, table_indices, comments=()):
+    def typeset_composition(self, table_indices, comments=(), midi_instruments=None):
         """Typeset a whole composition with all the pieces.
 
         Args:
             table_indices (dict): per musical part and per staff the list of indices we want to use for that part.
             comments (list of MusicBookComment): the list of comments we append at the end of the composition
+            midi_instruments (dict with list): a dictionary with for every part in the composition a list with
+                per tract the midi instruments to use
 
         Returns:
             LilypondBook: the lilypond book for a single whole composition
         """
-        scores = self.composition_manager.get_scores(self.parts, table_indices)
+        midi_instruments = midi_instruments or {}
+        scores = self.composition_manager.get_scores(self.parts, table_indices, midi_instruments=midi_instruments)
         return MusicBookTypeset(self.name, scores, show_title=True, comments=comments,
                                 page_limit=self.page_limit_composition).typeset()
 
@@ -157,17 +160,19 @@ class CompositionPart(object):
         """
         return self.instrument.count_unique_compositions()
 
-    def get_composition_scores(self, indices, part_manager):
+    def get_composition_scores(self, indices, part_manager, midi_instruments=None):
         """Get the score used in a composition.
 
         Args:
             indices (dict): per staff the list of the indices to the measures we want to use for this composition.
             part_manager (CompositionPartManager): the manager we use when we want to create a composition
+            midi_instruments (list): if set, a list with the instruments to use per tract
 
         Returns:
             list of LilypondScore: the visual and midi score for a composition with the given indices
         """
-        return self.instrument.get_composition_scores(self.name, indices, part_manager)
+        return self.instrument.get_composition_scores(self.name, indices, part_manager,
+                                                      midi_instruments=midi_instruments)
 
     def get_measure_overview_score(self):
         """Typeset the overview of the measures.
@@ -256,13 +261,14 @@ class Instrument(object):
                 prod *= tract.dice_table.count_unique_combinations(find_duplicate_bars([tract.bars]))
             return prod
 
-    def get_composition_scores(self, title, indices, part_manager):
+    def get_composition_scores(self, title, indices, part_manager, midi_instruments=None):
         """Get the scores used in a composition.
 
         Args:
             title (str): the title of this part
             indices (dict): per staff the list of the indices to the measures we want to use for this composition.
             part_manager (CompositionPartManager): the manager we use when we want to create a composition
+            midi_instruments (list): if set, a list with the instruments to use per tract
 
         Returns:
             list of LilypondScore: the visual and midi score for a composition with the given indices
@@ -270,7 +276,7 @@ class Instrument(object):
         bars = []
         for staff in self.staffs:
             bars.append([staff.bars.get_dice_table_indexed(measure_index) for measure_index in indices[staff.name]])
-        return part_manager.get_scores(self, title, bars)
+        return part_manager.get_scores(self, title, bars, midi_instruments)
 
     def get_measure_overview_score(self, title):
         """Typeset the overview of the measures.
