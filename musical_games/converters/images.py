@@ -42,7 +42,8 @@ def draw_rectangle(image_fname, fill_color, stroke_color, stroke_width, position
 
     output_fname = output_fname or image_fname
 
-    command = ['convert', '-fill', fill_color, '-stroke', stroke_color, '-strokewidth', str(stroke_width),
+    command = ['convert', '-quality', '95', '-fill', fill_color, '-stroke', stroke_color,
+               '-strokewidth', str(stroke_width),
                '-draw', 'rectangle ' + ','.join(map(str, position)) + ' ' + ','.join(map(str, end_position)),
                image_fname, output_fname]
     run_command(command)
