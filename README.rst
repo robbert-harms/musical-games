@@ -14,10 +14,10 @@ Musical Games
 
 Base classes for musical games in Python.
 
-For a use case of this software, please visit http://opus-infinity.org.
+For a use case of this library, please visit http://opus-infinity.org.
 
 * Free software: LGPL v3 license
-* Documentation: https://musical-games.readthedocs.org.
+* Documentation: https://musical_games.readthedocs.org.
 
 Features
 --------
