@@ -49,31 +49,8 @@ class PNGConcatenation(object):
             png_list (list of str): the list of pngs to concatenate
             output_fname (str): the name of the output file
         """
-        processed_images = []
-        for ind, png in enumerate(png_list):
-            if ind > 0:
-                processed_image = os.path.splitext(png)[0] + '_processed.png'
-
-                if ind % 2:
-                    draw_rectangle(png, 'white', 'white', 1, (0, 0), (60, 33), output_fname=processed_image)
-                else:
-                    image_size = get_image_size(png)
-                    position = (image_size[0] - 60, 0)
-                    end_position = (image_size[0], 33)
-
-                    draw_rectangle(png, 'white', 'white', 1, position, end_position,
-                                   output_fname=processed_image)
-
-                processed_images.append(processed_image)
-
-        concat_list = [png_list[0]]
-        concat_list.extend(processed_images)
-
-        concatenate_images(output_fname, concat_list)
+        concatenate_images(output_fname, png_list)
         trim_image(output_fname)
-
-        for png in processed_images:
-            os.remove(png)
 
 
 def auto_convert_lilypond_file(lilypond_filename, sound_font=None,

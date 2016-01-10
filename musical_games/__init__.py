@@ -4,7 +4,7 @@ __email__ = 'robbert@xkls.nl'
 __license__ = "LGPL v3"
 __maintainer__ = "Robbert Harms"
 
-VERSION = '0.3.7.4'
+VERSION = '0.3.8'
 VERSION_STATUS = ''
 
 _items = VERSION.split('-')
