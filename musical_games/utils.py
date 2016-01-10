@@ -3,7 +3,6 @@ import textwrap
 from musical_games.converters.audio import midi_to_wav, wav_to_mp3, wav_to_ogg
 from musical_games.converters.images import trim_image, concatenate_images, draw_rectangle, get_image_size
 from musical_games.converters.lilypond import lilypond, TypesetResults
-from musical_games.converters.utils import run_command
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-23"
@@ -53,19 +52,19 @@ class PNGConcatenation(object):
         processed_images = []
         for ind, png in enumerate(png_list):
             if ind > 0:
-                processed_image = os.path.splitext(png)[0] + '_processed.png'
+                # processed_image = os.path.splitext(png)[0] + '_processed.png'
+                #
+                # if ind % 2:
+                #     draw_rectangle(png, 'white', 'white', 1, (0, 0), (60, 33), output_fname=processed_image)
+                # else:
+                #     image_size = get_image_size(png)
+                #     position = (image_size[0] - 60, 0)
+                #     end_position = (image_size[0], 33)
+                #
+                #     draw_rectangle(png, 'white', 'white', 1, position, end_position,
+                #                    output_fname=processed_image)
 
-                if ind % 2:
-                    draw_rectangle(png, 'white', 'white', 1, (0, 0), (60, 33), output_fname=processed_image)
-                else:
-                    image_size = get_image_size(png)
-                    position = (image_size[0] - 60, 0)
-                    end_position = (image_size[0], 33)
-
-                    draw_rectangle(png, 'white', 'white', 1, position, end_position,
-                                   output_fname=processed_image)
-
-                processed_images.append(processed_image)
+                processed_images.append(png)
 
         concat_list = [png_list[0]]
         concat_list.extend(processed_images)
