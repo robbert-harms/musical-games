@@ -8,11 +8,12 @@ __maintainer__ = "Robbert Harms"
 __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 
-def run_command(command):
+def run_command(command, shell=False):
     """Run a shell command.
 
     Args:
         command (str or list): the shell command to run
+        shell (bool): the subprocess flag for shell
 
     Raises:
         RuntimeError: if the command returned with exit code -1
@@ -23,7 +24,7 @@ def run_command(command):
     if isinstance(command, six.string_types):
         command = command.split(' ')
 
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell)
     stdout, stderr = process.communicate()
     rc = process.returncode
     if rc == 1:
