@@ -54,17 +54,16 @@ class PNGConcatenation(object):
         for ind, png in enumerate(png_list):
             if ind > 0:
                 processed_image = os.path.splitext(png)[0] + '_processed.png'
-                trim_image(png, processed_image)
 
                 if ind % 2:
-                    draw_rectangle(processed_image, 'white', 'white', 1, (0, 0), (42, 15))
+                    draw_rectangle(png, 'white', 'white', 1, (0, 0), (60, 33), output_fname=processed_image)
                 else:
-                    image_size = get_image_size(processed_image)
-                    position = (image_size[0] - 42, 0)
-                    end_position = (image_size[0], 15)
-                    draw_rectangle(processed_image, 'white', 'white', 1, position, end_position)
+                    image_size = get_image_size(png)
+                    position = (image_size[0] - 60, 0)
+                    end_position = (image_size[0], 33)
 
-                run_command(['convert', '-splice', '0x20', processed_image, processed_image])
+                    draw_rectangle(png, 'white', 'white', 1, position, end_position,
+                                   output_fname=processed_image)
 
                 processed_images.append(processed_image)
 
@@ -72,6 +71,7 @@ class PNGConcatenation(object):
         concat_list.extend(processed_images)
 
         concatenate_images(output_fname, concat_list)
+        trim_image(output_fname)
 
         for png in processed_images:
             os.remove(png)
