@@ -9,7 +9,8 @@ Musical Games
     :target: https://travis-ci.org/robbert-harms/musical-games
 
 .. image:: https://pypip.in/v/musical_games/badge.png
-        :target: https://pypi.python.org/pypi/musical_games
+    :target: https://crate.io/packages/musical_games/
+    :alt: Latest PyPI version
 
 
 Base classes for musical games in Python.
