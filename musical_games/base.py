@@ -83,7 +83,7 @@ class TempoIndication(object):
 
 class MidiOptions(object):
 
-    def __init__(self, instrument, min_volume, max_volume):
+    def __init__(self, instrument=None, min_volume=None, max_volume=None):
         """Container for the midi options
 
         Args:
