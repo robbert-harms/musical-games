@@ -1,5 +1,8 @@
 import os
 import textwrap
+
+import multiprocessing
+
 from musical_games.converters.audio import midi_to_wav, wav_to_mp3, wav_to_ogg
 from musical_games.converters.images import trim_image, concatenate_images, draw_rectangle, get_image_size
 from musical_games.converters.lilypond import lilypond, TypesetResults
@@ -90,22 +93,49 @@ def auto_convert_lilypond_file(lilypond_filename, sound_font=None,
     ogg_list = []
 
     if sound_font:
-        for midi_file in typeset_results.midi_list:
-            wav_file = os.path.splitext(midi_file)[0] + '.wav'
-            midi_to_wav(midi_file, wav_file, sound_font, gain=midi_gain)
-            wav_list.append(wav_file)
 
+        pool = multiprocessing.Pool(processes=6)
+        results = pool.map(_convert_midi, [{'midi_file': midi_file,
+                                            'sound_font': sound_font,
+                                            'midi_gain': midi_gain,
+                                            'mp3': mp3,
+                                            'ogg': ogg} for midi_file in typeset_results.midi_list])
+
+        for result in results:
+            wav_list.append(result['wav'])
             if mp3:
-                mp3_file = os.path.splitext(midi_file)[0] + '.mp3'
-                wav_to_mp3(wav_file, mp3_file)
-                mp3_list.append(mp3_file)
+                mp3_list.append(result['mp3'])
 
             if ogg:
-                ogg_file = os.path.splitext(midi_file)[0] + '.ogg'
-                wav_to_ogg(wav_file, ogg_file)
-                ogg_list.append(ogg_file)
+                ogg_list.append(result['ogg'])
 
     return ConvertLilypondResults(typeset_results,  concatenated_image, wav_list, mp3_list, ogg_list)
+
+
+def _convert_midi(info):
+    """Small utility for use in multiprocessing. This converts midi to wav, mp3 and ogg."""
+    midi_file = info['midi_file']
+    sound_font = info['sound_font']
+    midi_gain = info['midi_gain']
+
+    results = {}
+
+    wav_file = os.path.splitext(midi_file)[0] + '.wav'
+    midi_to_wav(midi_file, wav_file, sound_font, gain=midi_gain)
+
+    results['wav'] = wav_file
+
+    if info['mp3']:
+        mp3_file = os.path.splitext(midi_file)[0] + '.mp3'
+        wav_to_mp3(wav_file, mp3_file)
+        results['mp3'] = mp3_file
+
+    if info['ogg']:
+        ogg_file = os.path.splitext(midi_file)[0] + '.ogg'
+        wav_to_ogg(wav_file, ogg_file)
+        results['ogg'] = ogg_file
+
+    return results
 
 
 class ConvertLilypondResults(object):
