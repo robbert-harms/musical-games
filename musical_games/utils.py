@@ -55,7 +55,7 @@ class PNGConcatenation(object):
 
 def auto_convert_lilypond_file(lilypond_filename, sound_font=None,
                                output_prefix=None, pdf=True, png=True, ps=False, mp3=True, ogg=True,
-                               png_concatenation=None):
+                               png_concatenation=None, midi_gain=None):
     """Converts a lilypond file to pdf, png, midi, wav, mp3 and ogg.
 
     The idea is that given a lilypond file you want to have some standard output. This wrapper function
@@ -71,7 +71,7 @@ def auto_convert_lilypond_file(lilypond_filename, sound_font=None,
         mp3 (boolean): if we want mp3 output, only applicable if the lilypond has midi output defined
         ogg (boolean): if we want ogg output, only applicable if the lilypond has midi output defined
         png_concatenation (PNGConcatenation): the concatenation routine to use for concatenating the PNGs
-
+        midi_gain (float): the gain for use during the midi to wav conversion
     Returns:
         LilypondConvertOutput: information about the file names that were outputted
     """
@@ -92,7 +92,7 @@ def auto_convert_lilypond_file(lilypond_filename, sound_font=None,
     if sound_font:
         for midi_file in typeset_results.midi_list:
             wav_file = os.path.splitext(midi_file)[0] + '.wav'
-            midi_to_wav(midi_file, wav_file, sound_font)
+            midi_to_wav(midi_file, wav_file, sound_font, gain=midi_gain)
             wav_list.append(wav_file)
 
             if mp3:

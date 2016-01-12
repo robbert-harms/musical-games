@@ -49,7 +49,7 @@ factory = DiceGameFactory()
 
 # composition = factory.get_composition('Kirnberger', 'Polonaise', 'Chamber ensemble')
 composition = factory.get_composition('Mozart', 'Waltz', 'Piano')
-#
+
 # book = composition.typeset_measure_overview()
 # write_lilypond_book('/tmp/test/measure_overview.ly', book)
 # auto_convert_lilypond_file('/tmp/test/measure_overview.ly')

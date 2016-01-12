@@ -83,6 +83,18 @@ class Composition(object):
         return MusicBookTypeset(self.name, scores, show_title=True, comments=comments,
                                 page_limit=self.page_limit_composition).typeset()
 
+    def get_midi_options(self):
+        """Get the default midi options in use in this composition.
+
+        The exact same data structure can be handed over to the typeset_composition function if you want to
+        overwrite parts of these defaults
+
+        Returns:
+            midi_options (dict with list of MidiOption objects): a dictionary with for every part in the
+                composition a list with per tract the midi options
+        """
+        return {part.name: part.get_midi_options() for part in self.parts}
+
     def get_dice_tables(self):
         """Get the dice tables used to create compositions.
 
@@ -151,6 +163,18 @@ class CompositionPart(object):
             list of list of int: the duplicate measures the list of dice table ids in which that measure occurs
         """
         return self.instrument.get_duplicates(staff=staff)
+
+    def get_midi_options(self):
+        """Get the default midi options in use in this composition.
+
+        The exact same data structure can be handed over to the typeset_composition function if you want to
+        overwrite parts of these defaults
+
+        Returns:
+            midi_options (list of MidiOption objects): a dictionary with for every part in the
+                composition a list with per tract the midi options
+        """
+        return self.instrument.get_midi_options()
 
     def count_unique_compositions(self):
         """Get a count of the number of unique compositions possible from this composition part.
@@ -244,6 +268,18 @@ class Instrument(object):
                     return find_duplicate_bars([st.bars])
         else:
             return find_duplicate_bars(list(s.bars for s in self.staffs))
+
+    def get_midi_options(self):
+        """Get the default midi options in use in this composition.
+
+        The exact same data structure can be handed over to the typeset_composition function if you want to
+        overwrite parts of these defaults
+
+        Returns:
+            midi_options (list of MidiOption objects): a dictionary with for every part in the
+                composition a list with per tract the midi options
+        """
+        return list(staff.midi_options for staff in self.staffs)
 
     def count_unique_compositions(self):
         """Get a count of the number of unique compositions possible from the tracts in this instrument.

@@ -8,15 +8,17 @@ __maintainer__ = "Robbert Harms"
 __email__ = "robbert.harms@maastrichtuniversity.nl"
 
 
-def midi_to_wav(midi_fname, wav_fname, sound_font):
+def midi_to_wav(midi_fname, wav_fname, sound_font, gain=None):
     """Tries to autodetect the available midi converter and uses the best one found.
 
     Args:
         midi_fname (str): the location of the midi file
         wav_fname (str): where to place the output wav file.
         sound_font (str): the path to the sound font file.
+        gain (float): number between 0 and 1 to indicate the desired output gain.
     """
-    converter = _get_first_available_converter([FluidSynth(sound_font), Timidity(sound_font)])
+    converter = _get_first_available_converter([FluidSynth(sound_font, gain=gain),
+                                                Timidity(sound_font, gain=gain)])
     converter.convert(midi_fname, wav_fname)
 
 
@@ -50,13 +52,15 @@ def _get_first_available_converter(converters):
 
 class MidiToWav(object):
 
-    def __init__(self, sound_font):
+    def __init__(self, sound_font, gain=None):
         """Create a new converter to convert midi to wav.
 
         Args:
             sound_font (str): the path to the sound font to use.
+            gain (float): number between 0 and 1 to indicate the desired output gain.
         """
         self._sound_font = sound_font
+        self.gain = gain or 0.02
 
     def convert(self, midi_fname, wav_fname):
         """Convert the given midi file to a wav file at the given location.
@@ -78,8 +82,8 @@ class FluidSynth(MidiToWav):
 
     def convert(self, midi_fname, wav_fname):
         ensure_dir_exists(wav_fname)
-        run_command('fluidsynth -F {wav} {soundfont} {midi}'.format(wav=wav_fname, soundfont=self._sound_font,
-                                                                    midi=midi_fname))
+        run_command('fluidsynth -g {gain} -F {wav} {soundfont} {midi}'.format(
+            wav=wav_fname, soundfont=self._sound_font, midi=midi_fname, gain=self.gain * 10))
 
     def is_available(self):
         return bash_function_exists('fluidsynth')
