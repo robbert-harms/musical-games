@@ -71,7 +71,9 @@ class SimpleTwoPiece(CompositionManager):
             scores.extend(part.get_composition_scores(table_indices[part.name], part_managers[ind],
                                                       midi_options=part_midi_options))
 
-        scores.extend(parts[0].get_composition_scores(table_indices[parts[0].name], MidiAlFine()))
+        part_midi_options = midi_options[parts[0].name] if parts[0].name in midi_options else None
+        scores.extend(parts[0].get_composition_scores(table_indices[parts[0].name], MidiAlFine(),
+                                                      midi_options=part_midi_options))
 
         return scores
 
