@@ -132,6 +132,24 @@ class Composition(object):
             if part.name == part_name:
                 return part.get_duplicates(staff=staff)
 
+    def are_dice_tables_linked(self, part_name=None):
+        """Check if the dice tables in the given part are linked or not.
+
+        If no part name is given we return a list of booleans for all parts in the composition.
+
+        Args:
+            part_name (str): the part for which we want to check if the dice tables are linked
+
+        Returns:
+            a boolean if the dice tables are linked or not or, or a list of booleans if no part name is given.
+        """
+        if part_name is None:
+            return [part.are_dice_tables_linked() for part in self.parts]
+
+        for part in self.parts:
+            if part.name == part_name:
+                return part.are_dice_tables_linked()
+
 
 class CompositionPart(object):
 
@@ -154,6 +172,14 @@ class CompositionPart(object):
             dict: as keys the staffs as values the dice tables to be used for creating compositions
         """
         return self.instrument.get_dice_tables()
+
+    def are_dice_tables_linked(self):
+        """Check if the dice tables are linked or not.
+
+        Returns:
+            bool: if the dice tables are linked or not
+        """
+        return self.instrument.dice_tables_linked
 
     def get_duplicates(self, staff=None):
         """Get the duplicate measures using the given staffs to find the duplicates.
@@ -207,7 +233,7 @@ class CompositionPart(object):
         Returns:
             LilypondScore: the lilypond score for this composition part
         """
-        return self.instrument.get_measure_overview_score(self.name)
+        return self.instrument.get_measure_overview_score(self.name, show_title=self.show_title)
 
     def typeset_single_measure(self, table_measure_ids):
         """Typeset a single measure in this composition.
@@ -223,7 +249,7 @@ class CompositionPart(object):
 
 class Instrument(object):
 
-    def __init__(self, name, staffs, tempo_indication, repeats, staff_layout, bar_converter):
+    def __init__(self, name, staffs, tempo_indication, repeats, staff_layout, bar_converter, dice_tables_linked):
         """Create an instruments information object for the given tracts.
 
         Args:
@@ -234,6 +260,11 @@ class Instrument(object):
                 two repeats, one in which 0 to 8 is repeated and one in which 8 to 16 is repeated.
             staff_layout (StaffLayout): the staff layout used when rendering the staffs
             bar_converter (BarConverter): the bar converter to use when typesetting the staffs
+            dice_tables_linked (bool): if the dice tables are linked or not. Normally when they are equal they
+                are linked. If they are linked the staffs in this composition part are linked to each other.
+                Measure 1 in staff one should then correspond (by default) with measure 1 in staff 2.
+                If they are not linked by default the measures in both staffs should be treated independent of each
+                other.
         """
         self.name = name
         self.staffs = staffs
@@ -241,7 +272,7 @@ class Instrument(object):
         self.repeats = repeats
         self.staff_layout = staff_layout
         self.bar_converter = bar_converter
-        self.dice_tables_equal = all(tract.dice_table == self.staffs[0].dice_table for tract in self.staffs)
+        self.dice_tables_linked = dice_tables_linked
 
     def get_dice_tables(self):
         """Get the dice tables for the staffs in this instrument
@@ -291,7 +322,7 @@ class Instrument(object):
         """
         from musical_games.dice_games.utils import find_duplicate_bars
 
-        if self.dice_tables_equal:
+        if self.dice_tables_linked:
             duplicates = find_duplicate_bars(list(t.bars for t in self.staffs))
             return self.staffs[0].dice_table.count_unique_combinations(duplicates)
         else:
@@ -319,11 +350,12 @@ class Instrument(object):
             bars.append([staff.bars.get_dice_table_indexed(measure_index) for measure_index in indices[staff.name]])
         return part_manager.get_scores(self, title, bars, midi_options=midi_options, show_title=show_title)
 
-    def get_measure_overview_score(self, title):
+    def get_measure_overview_score(self, title, show_title=True):
         """Typeset the overview of the measures.
 
         Args:
             title (str): the title of this score
+            show_title (boolean): if we show the title of this part or not
 
         Returns:
             LilypondScore: the lilypond score for this composition part
@@ -347,7 +379,7 @@ class Instrument(object):
             self.tempo_indication,
             staff_layout=self.staff_layout,
             show_tempo_indication=False,
-            show_title=True,
+            show_title=show_title,
             show_bar_numbers=True
         ).typeset()
         return score

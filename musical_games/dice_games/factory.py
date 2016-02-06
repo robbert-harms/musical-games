@@ -213,7 +213,9 @@ class SimpleComposerInfo(ComposerInfo):
         staff_layout_module = importlib.import_module('musical_games.dice_games.lilypond.staff_layouts')
         staff_layout = getattr(staff_layout_module, instrument_info.get('staff_layout', 'AutoLayout'))()
 
-        return Instrument(name, staffs, tempo_indication, repeats, staff_layout, bar_converter)
+        dice_tables_linked = instrument_info.get('dice_tables_linked', True)
+
+        return Instrument(name, staffs, tempo_indication, repeats, staff_layout, bar_converter, dice_tables_linked)
 
     def _find_instrument(self, instruments_list, instrument_name):
         for item in instruments_list:
