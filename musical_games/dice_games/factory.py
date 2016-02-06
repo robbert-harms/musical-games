@@ -194,7 +194,9 @@ class SimpleComposerInfo(ComposerInfo):
             instrument = self._load_instrument(composition_info['dir'] + '/' + part_info['dir'],
                                                part_info['instruments'], instruments_choice[ind])
 
-            parts.append(CompositionPart(name, instrument))
+            show_title = part_info.get('show_title', True)
+
+            parts.append(CompositionPart(name, instrument, show_title=show_title))
 
         return parts
 
@@ -205,7 +207,7 @@ class SimpleComposerInfo(ComposerInfo):
         tempo_indication = TempoIndication(*instrument_info['tempo_indication'])
         repeats = instrument_info['repeats']
 
-        converter_module = importlib.import_module('musical_games.dice_games.lilypond.staff_builders')
+        converter_module = importlib.import_module('musical_games.dice_games.lilypond.bar_converters')
         bar_converter = getattr(converter_module, instrument_info.get('bar_converter', 'SimpleBarConverter'))()
 
         staff_layout_module = importlib.import_module('musical_games.dice_games.lilypond.staff_layouts')

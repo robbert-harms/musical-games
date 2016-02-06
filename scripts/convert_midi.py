@@ -1,7 +1,6 @@
 import glob
 import os
 import re
-import subprocess
 import collections
 
 from musical_games.converters.utils import run_command

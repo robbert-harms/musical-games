@@ -24,34 +24,6 @@ class StaffTypeset(object):
         """
 
 
-class BarConverter(object):
-    """Bar converters are used when rendering a given bar for use the AllBarsConcatenated typesetter"""
-
-    def convert(self, bar):
-        """Convert the given bar to a string.
-
-        Args:
-            bar (Bar): the bar to convert to string
-
-        Returns:
-            str: the bar converted to a string
-        """
-
-
-class SimpleBarConverter(BarConverter):
-
-    def convert(self, bar):
-        return str(bar)
-
-
-class MozartBarConverter(BarConverter):
-
-    def convert(self, bar):
-        if bar.alternatives:
-            return r'<< {\voiceOne ' + str(bar.alternatives[0]) + r'} \new Voice { \voiceTwo ' + str(bar) + '} >>'
-        return str(bar)
-
-
 class StaffAnnotator(object):
 
     def annotate_begin(self):

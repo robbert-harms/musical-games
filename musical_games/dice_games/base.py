@@ -135,15 +135,17 @@ class Composition(object):
 
 class CompositionPart(object):
 
-    def __init__(self, name, instrument):
+    def __init__(self, name, instrument, show_title=True):
         """Contains information about one part of a composition.
 
         Args:
             name (str): the part name
             instrument (Instrument): the instrumental information
+            show_title (boolean): if we show the title of this part in the compositions
         """
         self.name = name
         self.instrument = instrument
+        self.show_title = show_title
 
     def get_dice_tables(self):
         """Get the dice tables for the staffs (in the instrument) in this composition part
@@ -197,7 +199,7 @@ class CompositionPart(object):
             list of LilypondScore: the visual and midi score for a composition with the given indices
         """
         return self.instrument.get_composition_scores(self.name, indices, part_manager,
-                                                      midi_options=midi_options)
+                                                      midi_options=midi_options, show_title=self.show_title)
 
     def get_measure_overview_score(self):
         """Typeset the overview of the measures.
@@ -298,7 +300,7 @@ class Instrument(object):
                 prod *= tract.dice_table.count_unique_combinations(find_duplicate_bars([tract.bars]))
             return prod
 
-    def get_composition_scores(self, title, indices, part_manager, midi_options=None):
+    def get_composition_scores(self, title, indices, part_manager, midi_options=None, show_title=True):
         """Get the scores used in a composition.
 
         Args:
@@ -307,6 +309,7 @@ class Instrument(object):
             part_manager (CompositionPartManager): the manager we use when we want to create a composition
             midi_options (list of MidiOption): a list with per tract additional midi options.
                 The default is used for options set to None.
+            show_title (boolean): if we show the title of this part or not
 
         Returns:
             list of LilypondScore: the visual and midi score for a composition with the given indices
@@ -314,7 +317,7 @@ class Instrument(object):
         bars = []
         for staff in self.staffs:
             bars.append([staff.bars.get_dice_table_indexed(measure_index) for measure_index in indices[staff.name]])
-        return part_manager.get_scores(self, title, bars, midi_options)
+        return part_manager.get_scores(self, title, bars, midi_options=midi_options, show_title=show_title)
 
     def get_measure_overview_score(self, title):
         """Typeset the overview of the measures.
