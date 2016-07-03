@@ -11,6 +11,7 @@ Musical Games
 .. image:: https://badge.fury.io/py/musical_games.svg
     :target: https://badge.fury.io/py/musical_games
 
+------------
 
 Base classes for musical games in Python. This features an implementation of various musical dice games by Mozart, Kirnberger and Stadler.
 
