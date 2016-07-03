@@ -7,9 +7,13 @@ import os
 # directory, add these directories to sys.path here. If the directory is
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
-sys.path.insert(0, os.path.abspath('..'))
+#sys.path.insert(0, os.path.abspath('..'))
 
-
+# Building from inside the docs/ directory?
+if os.path.basename(os.getcwd()) == 'docs':
+	sys.path.insert(1, os.path.abspath(os.path.join('..')))
+	
+	
 import musical_games
 
 # -- General configuration ---------------------------------------------
