@@ -25,4 +25,6 @@ Features
 * Implementations of various musical dice games by Mozart, Kirnberger and Stadler
 
 
-.. include:: docs/installation.rst
+Check out this `relative link`_.
+
+.. _relative link: docs/installation.rst
