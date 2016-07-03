@@ -4,6 +4,14 @@ musical_games.dice_games.lilypond package
 Submodules
 ----------
 
+musical_games.dice_games.lilypond.bar_converters module
+-------------------------------------------------------
+
+.. automodule:: musical_games.dice_games.lilypond.bar_converters
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 musical_games.dice_games.lilypond.base module
 ---------------------------------------------
 
