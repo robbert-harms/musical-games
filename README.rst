@@ -23,3 +23,6 @@ Features
 --------
 
 * Implementations of various musical dice games by Mozart, Kirnberger and Stadler
+
+
+.. include:: docs/installation.rst
