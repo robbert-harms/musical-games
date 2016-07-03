@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to Musical Games's documentation!
-======================================
+=========================================
 
 Contents:
 
