@@ -12,19 +12,12 @@ Musical Games
     :target: https://badge.fury.io/py/musical_games
 
 
-Base classes for musical games in Python.
+Base classes for musical games in Python. This features an implementation of various musical dice games by Mozart, Kirnberger and Stadler.
 
 For a use case of this library, please visit http://opus-infinity.org.
 
 * Free software: LGPL v3 license
 * Documentation: https://musical_games.readthedocs.org.
+* Installation: `installation docs`_.
 
-Features
---------
-
-* Implementations of various musical dice games by Mozart, Kirnberger and Stadler
-
-
-Check out this `relative link`_.
-
-.. _relative link: docs/installation.rst
+.. _installation docs: docs/installation.rst
