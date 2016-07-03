@@ -18,5 +18,4 @@ Base classes for musical games in Python. This features an implementation of var
 For a use case of this library, please visit http://opus-infinity.org.
 
 * Free software: LGPL v3 license
-* Installation: https://github.com/robbert-harms/musical-games/blob/master/docs/installation.rst.
-* Complete documentation: https://musical_games.readthedocs.org.
+* Documentation: https://musical_games.readthedocs.org.
