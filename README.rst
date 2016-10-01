@@ -2,14 +2,11 @@
 Musical Games
 =============
 
-.. image:: https://badge.fury.io/gh/robbert-harms%2Fmusical-games.svg
-    :target: http://badge.fury.io/gh/robbert-harms%2Fmusical-games
-
-.. image:: https://travis-ci.org/robbert-harms/musical-games.svg
-    :target: https://travis-ci.org/robbert-harms/musical-games
-
 .. image:: https://badge.fury.io/py/musical_games.svg
     :target: https://badge.fury.io/py/musical_games
+    
+.. image:: https://travis-ci.org/robbert-harms/musical-games.svg
+    :target: https://travis-ci.org/robbert-harms/musical-games
 
 ------------
 
