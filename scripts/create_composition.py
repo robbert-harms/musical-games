@@ -1,5 +1,7 @@
 from musical_games.base import MidiOptions
 from musical_games.dice_games.factory import DiceGameFactory
+# from musical_games.dice_games2.dataclass_loader import load_data
+# from musical_games.dice_games2.dice_game_loader import load_musical_game
 from musical_games.utils import correct_indent, write_lilypond_book, auto_convert_lilypond_file
 
 __author__ = 'Robbert Harms'
@@ -66,8 +68,13 @@ for part, tables in dice_tables.items():
 
 book = composition.typeset_composition(indices)
 write_lilypond_book('/tmp/test/composition.ly', book)
+# sound_font = '/home/robbert/programming/python/opus_infinity.org/soundfonts/Musyng_Kite.sf2'
 # sound_font = '/home/robbert/programming/www/opus-infinity.org/soundfonts/Arachno_SoundFont_Version_1.0.sf2'
 # auto_convert_lilypond_file('/tmp/test/composition.ly', sound_font=sound_font)
+
+# game = load_musical_game('/home/robbert/programming/python/musical-games/musical_games/data/dice_games/cpe_bach_counterpoint.yaml')
+# print(game)
+
 
 #
 #

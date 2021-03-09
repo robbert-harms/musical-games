@@ -325,5 +325,6 @@ class DiceGameFactory(object):
 
 
 for composer in os.listdir(pkg_resources.resource_filename('musical_games', 'data')):
-    composer_info = SimpleComposerInfo(pkg_resources.resource_filename('musical_games', 'data/' + composer))
-    DiceGameFactory.composers_info.append(composer_info)
+    if composer != 'dice_games':
+        composer_info = SimpleComposerInfo(pkg_resources.resource_filename('musical_games', 'data/' + composer))
+        DiceGameFactory.composers_info.append(composer_info)

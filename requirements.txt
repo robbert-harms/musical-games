@@ -1,4 +1,4 @@
-wheel>=0.23.0
 numpy
-six
 pyyaml
+ruamel.yaml
+dacite

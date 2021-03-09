@@ -32,5 +32,5 @@ def convert_file(filename, result_dir):
         csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         csv_writer.writerows(rh_list)
 
-convert_file('/home/robbert/programming/python/musical-games/musical_games/data/kirnberger/menuet_trio/piano/bars_menuet.txt',
-             '/home/robbert/programming/python/musical-games/musical_games/data/kirnberger/menuet_trio/piano/bars_menuet')
+convert_file('/musical_games/data/dice_games/kirnberger/menuet_trio/piano/bars_menuet.txt',
+             '/musical_games/data/dice_games/kirnberger/menuet_trio/piano/bars_menuet')

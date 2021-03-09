@@ -80,7 +80,7 @@ class MusicBookTypeset(object):
         parts.append(correct_indent(r'''
             print-all-headers = ##t
             score-markup-spacing = #'((basic-distance . 10))
-            markup-system-spacing #'minimum-distance = 0
+            markup-system-spacing = #'((minimum-distance = 0))
 
             scoreTitleMarkup = \markup {
                 \override #'(baseline-skip . 10) %% changes the distance between title/subtitle and composer/arranger
