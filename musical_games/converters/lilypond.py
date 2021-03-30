@@ -16,7 +16,7 @@ def lilypond(lilypond_fname, output, pdf=True, png=True, ps=False):
     Args:
         lilypond_fname (str): the location of the lilypond file to convert.
         output (str): the location for the output files, suffixes will be added.
-        pdf (str): if we want pdf output
+        pdf (bool): if we want pdf output
         png (boolean): if we want png output
         ps (boolean): if we want postscript output
 

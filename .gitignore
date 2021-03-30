@@ -49,3 +49,12 @@ docs/_build
 #Miscellaneous
 /misc
 /overig
+
+# debian tmps
+/debian/source
+/debian/tmp
+/debian/changelog
+/debian/compat
+/debian/control
+/debian/rules
+/debian/watch

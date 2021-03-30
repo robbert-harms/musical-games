@@ -24,33 +24,6 @@ def trim_image(image_fname, output_fname=None):
     return output_fname
 
 
-def draw_rectangle(image_fname, fill_color, stroke_color, stroke_width, position, end_position, output_fname=None):
-    """Draw a rectangle on a given image.
-
-    Args:
-        image_fname: the image to draw on
-        fill_color (str): the imagemagick color to use for filling
-        stroke_color (str): the imagemagick color for the border
-        stroke_width (int): the width fo the stroke
-        position (tuple): the x,y position of the top-left of the rectangle
-        end_position (tuple): the x,y end position of the rectangle to draw
-        output_fname: the output image, if not set it defaults to the input image
-
-    """
-    if not bash_function_exists('convert'):
-        raise RuntimeError('The function convert does not exists, please install ImageMagick or some similar tool.')
-
-    output_fname = output_fname or image_fname
-
-    command = ['convert', '-quality', '100', '-fill', fill_color, '-stroke', stroke_color,
-               '-strokewidth', str(stroke_width),
-               '-draw', 'rectangle ' + ','.join(map(str, position)) + ' ' + ','.join(map(str, end_position)),
-               image_fname, output_fname]
-    run_command(command)
-
-    return image_fname
-
-
 def get_image_size(image_fname):
     """Get the size of the given image.
 
