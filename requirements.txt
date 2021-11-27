@@ -2,3 +2,4 @@ numpy
 ruamel.yaml
 dacite
 jinja2
+coverage

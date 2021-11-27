@@ -6,9 +6,10 @@ __licence__ = 'LGPL v3'
 
 
 from dataclasses import MISSING
+from typing import Optional, Any
 
 
-def get_default_value(field):
+def get_default_value(field) -> Optional[Any]:
     """Resolve the default value of a dataclass field.
 
     This first looks if ``default`` is defined, next it tries to call the function ``default_factory``, else it
@@ -18,7 +19,7 @@ def get_default_value(field):
         field (dataclass.field): one field of a class with @dataclass decorator
 
     Returns:
-        Any: the default field object.
+        The default field value, can be None if no default value found.
     """
     if hasattr(field, 'default') and field.default is not MISSING:
         return field.default

@@ -1,24 +1,26 @@
+SHELL := /bin/bash
 PYTHON=$$(which python3)
 PIP=$$(which pip3)
+PYTEST := $$(which pytest)
 PROJECT_NAME=musical_games
 PROJECT_VERSION=$$($(PYTHON) setup.py --version)
 
 .PHONY: help
 help:
-	@echo "clean - remove all build, test, coverage and Python artifacts (no uninstall)"
-	@echo "lint - check style with flake8"
-	@echo "test(s)- run tests quickly with the default Python"
-	@echo "test-all - run tests on every Python version with tox"
-	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "docs-pdf - generate the PDF documentation, including API docs"
-	@echo "docs-man - generate the linux manpages"
-	@echo "docs-changelog - generate the changelog documentation"
-	@echo "prepare-release - prepare for a new release"
-	@echo "release - package and upload a release"
-	@echo "dist - create a pip package"
-	@echo "install - installs the package using pip"
-	@echo "uninstall - uninstalls the package using pip"
+	@echo "clean: remove all build, test, coverage and Python artifacts (no uninstall)"
+	@echo "lint: check style with flake8"
+	@echo "test-unit: run the unit tests using the default Python."
+	@echo "test-integration: run the integration tests using the default Python."
+	@echo "test-all: run all tests using all environments using tox"
+	@echo "docs: generate Sphinx HTML documentation, including API docs"
+	@echo "docs-pdf: generate the PDF documentation, including API docs"
+	@echo "docs-man: generate the linux manpages"
+	@echo "docs-changelog: generate the changelog documentation"
+	@echo "prepare-release: prepare for a new release"
+	@echo "release: package and upload a release"
+	@echo "dist: create a pip package"
+	@echo "install: installs the package using pip"
+	@echo "uninstall: uninstalls the package using pip"
 
 .PHONY: clean
 clean: clean-build clean-pyc clean-test
@@ -41,9 +43,14 @@ clean-pyc:
 
 .PHONY: clean-test
 clean-test:
-	rm -fr .tox/
+	rm -rf .tox/
 	rm -f .coverage
-	rm -fr htmlcov/
+	rm -rf htmlcov/
+	rm -rf .pytest_cache
+	rm -rf tests/htmlcov
+	rm -rf tests/.coverage
+	find tests -name 'build' -exec rm -rf {} +
+	find tests -name '.coverage' -exec rm -rf {} +
 
 .PHONY: lint
 lint:
@@ -51,21 +58,25 @@ lint:
 
 .PHONY: test
 test:
-	$(PYTHON) setup.py test
+	mkdir -p build
+	COVERAGE_FILE=build/.coverage \
+	$(PYTEST) tests --cov=musical_games --cov-report=html:build/coverage/defaultenv --cov-report=term --html=build/pytest/report-defaultenv.html --self-contained-html
 
-.PHONY: tests
-tests: test
+.PHONY: test-unit
+test-unit:
+	mkdir -p build
+	COVERAGE_FILE=build/.coverage \
+	$(PYTEST) tests/unit --cov=musical_games --cov-report=html:build/coverage/defaultenv --cov-report=term --html=build/pytest/report-defaultenv.html --self-contained-html
+
+.PHONY: test-integration
+test-integration:
+	mkdir -p build
+	COVERAGE_FILE=build/.coverage \
+	$(PYTEST) tests/integration --cov=musical_games --cov-report=html:build/coverage/defaultenv --cov-report=term --html=build/pytest/report-defaultenv.html --self-contained-html
 
 .PHONY: test-all
 test-all:
 	tox
-
-.PHONY: coverage
-coverage:
-	coverage run --source $(PROJECT_NAME) setup.py test
-	coverage report -m
-	coverage html
-	@echo "To view results type: htmlcov/index.html &"
 
 .PHONY: docs
 docs:
@@ -112,18 +123,20 @@ prepare-release: clean
 	@echo "Consider manually inspecting CHANGELOG.rst for possible improvements."
 
 .PHONY: release
-release: clean release-pip release-github
+release: clean release-pip release-git
 
 .PHONY: release-pip
 release-pip:
 	$(PYTHON) setup.py sdist bdist_wheel
 	twine upload dist/$(PROJECT_NAME)-$(PROJECT_VERSION).tar.gz dist/$(PROJECT_NAME)-$(PROJECT_VERSION)-py2.py3-none-any.whl
 
-.PHONY: release-github
-release-github:
-	git push . master:latest_release
+.PHONY: release-git
+release-git:
+	git add -u
+	git commit -am "New release"
+	git push
+
 	git tag -a v$(PROJECT_VERSION) -m "Version $(PROJECT_VERSION)"
-	git push origin latest_release
 	git push origin --tags
 
 .PHONY: dist

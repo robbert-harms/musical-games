@@ -1,44 +1,13 @@
 \version "2.19.81"
 \include "articulate.ly"
 \paper {
-	page-count = 1
-    print-all-headers = ##t
+	print-all-headers = ##t
     score-markup-spacing = #'((basic-distance . 10))
     markup-system-spacing = #'((minimum-distance = 0))
 
-    scoreTitleMarkup = \markup {
-        \override #'(baseline-skip . 10) %% changes the distance between title/subtitle and composer/arranger
-        \column {
-            \override #'(baseline-skip . 3.5)
-            \column {
-                \huge \larger \bold
-                \fill-line {
-                    \larger \fromproperty #'header:title
-                }
-                \fill-line {
-                    \large \smaller \bold
-                    \larger \fromproperty #'header:subtitle
-                }
-                \fill-line {
-                    \smaller \bold
-                    \fromproperty #'header:subsubtitle
-                }
-            }
-            \override #'(baseline-skip . 3.5)
-            \column {
-                \fill-line {
-                    \fromproperty #'header:poet
-                    { \large \bold \fromproperty #'header:instrument }
-                    \fromproperty #'header:composer
-                }
-                \fill-line {
-                    \fromproperty #'header:piece
-                    \fromproperty #'header:meter
-                    \fromproperty #'header:arranger
-                }
-            }
-        }
-    }
+    \BLOCK{ if render_options['large_page'] }
+        paper-height = 330\mm  %% default is 297 for a4
+    \BLOCK{ endif }
 }
 \header{
     title = "Menuet and Trio"
