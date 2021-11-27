@@ -163,10 +163,10 @@ tag_filter_regexp = r'^v[0-9]+\.[0-9]+(\.[0-9]+)?$'
 ## between last valid tag and HEAD if any.
 def get_file_version():
     import datetime
-    with open('mdt/__version__.py') as f:
+    with open('musical_games/__version__.py') as f:
         version_file_contents = "\n".join(f.readlines())
         ver_dic = {}
-        exec(compile(version_file_contents, "mdt/__version__.py", 'exec'), ver_dic)
+        exec(compile(version_file_contents, "musical_games/__version__.py", 'exec'), ver_dic)
         return 'v{} ({})'.format(ver_dic["VERSION"], datetime.datetime.now().strftime ("%Y-%m-%d"))
 unreleased_version_label = get_file_version()
 

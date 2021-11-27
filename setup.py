@@ -49,7 +49,7 @@ info_dict = dict(
         'Topic :: Scientific/Engineering'
     ],
     test_suite="tests",
-    tests_require=requirements.txt,
+    tests_require='requirements.txt',
     scripts=glob.glob('bin/mg-*')
 )
 
