@@ -2,6 +2,11 @@
 Changelog
 *********
 
+v0.5.0 (2022-02-12)
+===================
+- Refactored the dice games.
+
+
 v0.4.1 (2021-11-27)
 ===================
 - Corrected the version numbers.
