@@ -6,77 +6,67 @@ __maintainer__ = 'Robbert Harms'
 __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
-from abc import ABCMeta
 from functools import reduce
 from operator import mul
-
 import numpy as np
 from numpy.random import RandomState
 from pathlib import Path
 from typing import Tuple, Dict, Optional
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from typing import List
-
-from musical_games.dice_games.utils import get_default_value
 import dacite
-from ruamel.yaml import YAML
 
 
 @dataclass
-class DiceGameNode(metaclass=ABCMeta):
-    """Basic inheritance class for all dice games related content nodes."""
-
-
-@dataclass
-class SimpleDiceGameNode(DiceGameNode):
-    """Simple implementation of the required methods of an DiceGameNode."""
-
-    def __post_init__(self):
-        """By default, initialize the fields using the dataclass fields."""
-        for field in fields(self):
-            value = getattr(self, field.name)
-            if value is None:
-                setattr(self, field.name, get_default_value(field))
-
-
-@dataclass
-class DiceGame(SimpleDiceGameNode):
-    composer: str = None
-    title: str = None
+class GameMechanics:
     dice_tables: Dict[str, DiceTable] = None
     bars: Dict[str, Dict[str, Dict[int, Optional[str]]]] = None
 
     @classmethod
-    def from_file(cls, fname) -> DiceGame:
-        """Load the data from the provided configuration file and return an DiceGame object.
-
-        Args:
-            fname (str): the filename of the YAML config file to load
-
-        Returns:
-            The loaded dice game
-        """
-        with open(fname, 'r', encoding='utf-8') as f:
-            return cls.from_yaml_config(f.read())
-
-    @classmethod
-    def from_yaml_config(cls, yaml_str) -> DiceGame:
+    def from_dict(cls, data) -> GameMechanics:
         """Load the data from the provided yaml formatted string and return a DiceGame object
 
         Args:
-            yaml_str (str): an yaml formatted string to load
+            data (Dict): unformatted data to parse as an object of this class.
 
         Returns:
             The loaded dice game
         """
-        yaml = YAML(typ='safe')
-        data = yaml.load(yaml_str)
-        return dacite.from_dict(DiceGame, data, config=dacite.Config(
+        return dacite.from_dict(GameMechanics, data, config=dacite.Config(
             type_hooks={
                 Tuple[int, int]: tuple,
                 Tuple[str, str]: tuple
             },
             cast=[Path, DiceTable]))
+
+    def get_table_names(self) -> List[str]:
+        """Get a list of the dice table names available.
+
+        Returns:
+            A list of the available dice tables.
+        """
+        return list(self.bars.keys())
+
+    def get_available_staffs_per_table(self, table_name) -> List[str]:
+        """Get a list of names of the available staffs connected to a specific dice table.
+
+        Returns:
+            The names of the available staffs for a specific dice table
+        """
+        return list(self.bars[table_name].keys())
+
+    def get_bar(self, table_name, staff_name, bar_nmr) -> str:
+        """Get the bar of one of the dice tables
+
+        Args:
+            table_name (str): the name of the table for which we want to get a bar
+            staff_name (str): the name of the staff within the dice table for which we want to get a bar
+            bar_nmr (int): the number of bar we want to get, 1-index
+
+        Returns:
+            The requested single staff bar
+        """
+        return self.bars[table_name][staff_name][bar_nmr]
 
     def get_full_bar(self, table_name, bar_nmr) -> List[str]:
         """Get the full bar with all the staves in a list.
@@ -89,11 +79,11 @@ class DiceGame(SimpleDiceGameNode):
             All the staves in a list
         """
         full_bar = []
-        for stave_name, note_items in self.bars[table_name].items():
+        for note_items in self.bars[table_name].values():
             full_bar.append(note_items[bar_nmr])
         return full_bar
 
-    def get_full_bar_list(self, table_name) -> Dict[int, List[str]]:
+    def get_full_bar_overview(self, table_name) -> Dict[int, List[str]]:
         """Get the full bars (with all the staves).
 
         Args:
@@ -103,14 +93,14 @@ class DiceGame(SimpleDiceGameNode):
             The bars indexed by bar number as a list of staves.
         """
         full_bars = {}
-        for stave_name, note_items in self.bars[table_name].items():
+        for note_items in self.bars[table_name].values():
             for bar_nmr, notes in note_items.items():
                 if bar_nmr not in full_bars:
                     full_bars[bar_nmr] = []
                 full_bars[bar_nmr].append(notes)
         return full_bars
 
-    def get_duplicate_bars(self, table_name) -> List[List]:
+    def get_all_duplicate_bars(self, table_name) -> List[List]:
         """Get all the duplicate bars in a given table.
 
         Args:
@@ -119,7 +109,7 @@ class DiceGame(SimpleDiceGameNode):
         Returns:
             List of all the duplicates of the given table, by bar number.
         """
-        bar_items = list(self.get_full_bar_list(table_name).items())
+        bar_items = list(self.get_full_bar_overview(table_name).items())
         mask = np.zeros(len(bar_items))
 
         groups = []
@@ -133,6 +123,22 @@ class DiceGame(SimpleDiceGameNode):
             if len(current_group) > 1:
                 groups.append(current_group)
         return groups
+
+    def get_duplicate_bars(self, table_name, bar_nmr) -> List[int]:
+        """Get all the duplicate bars in a given table.
+
+        Args:
+            table_name (str): the name of the table
+            bar_nmr (int): the bar number for which we want to get the duplicates
+
+        Returns:
+            A list with all the duplicate items to the given bar nmr.
+            This always returns at least the bar_nmr provided, with additionally all the bar numbers
+            with duplicate items.
+        """
+        full_bar_overview = self.get_full_bar_overview(table_name)
+        reference_bar = full_bar_overview[bar_nmr]
+        return [bar_nmr for bar_nmr, bar_items in full_bar_overview.items() if bar_items == reference_bar]
 
     def count_unique_compositions(self, count_duplicates=False) -> int:
         """Count the number of unique compositions possible by this dice game.
@@ -164,24 +170,24 @@ class DiceGame(SimpleDiceGameNode):
 
         Returns:
             A composition represented as a dictionary of random bar numbers.
+            Indexed by Table name, Staff name,  Bar number.
         """
         choices = {}
         for table_name, dice_table in self.dice_tables.items():
             bar_nmrs = dice_table.get_random_selection(seed)
 
             choices[table_name] = {}
-            for stave_name in self.bars[table_name].keys():
-                choices[table_name][stave_name] = bar_nmrs
+            for staff_name in self.bars[table_name].keys():
+                choices[table_name][staff_name] = bar_nmrs
         return choices
 
 
 @dataclass
-class DiceTable(SimpleDiceGameNode):
+class DiceTable:
     """Representation of a dice table used in playing the dice games."""
     table: np.ndarray
 
     def __post_init__(self):
-        super().__post_init__()
         self.table = np.array(self.table)
         if np.any((self.table - self.table.astype(int)) != 0):
             raise ValueError('The dice table must be initialized with only integer values.')

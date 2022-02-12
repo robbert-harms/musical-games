@@ -1,4 +1,4 @@
-from musical_games.converters.utils import run_command, ensure_dir_exists, bash_function_exists
+from musical_games.lib.utils import run_command, ensure_dir_exists, bash_function_exists
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-22"

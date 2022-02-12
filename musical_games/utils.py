@@ -1,7 +1,7 @@
 import os
 import multiprocessing
-from musical_games.converters.audio import midi_to_wav, wav_to_mp3, wav_to_ogg
-from musical_games.converters.lilypond import lilypond, TypesetResults
+from musical_games.lib.audio import midi_to_wav, wav_to_mp3, wav_to_ogg
+from musical_games.lib.lilypond import lilypond, TypesetResults
 
 __author__ = 'Robbert Harms'
 __date__ = "2015-09-23"

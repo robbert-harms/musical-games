@@ -23,7 +23,7 @@
             }
             {
                 \clef treble
-                \VAR{ dice_game.bars[table_name]['piano_right_hand'][bar_nmr] }
+                \VAR{ game_mechanics.bars[table_name]['piano_right_hand'][bar_nmr] }
                 \bar "|."
             }
         >>
@@ -35,10 +35,10 @@
             }
             {
                 \clef bass
-                \BLOCK{ if dice_game.bars['waltz']['piano_left_hand_alternative'][bar_nmr] }
-                    << {\voiceOne \VAR{ dice_game.bars['waltz']['piano_left_hand'][bar_nmr] } } \new Voice { \voiceTwo \VAR{ dice_game.bars['waltz']['piano_left_hand_alternative'][bar_nmr] }} >>
+                \BLOCK{ if game_mechanics.bars['waltz']['piano_left_hand_alternative'][bar_nmr] }
+                    << {\voiceOne \VAR{ game_mechanics.bars['waltz']['piano_left_hand'][bar_nmr] } } \new Voice { \voiceTwo \VAR{ game_mechanics.bars['waltz']['piano_left_hand_alternative'][bar_nmr] }} >>
                 \BLOCK{ else }
-                    \VAR{ dice_game.bars['waltz']['piano_left_hand'][bar_nmr] }
+                    \VAR{ game_mechanics.bars['waltz']['piano_left_hand'][bar_nmr] }
                 \BLOCK{ endif }
                 \bar "|."
             }

@@ -20,9 +20,9 @@
             {
                 \clef \VAR{ table_name }
                 \BLOCK{ if table_name == 'treble' }
-                    \VAR{ dice_game.bars[table_name]['piano_right_hand'][bar_nmr] }
+                    \VAR{ game_mechanics.bars[table_name]['piano_right_hand'][bar_nmr] }
                 \BLOCK{ else }
-                    \VAR{ dice_game.bars[table_name]['piano_left_hand'][bar_nmr] }
+                    \VAR{ game_mechanics.bars[table_name]['piano_left_hand'][bar_nmr] }
                 \BLOCK{ endif }
                 \bar "|."
             }

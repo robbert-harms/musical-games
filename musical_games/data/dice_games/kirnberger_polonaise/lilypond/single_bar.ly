@@ -20,7 +20,7 @@
             }
             {
                 \clef treble
-                \VAR{ dice_game.bars[table_name]['violin_1'][bar_nmr] }
+                \VAR{ game_mechanics.bars[table_name]['violin_1'][bar_nmr] }
                 \bar "|."
             }
         >>
@@ -33,7 +33,7 @@
             }
             {
                 \clef treble
-                \VAR{ dice_game.bars[table_name]['violin_2'][bar_nmr] }
+                \VAR{ game_mechanics.bars[table_name]['violin_2'][bar_nmr] }
                 \bar "|."
             }
         >>
@@ -48,7 +48,7 @@
                 }
                 {
                     \clef treble
-                    \VAR{ dice_game.bars[table_name]['piano_right_hand'][bar_nmr] }
+                    \VAR{ game_mechanics.bars[table_name]['piano_right_hand'][bar_nmr] }
                     \bar "|."
                 }
             >>
@@ -60,7 +60,7 @@
                 }
                 {
                     \clef bass
-                    \VAR{ dice_game.bars[table_name]['piano_left_hand'][bar_nmr] }
+                    \VAR{ game_mechanics.bars[table_name]['piano_left_hand'][bar_nmr] }
                     \bar "|."
                 }
             >>

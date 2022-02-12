@@ -2,7 +2,7 @@
 \paper {
     print-all-headers = ##t
 
-    \BLOCK{ if render_options['large_page'] }
+    \BLOCK{ if render_settings['large_page'] }
         system-system-spacing = #'((basic-distance . 15))
         paper-height = 3400\mm  %% default is 297 for a4
     \BLOCK{ endif }
@@ -30,7 +30,7 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index, bar in dice_game.bars['polonaise']['violin_1'].items() }
+                \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['violin_1'].items() }
                     \VAR{bar}
                 \BLOCK{ endfor }
                 \bar "|"
@@ -47,7 +47,7 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index, bar in dice_game.bars['polonaise']['violin_2'].items() }
+                \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['violin_2'].items() }
                     \VAR{bar}
                 \BLOCK{ endfor }
                 \bar "|"
@@ -66,7 +66,7 @@
                 }
                 {
                     \clef treble
-                    \BLOCK{ for bar_index, bar in dice_game.bars['polonaise']['piano_right_hand'].items() }
+                    \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['piano_right_hand'].items() }
                         \VAR{bar}
                     \BLOCK{ endfor }
                     \bar "|"
@@ -82,7 +82,7 @@
                 }
                 {
                     \clef bass
-                    \BLOCK{ for bar_index, bar in dice_game.bars['polonaise']['piano_left_hand'].items() }
+                    \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['piano_left_hand'].items() }
                         \VAR{bar}
                     \BLOCK{ endfor }
                     \bar "|"

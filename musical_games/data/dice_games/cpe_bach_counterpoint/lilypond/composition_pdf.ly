@@ -1,5 +1,4 @@
 \version "2.19.81"
-\include "articulate.ly"
 \paper {
 	page-count = 1
     print-all-headers = ##t
@@ -64,7 +63,7 @@
             {
                 \clef treble
                 \BLOCK{ for bar_index in range(6) }
-                    \VAR{composition.get_staff('treble', 'piano_right_hand', bar_index)}
+                    \VAR{game_mechanics.get_bar('treble', 'piano_right_hand',  bar_nmrs['treble']['piano_right_hand'][bar_index])}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -80,7 +79,7 @@
             {
                 \clef bass
                 \BLOCK{ for bar_index in range(6) }
-                    \VAR{composition.get_staff('bass', 'piano_left_hand',  bar_index)}
+                    \VAR{game_mechanics.get_bar('bass', 'piano_left_hand',  bar_nmrs['bass']['piano_left_hand'][bar_index])}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -91,59 +90,6 @@
     }
 }
 
-\BLOCK{ if 'comment' in render_options }
-    \markup {\fill-line \italic {"" "" "\VAR{ render_options['comment'] }"}}
+\BLOCK{ if render_settings['comment'] is not none }
+    \markup {\fill-line \italic {"" "" "\VAR{ render_settings['comment'] }"}}
 \BLOCK{ endif }
-
-
-\score {
-    \unfoldRepeats
-    \articulate
-    \new GrandStaff
-    <<
-        \new Staff
-            \with {
-                midiMinimumVolume = #0
-                midiMaximumVolume = #1
-                midiInstrument = #"acoustic grand"
-            }
-        <<
-            {
-                \key c\major
-                \time 4/4
-                \tempo 4 = 100
-                \override Score.RehearsalMark.direction = #down
-            }
-            {
-                \clef treble
-                \BLOCK{ for bar_index in range(6) }
-                    \VAR{composition.get_staff('treble', 'piano_right_hand',  bar_index)}
-                \BLOCK{ endfor }
-                \bar "|."
-            }
-        >>
-        \new Staff
-
-            \with {
-                midiMinimumVolume = #0
-                midiMaximumVolume = #0.75
-                midiInstrument = #"acoustic grand"
-            }
-        <<
-            {
-                \key c\major
-                \time 4/4
-                \tempo 4 = 100
-                \override Score.RehearsalMark.direction = #down
-            }
-            {
-                \clef bass
-                \BLOCK{ for bar_index in range(6) }
-                    \VAR{composition.get_staff('bass', 'piano_left_hand', bar_index)}
-                \BLOCK{ endfor }
-                \bar "|."
-            }
-        >>
-    >>
-    \midi { }
-}

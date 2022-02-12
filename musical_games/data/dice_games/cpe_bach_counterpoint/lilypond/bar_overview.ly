@@ -1,7 +1,7 @@
 \version "2.19.81"
 \paper {
     print-all-headers = ##t
-    \BLOCK{ if render_options['large_page'] }
+    \BLOCK{ if render_settings['large_page'] }
         system-system-spacing = #'((basic-distance . 15))
         paper-height = 420\mm  %% default is 297 for a4
     \BLOCK{ endif }
@@ -28,7 +28,7 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index, bar in dice_game.bars['treble']['piano_right_hand'].items() }
+                \BLOCK{ for bar_index, bar in game_mechanics.bars['treble']['piano_right_hand'].items() }
                     \VAR{bar}
                 \BLOCK{ endfor }
                 \bar "|"
@@ -43,7 +43,7 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar_index, bar in dice_game.bars['bass']['piano_left_hand'].items() }
+                \BLOCK{ for bar_index, bar in game_mechanics.bars['bass']['piano_left_hand'].items() }
                     \VAR{bar}
                 \BLOCK{ endfor }
                 \bar "|"

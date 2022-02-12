@@ -4,25 +4,37 @@ __maintainer__ = 'Robbert Harms'
 __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
-from musical_games.dice_games import load_inbuilt_dice_game, load_inbuilt_dice_game_typesetter
+from musical_games.dice_games.dice_games import CPEBachCounterpoint
+from musical_games.dice_games.typesetting import MidiSettings
 from musical_games.utils import auto_convert_lilypond_file
 
-dice_game = load_inbuilt_dice_game('cpe_bach_counterpoint')
-dice_game_typesetter = load_inbuilt_dice_game_typesetter(dice_game, 'cpe_bach_counterpoint')
+dice_game = CPEBachCounterpoint()
 
-dice_game_typesetter.typeset_bars_overview({'large_page': True}, '/tmp/test/overview.ly')
+dice_game.typeset_bars_overview({'large_page': True}, '/tmp/test/overview.ly')
 auto_convert_lilypond_file('/tmp/test/overview.ly')
 
-dice_game_typesetter.typeset_single_bar('treble', 1, '/tmp/test/bar_treble_1.ly')
+dice_game.typeset_single_bar('treble', 1, out_file='/tmp/test/bar_treble_1.ly')
 auto_convert_lilypond_file('/tmp/test/bar_treble_1.ly')
-dice_game_typesetter.typeset_single_bar('bass', 1, '/tmp/test/bar_bass_1.ly')
+dice_game.typeset_single_bar('bass', 1, out_file='/tmp/test/bar_bass_1.ly')
 auto_convert_lilypond_file('/tmp/test/bar_bass_1.ly')
 
-print(dice_game.get_duplicate_bars('bass'))
-print(dice_game.count_unique_compositions(count_duplicates=True))
-print(dice_game.count_unique_compositions(count_duplicates=False))
+print(dice_game.game_mechanics.get_all_duplicate_bars('bass'))
+print(dice_game.game_mechanics.count_unique_compositions(count_duplicates=True))
+print(dice_game.game_mechanics.count_unique_compositions(count_duplicates=False))
 
-dice_game_typesetter.typeset_composition(dice_game.get_random_bar_nmrs(seed=0),
-                                         out_file='/tmp/test/composition.ly')
-auto_convert_lilypond_file('/tmp/test/composition.ly',
+
+dice_game.typeset_composition_pdf(
+    dice_game.game_mechanics.get_random_bar_nmrs(seed=0),
+    render_settings={'comment': 'Test'},
+    out_file='/tmp/test/composition_pdf.ly')
+
+auto_convert_lilypond_file('/tmp/test/composition_pdf.ly')
+
+dice_game.typeset_composition_midi(
+    dice_game.game_mechanics.get_random_bar_nmrs(seed=0),
+    render_settings={'bass_midi_settings': MidiSettings('flute', 0, 1)},
+    out_file='/tmp/test/composition_midi.ly')
+
+auto_convert_lilypond_file('/tmp/test/composition_midi.ly',
                            sound_font='/home/robbert/programming/python/opus_infinity.org/soundfonts/Musyng_Kite.sf2')
+
