@@ -2,6 +2,11 @@
 Changelog
 *********
 
+v0.5.1 (2022-02-14)
+===================
+- Small refactoring of the lilypond render function.
+
+
 v0.5.0 (2022-02-12)
 ===================
 - Refactored the dice games.
