@@ -14,7 +14,7 @@ def lilypond(lilypond_fname, output, pdf=True, png=True, ps=False):
     file and can not be set on the command line.
 
     Args:
-        lilypond_fname (str): the location of the lilypond file to convert.
+        lilypond_fname (Path or str): the location of the lilypond file to convert.
         output (str): the location for the output files, suffixes will be added.
         pdf (bool): if we want pdf output
         png (boolean): if we want png output
@@ -29,14 +29,16 @@ def lilypond(lilypond_fname, output, pdf=True, png=True, ps=False):
     if not os.path.isdir(os.path.dirname(output)):
         os.makedirs(os.path.dirname(output))
 
-    kwargs = dict(output=output,
-                  lilypond=lilypond_fname,
-                  png='--png' if png else '',
-                  ps='--ps' if ps else '',
-                  pdf='--pdf' if pdf else '')
+    command = ['lilypond']
+    if pdf:
+        command.append('--pdf')
+    if png:
+        command.append('--png')
+    if ps:
+        command.append('--ps')
+    command.extend(['-o', output, lilypond_fname])
 
-    command = 'lilypond {pdf} {png} {ps} -o {output} {lilypond}'.format(**kwargs)
-    process = subprocess.Popen(command.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     std_err = process.communicate()[1]
     rc = process.returncode
 
