@@ -2,6 +2,14 @@
 Changelog
 *********
 
+v0.5.2 (2022-02-15)
+===================
+
+Fixed
+-----
+- Fixed wrong order of bars in the Mozart dice game.
+
+
 v0.5.1 (2022-02-14)
 ===================
 - Small refactoring of the lilypond render function.

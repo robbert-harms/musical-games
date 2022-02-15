@@ -5,7 +5,7 @@ __license__ = "LGPL v3"
 __maintainer__ = "Robbert Harms"
 
 
-VERSION = '0.5.1'
+VERSION = '0.5.2'
 
 _items = VERSION.split('-')
 
