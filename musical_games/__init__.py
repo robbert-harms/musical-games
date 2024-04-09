@@ -4,4 +4,4 @@ __email__ = 'robbert@xkls.nl'
 __license__ = "LGPL v3"
 __maintainer__ = "Robbert Harms"
 
-from musical_games.__version__ import VERSION, VERSION_STATUS, __version__
+from musical_games.__version__ import __version__

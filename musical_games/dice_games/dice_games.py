@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Dict, Any, List
 
 import jinja2
-from ruamel.yaml import YAML
+from ruyaml import YAML
 
 from musical_games.dice_games.game_mechanics import GameMechanics
 from musical_games.dice_games.typesetting import LilypondDiceGameTypesetter, MidiSettings, TypesetOption
