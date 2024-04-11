@@ -9,10 +9,16 @@ __licence__ = 'LGPL v3'
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Self
+from typing import Self, TypeAlias
 
 import numpy as np
 from numpy.random import RandomState
+
+
+int_bar_index: TypeAlias = int
+str_dice_table_key: TypeAlias = str
+int_voice_index: TypeAlias = int
+int_staff_index: TypeAlias = int
 
 
 class DiceGame(metaclass=ABCMeta):
@@ -36,7 +42,7 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_dice_tables(self) -> dict[str, DiceTable]:
+    def get_dice_tables(self) -> dict[str_dice_table_key, DiceTable]:
         """Get dice tables in this dice game.
 
         This should return the dice tables as a dictionary mapping an arbitrary key to a dice table. The keys may be
@@ -48,7 +54,7 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_all_duplicate_bars(self, table_key: str) -> list[set[int]]:
+    def get_all_duplicate_bars(self, table_key: str_dice_table_key) -> list[set[int_bar_index]]:
         """Get a list of all the duplicate bars in a given dice table.
 
         For a given dice table, this should scan the bars belonging to that dice table for duplicates. We return each
@@ -58,7 +64,7 @@ class DiceGame(metaclass=ABCMeta):
             table_key: the key of the dice table we want to search for duplicates.
 
         Returns:
-            A list of duplicate bar sets.
+            A list of duplicate bar sets by bar index.
         """
 
     @abstractmethod
@@ -112,7 +118,7 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def compile_single_bar(self, table_key: str, bar_ind: int) -> LilypondScore:
+    def compile_single_bar(self, table_key: str_dice_table_key, bar_ind: int_bar_index) -> LilypondScore:
         """Get a lilypond score with only a single bar from one of the dice tables.
 
         Args:
@@ -165,6 +171,14 @@ class Bar(metaclass=ABCMeta):
 class MultiVoiceBar(Bar, metaclass=ABCMeta):
     """Representation of a single bar with multiple voices."""
 
+    @abstractmethod
+    def get_voices(self) -> dict[int_voice_index, Bar]:
+        """Get the voices stored in this multi-voice bar.
+
+        Returns:
+            Each voice should be returned as a separate bar object, indexed by their voice number.
+        """
+
 
 class SynchronousBars(metaclass=ABCMeta):
     """Representation of a list of bars played synchronously across staves.
@@ -182,7 +196,7 @@ class SynchronousBars(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_bar(self, staff_ind: int) -> Bar:
+    def get_bar(self, staff_ind: int_staff_index) -> Bar:
         """Get a single bar from a single staff.
 
         Args:
@@ -196,30 +210,30 @@ class SynchronousBars(metaclass=ABCMeta):
 class BarCollection(metaclass=ABCMeta):
     """Collection of synchronous bars for a single compositional piece.
 
-    The bars are expected to be stored in a dictionary mapping dice table labels to bars.
+    The bars are expected to be stored in a dictionary mapping dice table labels (bar indices) to bars.
     """
 
     @abstractmethod
-    def get_synchronous_bars(self) -> dict[int, SynchronousBars]:
+    def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBars]:
         """Get the collection of all synchronous bars.
 
         Returns:
-            All synchronous bars indiced by their dice table label.
+            All synchronous bars indexed by their bar index.
         """
 
     @abstractmethod
-    def get_bars(self, staff_ind: int) -> dict[int, Bar]:
+    def get_bars(self, staff_ind: int_staff_index) -> dict[int_bar_index, Bar]:
         """Get the collection of bars of a single staff.
 
         Args:
             staff_ind: the index of the staff for which we want to return the bars.
 
         Returns:
-            All bars of a single staff indiced by their dice table label.
+            All bars of a single staff indexed by their bar index..
         """
 
     @abstractmethod
-    def get_bar(self, staff_ind: int, bar_index: int) -> Bar:
+    def get_bar(self, staff_ind: int_staff_index, bar_index: int_bar_index) -> Bar:
         """Get a single bar from a specific staff.
 
         Args:
@@ -246,20 +260,26 @@ class SimpleMultiVoiceBar(MultiVoiceBar):
     """Representation of a single bar with multiple voices.
 
     Since in a piece there may be multiple voices which we may want to connect, we index the voices in this
-    class by a voice index number.
+    class by a voice index number. As such, if, for example, voice 3 drops out for a section, the indices
+    stay constant.
 
     Args:
         A mapping of voice number to a bar.
     """
-    voices: dict[int, Bar]
+    voices: dict[int_voice_index, Bar]
 
     @property
     def lilypond_str(self) -> str:
-        voice_strings = []
-        for key, bar in self.voices.items():
-            voice_strings.append('{ ' + bar.lilypond_str + ' } % voice key: ' + str(key))
+        return None
+        # todo, this is incorrect, we need to specify the exact voices
+        # voice_strings = []
+        # for key, bar in self.voices.items():
+        #     voice_strings.append('{ ' + bar.lilypond_str + ' } % voice key: ' + str(key))
+        #
+        # return '<< \n' + '\n\\\\\n'.join(voice_strings) + '\n >>'
 
-        return '<< \n' + '\n\\\\\n'.join(voice_strings) + '\n >>'
+    def get_voices(self) -> dict[int_voice_index, Bar]:
+        return self.voices
 
 
 @dataclass(frozen=True, slots=True)
@@ -274,7 +294,7 @@ class SimpleSynchronousBars(SynchronousBars):
     def get_bars(self) -> tuple[Bar, ...]:
         return self.bars
 
-    def get_bar(self, staff_ind: int) -> Bar:
+    def get_bar(self, staff_ind: int_staff_index) -> Bar:
         return self.bars[staff_ind]
 
 
@@ -286,17 +306,17 @@ class SimpleBarCollection(BarCollection):
     dictionary such that we can store the bars with their dice table label instead of a numerical index.
 
     Args:
-        synchronous_bars: the collection of synchronous bars.
+        synchronous_bars: the collection of synchronous bars indexed by their bar index.
     """
-    synchronous_bars: dict[int, SynchronousBars]
+    synchronous_bars: dict[int_bar_index, SynchronousBars]
 
-    def get_synchronous_bars(self) -> dict[int, SynchronousBars]:
+    def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBars]:
         return self.synchronous_bars
 
-    def get_bars(self, staff_ind: int) -> dict[int, Bar]:
+    def get_bars(self, staff_ind: int_staff_index) -> dict[int_bar_index, Bar]:
         return {key: sb.get_bar(staff_ind) for key, sb in self.synchronous_bars.items()}
 
-    def get_bar(self, staff_ind: int, bar_index: int) -> Bar:
+    def get_bar(self, staff_ind: int_staff_index, bar_index: int_bar_index) -> Bar:
         return self.synchronous_bars[bar_index].get_bar(staff_ind)
 
 
@@ -439,7 +459,8 @@ class BarSelection(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def get_bar_index(self, table_key: str, throw_ind: int, staff_ind: int | None = None) -> int:
+    def get_bar_index(self, table_key: str_dice_table_key, throw_ind: int,
+                      staff_ind: int_staff_index | None = None) -> int:
         """Get the bar index for a specific dice table, a specified throw index and optionally a specific staff.
 
         Args:
@@ -452,7 +473,7 @@ class BarSelection(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_bar_indices(self, table_key: str, staff_ind: int | None = None) -> list[int]:
+    def get_bar_indices(self, table_key: str_dice_table_key, staff_ind: int_staff_index | None = None) -> list[int]:
         """Get the bar indices chosen for the specific dice table and staff (within that dice table).
 
         For a given table, this may either return the same bar indices for each staff, or a different list per staff.
@@ -475,10 +496,11 @@ class GroupedStaffsBarSelection(BarSelection):
     """
     bar_indices: dict[str, list[int]]
 
-    def get_bar_index(self, table_key: str, throw_ind: int, staff_ind: int | None = None) -> int:
+    def get_bar_index(self, table_key: str_dice_table_key, throw_ind: int,
+                      staff_ind: int_staff_index | None = None) -> int:
         return self.bar_indices[table_key][throw_ind]
 
-    def get_bar_indices(self, table_key: str, staff_ind: int | None = None) -> list[int]:
+    def get_bar_indices(self, table_key: str_dice_table_key, staff_ind: int_staff_index | None = None) -> list[int]:
         return self.bar_indices[table_key]
 
 
@@ -491,17 +513,18 @@ class PerStaffsBarSelection(BarSelection):
     """
     bar_indices: dict[str, dict[int, list[int]]]
 
-    def get_bar_index(self, table_key: str, throw_ind: int, staff_ind: int | None = None) -> int:
+    def get_bar_index(self, table_key: str_dice_table_key, throw_ind: int,
+                      staff_ind: int_staff_index | None = None) -> int:
         return self.bar_indices[table_key][staff_ind][throw_ind]
 
-    def get_bar_indices(self, table_key: str, staff_ind: int | None = None) -> list[int]:
+    def get_bar_indices(self, table_key: str_dice_table_key, staff_ind: int_staff_index| None = None) -> list[int]:
         return self.bar_indices[table_key][staff_ind]
 
 
 class MidiSettings(metaclass=ABCMeta):
 
     @abstractmethod
-    def get_midi_instrument(self, table_key: str, staff_ind: int) -> str:
+    def get_midi_instrument(self, table_key: str_dice_table_key, staff_ind: int_staff_index) -> str:
         """Get the midi instrument to use for rendering the specific table and specific staff.
 
         Args:
@@ -513,7 +536,7 @@ class MidiSettings(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_min_volume(self, table_key: str, staff_ind: int) -> float:
+    def get_min_volume(self, table_key: str_dice_table_key, staff_ind: int_staff_index) -> float:
         """Get the minimum volume to use for rendering the specific table and specific staff.
 
         Args:
@@ -525,7 +548,7 @@ class MidiSettings(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_max_volume(self, table_key: str, staff_ind: int) -> float:
+    def get_max_volume(self, table_key: str_dice_table_key, staff_ind: int_staff_index) -> float:
         """Get the maximum volume to use for rendering the specific table and specific staff.
 
         Args:
@@ -537,7 +560,8 @@ class MidiSettings(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def with_updated_instrument(self, midi_instrument: str, table_key: str, staff_ind: int) -> Self:
+    def with_updated_instrument(self, midi_instrument: str, table_key: str_dice_table_key,
+                                staff_ind: int_staff_index) -> Self:
         """Get a version of this midi setting but with a different instrument for the given dice table and staff.
 
         Args:
@@ -550,7 +574,8 @@ class MidiSettings(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def with_updated_min_volume(self, min_volume: float, table_key: str, staff_ind: int) -> Self:
+    def with_updated_min_volume(self, min_volume: float, table_key: str_dice_table_key,
+                                staff_ind: int_staff_index) -> Self:
         """Get a version of this midi setting but with a different minimum volume for the given dice table and staff.
 
         Args:
@@ -563,7 +588,8 @@ class MidiSettings(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def with_updated_max_volume(self, max_volume: float, table_key: str, staff_ind: int) -> Self:
+    def with_updated_max_volume(self, max_volume: float, table_key: str_dice_table_key,
+                                staff_ind: int_staff_index) -> Self:
         """Get a version of this midi setting but with a different maximum volume for the given dice table and staff.
 
         Args:
@@ -589,23 +615,26 @@ class SimpleMidiSettings(MidiSettings):
     min_volumes: dict[str, dict[int, float]]
     max_volumes: dict[str, dict[int, float]]
 
-    def get_midi_instrument(self, table_key: str, staff_ind: int) -> str:
+    def get_midi_instrument(self, table_key: str_dice_table_key, staff_ind: int_staff_index) -> str:
         return self.midi_instruments[table_key][staff_ind]
 
-    def get_min_volume(self, table_key: str, staff_ind: int) -> float:
+    def get_min_volume(self, table_key: str_dice_table_key, staff_ind: int_staff_index) -> float:
         return self.min_volumes[table_key][staff_ind]
 
-    def get_max_volume(self, table_key: str, staff_ind: int) -> float:
+    def get_max_volume(self, table_key: str_dice_table_key, staff_ind: int_staff_index) -> float:
         return self.max_volumes[table_key][staff_ind]
 
-    def with_updated_instrument(self, midi_instrument: str, table_key: str, staff_ind: int) -> Self:
+    def with_updated_instrument(self, midi_instrument: str, table_key: str_dice_table_key,
+                                staff_ind: int_staff_index) -> Self:
         updated_dict = self.midi_instruments | {table_key: (self.midi_instruments[table_key] | {staff_ind: midi_instrument})}
         return type(self)(updated_dict, self.min_volumes, self.max_volumes)
 
-    def with_updated_min_volume(self, min_volume: float, table_key: str, staff_ind: int) -> Self:
+    def with_updated_min_volume(self, min_volume: float, table_key: str_dice_table_key,
+                                staff_ind: int_staff_index) -> Self:
         updated_dict = self.min_volumes | {table_key: (self.min_volumes[table_key] | {staff_ind: min_volume})}
         return type(self)(self.midi_instruments, updated_dict, self.max_volumes)
 
-    def with_updated_max_volume(self, max_volume: float, table_key: str, staff_ind: int) -> Self:
+    def with_updated_max_volume(self, max_volume: float, table_key: str_dice_table_key,
+                                staff_ind: int_staff_index) -> Self:
         updated_dict = self.max_volumes | {table_key: (self.max_volumes[table_key] | {staff_ind: max_volume})}
         return type(self)(self.midi_instruments, self.min_volumes, updated_dict)

@@ -4,15 +4,17 @@ __maintainer__ = 'Robbert Harms'
 __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
+from importlib import resources
 from functools import reduce
 from operator import mul
 
 import jinja2
 import numpy as np
 
-from musical_games.dice_games2.base import DiceGame, SimpleBarCollection, SimpleSynchronousBars, \
-    SimpleBar, SimpleDiceTable, SimpleLilypondScore, LilypondScore, DiceTable, BarCollection, BarSelection, \
-    GroupedStaffsBarSelection, MidiSettings, SimpleMidiSettings, Bar
+from musical_games.dice_games2.base import (DiceGame, SimpleDiceTable, SimpleLilypondScore, LilypondScore,
+                                            DiceTable, BarCollection, BarSelection, \
+    GroupedStaffsBarSelection, MidiSettings, SimpleMidiSettings)
+from musical_games.dice_games2.data_csv import SimpleBarCollectionCSVReader
 
 
 class CPEBachCounterpoint(DiceGame):
@@ -173,62 +175,5 @@ class CPEBachCounterpoint(DiceGame):
             The bars for this dice game as a synchronous bar collection. The first element of each synchronous bar
             is for the treble and the first dice table, the second is for the bass and the second dice table.
         """
-        return SimpleBarCollection({
-            1: SimpleSynchronousBars((SimpleBar("e''4 g'' e'' c''"), SimpleBar("r2 c'4 c'"))),
-            2: SimpleSynchronousBars((SimpleBar("r8 e''8 g'' [f''] e'' [g''] e'' c''"), SimpleBar("c'2. c'4"))),
-            3: SimpleSynchronousBars((SimpleBar("e''2. c''4"), SimpleBar("c'4 e'8 d'8 c'4 c'4"))),
-            4: SimpleSynchronousBars((SimpleBar("c''4 g' e'' c''"), SimpleBar("c2 c'2"))),
-            5: SimpleSynchronousBars((SimpleBar("r4 c''8 d'' e''4 c''4"), SimpleBar("r2 c'2"))),
-            6: SimpleSynchronousBars(
-                (SimpleBar("e''8 [f''] g'' [f''] f'' [e''] e'' c''"), SimpleBar("r4 e8 d c4 c'4"))),
-            7: SimpleSynchronousBars((SimpleBar("c''2 e''2"), SimpleBar("c'1"))),
-            8: SimpleSynchronousBars((SimpleBar("r8 c''8 c'' [d''] e'' [e''] d'' c''"), SimpleBar("c4 e8 g8 c'4 c'"))),
-            9: SimpleSynchronousBars(
-                (SimpleBar("c''4 c''8 [d''] e'' [d''] e'' c''"), SimpleBar("c'8 [c8] e g c'4 c'"))),
-            10: SimpleSynchronousBars((SimpleBar("d''4 g' g''2"), SimpleBar("c'4 b8 a b4 g"))),
-            11: SimpleSynchronousBars((SimpleBar("g''8 [a''] g'' fis'' g''2"), SimpleBar("c'4 c' b b"))),
-            12: SimpleSynchronousBars((SimpleBar("e''8 [g'] g'' fis'' g''2"), SimpleBar("c'8 [c'8] b [a] c' [b] a g"))),
-            13: SimpleSynchronousBars((SimpleBar("d''4 d'' g''2"), SimpleBar("c'4 b8 [a] b [d'] b g"))),
-            14: SimpleSynchronousBars((SimpleBar("d''4 g''8 fis''8 g''2"), SimpleBar("c'4 c'2 b4"))),
-            15: SimpleSynchronousBars((SimpleBar("d''2 g''"), SimpleBar("c'4 c'4 b e'4"))),
-            16: SimpleSynchronousBars((SimpleBar("g''8 [g'] g'' g'' g''2"), SimpleBar("c'4 b8 [a] b [c'] d' e'"))),
-            17: SimpleSynchronousBars((SimpleBar("d''8 [d''] g'' fis'' g''2"), SimpleBar("c'4 b4 e'8 [d'] c' b"))),
-            18: SimpleSynchronousBars((SimpleBar("g''4 g' g''2"), SimpleBar("c'8 [c'] b [a] c' [b] a g"))),
-            19: SimpleSynchronousBars((SimpleBar("g''8 [a''] b'' c''' f''2"), SimpleBar("a2 d'8 c' b a"))),
-            20: SimpleSynchronousBars((SimpleBar("g''4 c'' f''2"), SimpleBar("a2. b4"))),
-            21: SimpleSynchronousBars((SimpleBar("g''8 [c''] d'' e'' f''4 f''"), SimpleBar("a4 bes a8 [c'] a f"))),
-            22: SimpleSynchronousBars((SimpleBar("g''8 [c''] b' c'' f''2"), SimpleBar("a2 (a8) [b] c' d'"))),
-            23: SimpleSynchronousBars((SimpleBar("g''8 [g''] c'''8 g'' f''4 f''4"), SimpleBar("a2 d8 [f] e d"))),
-            24: SimpleSynchronousBars((SimpleBar("g''2 f''"), SimpleBar("a2. d'4"))),
-            25: SimpleSynchronousBars((SimpleBar("g''8 [g''] f'' e'' f''2"), SimpleBar("a4 a (a8) [a] g f"))),
-            26: SimpleSynchronousBars((SimpleBar("g''8 [e''] d'' c'' f''4 f''"), SimpleBar("a4 a2 d'4"))),
-            27: SimpleSynchronousBars((SimpleBar("g''8 [c''] f'' e'' f''2"), SimpleBar("a2 (a8) [c'] b a"))),
-            28: SimpleSynchronousBars((SimpleBar("f''4 f'' e''8 [c''] a'' c''"), SimpleBar("g4 a8 b c'2"))),
-            29: SimpleSynchronousBars((SimpleBar("f''4 e''8 d'' e''4 c''"), SimpleBar("g2 c'4 c'"))),
-            30: SimpleSynchronousBars((SimpleBar("f''8 [f''] e'' [d''] e'' [e''] d'' c''"), SimpleBar("g4 g4 c'2"))),
-            31: SimpleSynchronousBars(
-                (SimpleBar("f''4 e''8 [d''] e'' [g''] e'' c''"), SimpleBar("g8 [g] a b c'4 c'4"))),
-            32: SimpleSynchronousBars((SimpleBar("f''4 f''4 (f''8) [e''] d'' c''"), SimpleBar("g8 [d'] c' b c'4 c'"))),
-            33: SimpleSynchronousBars((SimpleBar("f''4. f''8 e'' [d''] e'' c''"), SimpleBar("g4 g c' c'"))),
-            34: SimpleSynchronousBars((SimpleBar("f''4 f''2 e''4"), SimpleBar("g8 [g] c'8 b c'4 c'"))),
-            35: SimpleSynchronousBars((SimpleBar("f''4 f'' e'' a''"), SimpleBar("g4 c'8 b c'2"))),
-            36: SimpleSynchronousBars((SimpleBar("f''8 [b'] c'' [d''] e'' [g''] f'' e''"), SimpleBar("g2 c4 c'4"))),
-            37: SimpleSynchronousBars((SimpleBar("d''2. c''8 d''"), SimpleBar("c'4 b8 a b2"))),
-            38: SimpleSynchronousBars((SimpleBar("d''4 g''8 a'' g''4. f''8"), SimpleBar("c'4 b8 a b4 a8 b"))),
-            39: SimpleSynchronousBars((SimpleBar("d''2 d''2"), SimpleBar("c'4 b4 (b8) a b4"))),
-            40: SimpleSynchronousBars((SimpleBar("d''1"), SimpleBar("c'8 [a] b [c'] b [c'] a b"))),
-            41: SimpleSynchronousBars((SimpleBar("d''4 g''2 f''8 g''8"), SimpleBar("c'4 c' b b"))),
-            42: SimpleSynchronousBars((SimpleBar("d''4 d''8 [c''] d'' e'' f''4"), SimpleBar("c'4 b2 a8 b"))),
-            43: SimpleSynchronousBars((SimpleBar("d''4 g'4 g'' f''"), SimpleBar("c'2 b2"))),
-            44: SimpleSynchronousBars((SimpleBar("d''4 g'' g' f''"), SimpleBar("c'2 b4 a8 b"))),
-            45: SimpleSynchronousBars(
-                (SimpleBar("d''4 g''8 [a''] g'' [a''] f'' g''"), SimpleBar("c'8 [c'] b [a] b [b] a b"))),
-            46: SimpleSynchronousBars((SimpleBar("e''8 [f''] d'' e'' c''2"), SimpleBar("c'1"))),
-            47: SimpleSynchronousBars((SimpleBar("e''8 [f''] e'' d'' c''2"), SimpleBar("c'1"))),
-            48: SimpleSynchronousBars((SimpleBar("e''4 d''8 e'' c''2"), SimpleBar("c'1"))),
-            49: SimpleSynchronousBars((SimpleBar("e''8 [d''] e'' d'' c''2"), SimpleBar("c'1"))),
-            50: SimpleSynchronousBars((SimpleBar("e''8 [f''] g'' e'' c''2"), SimpleBar("c'1"))),
-            51: SimpleSynchronousBars((SimpleBar("e''8 [g''] e'' d'' c''2"), SimpleBar("c'1"))),
-            52: SimpleSynchronousBars((SimpleBar("e''8 [c''] e'' d'' c''2"), SimpleBar("c'1"))),
-            53: SimpleSynchronousBars((SimpleBar("e''4. d''8 c''2"), SimpleBar("c'1"))),
-            54: SimpleSynchronousBars((SimpleBar("e''8 [c'''] g'' e'' c''2"), SimpleBar("c'1")))})
+        csv_reader = SimpleBarCollectionCSVReader()
+        return csv_reader.read_csv(resources.files('musical_games') / 'data/dice_games2/cpe_bach_counterpoint/bars.csv')
