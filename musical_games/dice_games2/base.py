@@ -270,13 +270,11 @@ class SimpleMultiVoiceBar(MultiVoiceBar):
 
     @property
     def lilypond_str(self) -> str:
-        return None
-        # todo, this is incorrect, we need to specify the exact voices
-        # voice_strings = []
-        # for key, bar in self.voices.items():
-        #     voice_strings.append('{ ' + bar.lilypond_str + ' } % voice key: ' + str(key))
-        #
-        # return '<< \n' + '\n\\\\\n'.join(voice_strings) + '\n >>'
+        voices_index_to_name = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four'}
+        voice_strings = []
+        for voice_ind, bar in self.voices.items():
+            voice_strings.append("{\\voice" + voices_index_to_name[voice_ind] + ' ' + bar.lilypond_str + ' }')
+        return '{<<' + ' \\new Voice '.join(voice_strings) + '>>}'
 
     def get_voices(self) -> dict[int_voice_index, Bar]:
         return self.voices
