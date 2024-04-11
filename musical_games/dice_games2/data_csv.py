@@ -8,8 +8,10 @@ import csv
 from abc import ABCMeta, abstractmethod
 from importlib.abc import Traversable
 from pathlib import Path
+import re
 
-from musical_games.dice_games2.base import Bar, BarCollection, SimpleBar, SimpleSynchronousBars, SimpleBarCollection
+from musical_games.dice_games2.base import Bar, BarCollection, SimpleBar, SimpleSynchronousBars, SimpleBarCollection, \
+    SimpleMultiVoiceBar
 
 
 class BarCollectionCSVWriter(metaclass=ABCMeta):
@@ -78,9 +80,33 @@ class SimpleBarCollectionCSVReader(BarCollectionCSVReader):
             for row_ind, row in enumerate(bar_reader):
                 if row_ind > 0:
                     bars = []
-                    for element in row[1:]:
-                        bars.append(SimpleBar(element))
+                    for bar_str in row[1:]:
+                        bars.append(self._load_bar(bar_str))
                     synchronous_bars[int(row[0])] = SimpleSynchronousBars(tuple(bars))
 
         return SimpleBarCollection(synchronous_bars)
+
+    @staticmethod
+    def _load_bar(bar_str: str) -> Bar:
+        """Load a Bar object from a CSV value string.
+
+        This function will try to autodetect voices and load these as such.
+
+        Args:
+            bar_str: the CSV value to load.
+
+        Returns:
+            The loaded bar data.
+        """
+        voices = bar_str[3:-3].split('\\new Voice')
+
+        if len(voices) > 1:
+            voice_names_to_index = {'One': 1, 'Two': 2, 'Three': 3, 'Four': 4}
+            voice_results = {}
+            for voice_data in voices:
+                match_groups = re.search(r"{\\voice([a-zA-Z]+) (.*)}", voice_data).groups()
+                voice_results[voice_names_to_index[match_groups[0]]] = SimpleBar(match_groups[1])
+            return SimpleMultiVoiceBar(voice_results)
+        else:
+            return SimpleBar(bar_str)
 

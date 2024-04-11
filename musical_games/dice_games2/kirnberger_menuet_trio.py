@@ -43,26 +43,26 @@ class KirnbergerMenuetTrio(DiceGame):
                 [39, 28, 18, 35, 89, 75, 61, 96, 7, 91, 70, 1, 74, 44, 52, 50],
                 [59, 71, 37, 16, 86, 49, 77, 20, 38, 68, 19, 29, 80, 36, 34, 9]])),
         }
-        self._bar_collection = self._get_bar_collection()
+        self._bar_collections = self._get_bar_collection()
     #     self._table_key_to_staff = {'treble': 0, 'bass': 1}
     #
-    #     self._jinja2_environment_options = dict(
-    #         block_start_string=r'\BLOCK{',
-    #         block_end_string='}',
-    #         variable_start_string=r'\VAR{',
-    #         variable_end_string='}',
-    #         comment_start_string=r'\#{',
-    #         comment_end_string='}',
-    #         line_statement_prefix='%-',
-    #         line_comment_prefix='%#',
-    #         trim_blocks=True,
-    #         autoescape=False,
-    #         lstrip_blocks=True
-    #     )
-    #     template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games2/cpe_bach_counterpoint/lilypond')
-    #     env_options = self._jinja2_environment_options | {'loader': template_loader}
-    #     self._jinja2_env = jinja2.Environment(**env_options)
-    #
+        self._jinja2_environment_options = dict(
+            block_start_string=r'\BLOCK{',
+            block_end_string='}',
+            variable_start_string=r'\VAR{',
+            variable_end_string='}',
+            comment_start_string=r'\#{',
+            comment_end_string='}',
+            line_statement_prefix='%-',
+            line_comment_prefix='%#',
+            trim_blocks=True,
+            autoescape=False,
+            lstrip_blocks=True
+        )
+        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games2/kirnberger_menuet_trio/lilypond')
+        env_options = self._jinja2_environment_options | {'loader': template_loader}
+        self._jinja2_env = jinja2.Environment(**env_options)
+
     @property
     def author(self) -> str:
         return self._author
@@ -87,9 +87,6 @@ class KirnbergerMenuetTrio(DiceGame):
         pass
 
     def get_default_midi_settings(self) -> MidiSettings:
-        pass
-
-    def compile_bars_overview(self, single_page: bool = False) -> LilypondScore:
         pass
 
     def compile_single_bar(self, table_key: str_dice_table_key, bar_ind: int_bar_index) -> LilypondScore:
@@ -143,10 +140,10 @@ class KirnbergerMenuetTrio(DiceGame):
     #         {'treble': {0: 0}, 'bass': {0: 0}},
     #         {'treble': {0: 1}, 'bass': {0: 0.75}})
     #
-    # def compile_bars_overview(self, single_page: bool = False) -> LilypondScore:
-    #     template = self._jinja2_env.get_template('bar_overview.ly')
-    #     return SimpleLilypondScore(template.render(bar_collection=self._bar_collection,
-    #                                                render_settings={'single_page': single_page}))
+    def compile_bars_overview(self, single_page: bool = False) -> LilypondScore:
+        template = self._jinja2_env.get_template('bar_overview.ly')
+        return SimpleLilypondScore(template.render(bar_collections=self._bar_collections,
+                                                   render_settings={'single_page': single_page}))
     #
     # def compile_single_bar(self, table_key: str, bar_ind: int) -> LilypondScore:
     #     template = self._jinja2_env.get_template('single_bar.ly')
@@ -189,13 +186,16 @@ class KirnbergerMenuetTrio(DiceGame):
     #             composition_bars[table_key].append(bar)
     #     return composition_bars
     #
-    # @staticmethod
-    # def _get_bar_collection() -> BarCollection:
-    #     """Get the collection of bars for this dice game.
-    #
-    #     Returns:
-    #         The bars for this dice game as a synchronous bar collection. The first element of each synchronous bar
-    #         is for the treble and the first dice table, the second is for the bass and the second dice table.
-    #     """
-    #     csv_reader = SimpleBarCollectionCSVReader()
-    #     return csv_reader.read_csv(resources.files('musical_games') / 'data/dice_games2/cpe_bach_counterpoint/bars.csv')
+    @staticmethod
+    def _get_bar_collection() -> dict[str, BarCollection]:
+        """Get the collection of bars for this dice game.
+
+        Returns:
+            Per composition part, the bars for this dice game as a synchronous bar collection.
+        """
+        csv_reader = SimpleBarCollectionCSVReader()
+        return {'menuet': csv_reader.read_csv(resources.files('musical_games') /
+                                              'data/dice_games2/kirnberger_menuet_trio/menuet_bars.csv'),
+                'trio': csv_reader.read_csv(resources.files('musical_games') /
+                                              'data/dice_games2/kirnberger_menuet_trio/trio_bars.csv')}
+
