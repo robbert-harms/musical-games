@@ -25,6 +25,9 @@ print(dice_game.game_mechanics.count_unique_compositions(count_duplicates=True))
 print(dice_game.game_mechanics.count_unique_compositions(count_duplicates=False))
 
 
+print(dice_game.game_mechanics.get_random_bar_nmrs(0))
+
+
 dice_game.typeset_composition_pdf(
     dice_game.game_mechanics.get_random_bar_nmrs(seed=0),
     render_settings={'comment': 'Test'},

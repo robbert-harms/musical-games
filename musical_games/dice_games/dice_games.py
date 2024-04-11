@@ -6,14 +6,16 @@ __licence__ = 'LGPL v3'
 
 
 from importlib import resources
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, Any, List
 
 import jinja2
+import numpy as np
 from ruyaml import YAML
 
-from musical_games.dice_games.game_mechanics import GameMechanics
-from musical_games.dice_games.typesetting import LilypondDiceGameTypesetter, MidiSettings, TypesetOption
+from musical_games.dice_games.game_mechanics import GameMechanics, DiceTable
+from musical_games.dice_games.typesetting import LilypondDiceGameTypesetter, MidiSettings, TypesetOption, \
+    TypesetTemplate
 
 
 @dataclass

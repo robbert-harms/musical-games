@@ -6,6 +6,8 @@ __email__ = "robbert@xkls.nl"
 from dataclasses import dataclass
 from pathlib import Path
 import os
+
+from musical_games.external.images import trim_image
 from musical_games.external.utils import run_command
 
 
@@ -45,6 +47,9 @@ def typeset_lilypond(lilypond_in: Path, output_basename: Path, pdf: bool = True,
     png_list = _get_png_list(output_basename) if png else []
     ps_list = [output_basename.with_suffix('.ps')] if ps else []
     midi_list = _get_midi_list(output_basename)
+
+    for png in png_list:
+        trim_image(png)
 
     return LilypondTypesetResults(pdf_list, png_list, ps_list, midi_list)
 
