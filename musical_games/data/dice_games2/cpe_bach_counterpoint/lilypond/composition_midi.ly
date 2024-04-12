@@ -7,9 +7,9 @@
     <<
         \new Staff
             \with {
-                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('treble', 0)}
-                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('treble', 0)}
-                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('treble', 0)}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('treble', 'treble')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('treble', 'treble')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('treble', 'treble')}"
             }
         <<
             {
@@ -29,9 +29,9 @@
         \new Staff
 
             \with {
-                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('bass', 0)}
-                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('bass', 0)}
-                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('bass', 0)}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('bass', 'bass')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('bass', 'bass')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('bass', 'bass')}"
             }
         <<
             {

@@ -24,7 +24,7 @@ def load_item(item: str) -> Bar:
         voice_results = {}
         for voice_data in voices:
             match_groups = re.search(r"{\\voice([a-zA-Z]+) (.*)}", voice_data).groups()
-            voice_results[voice_names_to_index[match_groups[0]]] = SimpleBar(match_groups[1])
+            voice_results[voice_names_to_index[match_groups[0]]] = SimpleBar(match_groups[1].strip())
         return SimpleMultiVoiceBar(voice_results)
     else:
         return SimpleBar(item)

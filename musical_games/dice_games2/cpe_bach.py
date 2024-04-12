@@ -13,7 +13,8 @@ import numpy as np
 
 from musical_games.dice_games2.base import (DiceGame, SimpleDiceTable, SimpleLilypondScore, LilypondScore,
                                             DiceTable, BarCollection, BarSelection, \
-    GroupedStaffsBarSelection, MidiSettings, SimpleMidiSettings)
+                                            GroupedStaffsBarSelection, MidiSettings, SimpleMidiSettings,
+                                            str_dice_table_name, int_bar_index, str_staff_name)
 from musical_games.dice_games2.data_csv import SimpleBarCollectionCSVReader
 
 
@@ -50,7 +51,7 @@ class CPEBachCounterpoint(DiceGame):
                 [9, 18, 27, 36, 45, 54]])),
         }
         self._bar_collection = self._get_bar_collection()
-        self._table_key_to_staff = {'treble': 0, 'bass': 1}
+        self._table_name_to_staff_name: dict[str_dice_table_name, str_staff_name] = {'treble': 'treble', 'bass': 'bass'}
 
         self._jinja2_environment_options = dict(
             block_start_string=r'\BLOCK{',
@@ -77,11 +78,11 @@ class CPEBachCounterpoint(DiceGame):
     def title(self) -> str:
         return self._title
 
-    def get_dice_tables(self) -> dict[str, DiceTable]:
+    def get_dice_tables(self) -> dict[str_dice_table_name, DiceTable]:
         return self._dice_tables
 
-    def get_all_duplicate_bars(self, table_key: str) -> list[set[int]]:
-        bars = self._bar_collection.get_bars(self._table_key_to_staff[table_key])
+    def get_all_duplicate_bars(self, table_name: str_dice_table_name) -> list[set[int_bar_index]]:
+        bars = self._bar_collection.get_bars(self._table_name_to_staff_name[table_name])
 
         bars_by_lilypond = {}
         for bar_ind, bar in bars.items():
@@ -91,18 +92,18 @@ class CPEBachCounterpoint(DiceGame):
         return [v for k, v in bars_by_lilypond.items() if len(v) > 1]
 
     def count_unique_compositions(self, count_duplicates=False) -> int:
-        def count_unique_bars(table_key: str, bar_numbers: list[int]):
+        def count_unique_bars(table_name: str, bar_numbers: list[int]):
             """Count the number of unique bars in the provided list of bar numbers."""
-            bars_of_table = self._bar_collection.get_bars(self._table_key_to_staff[table_key])
+            bars_of_table = self._bar_collection.get_bars(self._table_name_to_staff_name[table_name])
             bars = [bars_of_table[bar_number].lilypond_str for bar_number in bar_numbers]
             return len(set(bars))
 
         table_counts = []
-        for table_key, table in self._dice_tables.items():
+        for table_name, table in self._dice_tables.items():
             if count_duplicates:
                 table_counts.append(table.max_dice_value ** table.nmr_throws)
             else:
-                table_counts.append(reduce(mul, [count_unique_bars(table_key, column)
+                table_counts.append(reduce(mul, [count_unique_bars(table_name, column)
                                                  for column in table.list_columns()]))
         return reduce(mul, table_counts)
 
@@ -111,25 +112,25 @@ class CPEBachCounterpoint(DiceGame):
 
     def get_random_bar_selection(self, shuffle_staffs: bool = False, seed: int = None) -> BarSelection:
         choices = {}
-        for table_key, dice_table in self._dice_tables.items():
-            choices[table_key] = dice_table.get_random_selection(seed)
+        for table_name, dice_table in self._dice_tables.items():
+            choices[table_name] = dice_table.get_random_selection(seed)
         return GroupedStaffsBarSelection(choices)
 
     def get_default_midi_settings(self) -> MidiSettings:
         return SimpleMidiSettings(
-            {'treble': {0: 'acoustic grand', 1: 'test'}, 'bass': {0: 'acoustic grand'}},
-            {'treble': {0: 0}, 'bass': {0: 0}},
-            {'treble': {0: 1}, 'bass': {0: 0.75}})
+            {'treble': {'treble': 'acoustic grand'}, 'bass': {'bass': 'acoustic grand'}},
+            {'treble': {'treble': 0}, 'bass': {'bass': 0}},
+            {'treble': {'treble': 1}, 'bass': {'bass': 0.75}})
 
     def compile_bars_overview(self, single_page: bool = False) -> LilypondScore:
         template = self._jinja2_env.get_template('bar_overview.ly')
         return SimpleLilypondScore(template.render(bar_collection=self._bar_collection,
                                                    render_settings={'single_page': single_page}))
 
-    def compile_single_bar(self, table_key: str, bar_ind: int) -> LilypondScore:
+    def compile_single_bar(self, table_name: str_dice_table_name, bar_ind: int_bar_index) -> LilypondScore:
         template = self._jinja2_env.get_template('single_bar.ly')
-        bar = self._bar_collection.get_bars(self._table_key_to_staff[table_key])[bar_ind]
-        return SimpleLilypondScore(template.render(clef=table_key, bar=bar))
+        bar = self._bar_collection.get_bars(self._table_name_to_staff_name[table_name])[bar_ind]
+        return SimpleLilypondScore(template.render(clef=self._table_name_to_staff_name[table_name], bar=bar))
 
     def compile_composition_score(self, bar_selection: BarSelection, comment: str | None = None) -> LilypondScore:
         template = self._jinja2_env.get_template('composition_pdf.ly')
@@ -163,7 +164,7 @@ class CPEBachCounterpoint(DiceGame):
         for table_key in self._dice_tables.keys():
             for throw_ind in range(self._dice_tables[table_key].nmr_throws):
                 bar_ind = bar_selection.get_bar_index(table_key, throw_ind)
-                bar = self._bar_collection.get_bar(self._table_key_to_staff[table_key], bar_ind)
+                bar = self._bar_collection.get_bar(self._table_name_to_staff_name[table_key], bar_ind)
                 composition_bars[table_key].append(bar)
         return composition_bars
 

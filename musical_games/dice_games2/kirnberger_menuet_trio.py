@@ -74,7 +74,7 @@ class KirnbergerMenuetTrio(DiceGame):
     def get_dice_tables(self) -> dict[str, DiceTable]:
         return self._dice_tables
 
-    def get_all_duplicate_bars(self, table_key: str_dice_table_key) -> list[set[int_bar_index]]:
+    def get_all_duplicate_bars(self, table_name: str_dice_table_key) -> list[set[int_bar_index]]:
         pass
 
     def count_unique_compositions(self, count_duplicates=False) -> int:
@@ -89,7 +89,7 @@ class KirnbergerMenuetTrio(DiceGame):
     def get_default_midi_settings(self) -> MidiSettings:
         pass
 
-    def compile_single_bar(self, table_key: str_dice_table_key, bar_ind: int_bar_index) -> LilypondScore:
+    def compile_single_bar(self, table_name: str_dice_table_key, bar_ind: int_bar_index) -> LilypondScore:
         pass
 
     def compile_composition_score(self, bar_selection: BarSelection, comment: str | None = None) -> LilypondScore:

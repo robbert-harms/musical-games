@@ -77,12 +77,15 @@ class SimpleBarCollectionCSVReader(BarCollectionCSVReader):
         with open(csv_in, 'r', newline='') as csvfile:
             bar_reader = csv.reader(csvfile, dialect='unix')
 
+            staff_names = None
             for row_ind, row in enumerate(bar_reader):
-                if row_ind > 0:
+                if row_ind == 0:
+                    staff_names = row[1:]
+                else:
                     bars = []
                     for bar_str in row[1:]:
                         bars.append(self._load_bar(bar_str))
-                    synchronous_bars[int(row[0])] = SimpleSynchronousBars(tuple(bars))
+                    synchronous_bars[int(row[0])] = SimpleSynchronousBars(dict(zip(staff_names, bars)))
 
         return SimpleBarCollection(synchronous_bars)
 
