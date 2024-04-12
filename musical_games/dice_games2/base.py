@@ -11,13 +11,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Self, TypeAlias
 
+import jinja2
 import numpy as np
 from numpy.random import RandomState
 
 
 int_bar_index: TypeAlias = int
-str_dice_table_name: TypeAlias = str
 int_voice_index: TypeAlias = int
+str_dice_table_name: TypeAlias = str
 str_staff_name: TypeAlias = str
 
 
@@ -54,17 +55,14 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_all_duplicate_bars(self, table_name: str_dice_table_name) -> list[set[int_bar_index]]:
-        """Get a list of all the duplicate bars in a given dice table.
+    def get_all_duplicate_bars(self) -> dict[str_dice_table_name, list[set[int_bar_index]]]:
+        """Get a list of all the duplicate bars for each dice table.
 
-        For a given dice table, this should scan the bars belonging to that dice table for duplicates. We return each
+        For each dice table, this should scan the bars belonging to that dice table for duplicates. We return each
         set of duplicates as a set containing all the bar indices having duplicates.
 
-        Args:
-            table_name: the name of the dice table we want to search for duplicates.
-
         Returns:
-            A list of duplicate bar sets by bar index.
+            A list of duplicate bar sets by bar index for each dice table
         """
 
     @abstractmethod
@@ -79,7 +77,7 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_nmr_staffs_per_table(self) -> dict[str, int]:
+    def get_nmr_staffs_per_table(self) -> dict[str_dice_table_name, int]:
         """Get the number of staffs available per dice table.
 
         Returns:
@@ -155,6 +153,104 @@ class DiceGame(metaclass=ABCMeta):
         """
 
 
+class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
+
+    def __init__(self,
+                 author: str,
+                 title: str,
+                 dice_tables: dict[str_dice_table_name: DiceTable],
+                 bar_collection: dict[str_dice_table_name, BarCollection],
+                 jinja2_environment: jinja2.Environment,
+                 default_midi_settings: MidiSettings):
+        """Implementation of a simple dice game covering most standard dice games functionality.
+
+        Args:
+            author: the author of the dice game
+            title: the title of the dice game
+            dice_tables: the dice tables indexed by table name
+            bar_collection: the collection of bars per table
+            jinja2_environment: the jinja2 environment we use for typesetting
+            default_midi_settings: the default midi settings
+        """
+        self._author = author
+        self._title = title
+        self._dice_tables = dice_tables
+        self._bar_collection = bar_collection
+        self._jinja2_environment = jinja2_environment
+        self._default_midi_settings = default_midi_settings
+
+    @property
+    def author(self) -> str:
+        return self._author
+
+    @property
+    def title(self) -> str:
+        return self._title
+
+    def get_dice_tables(self) -> dict[str_dice_table_name, DiceTable]:
+        return self._dice_tables
+
+    def get_all_duplicate_bars(self) -> dict[str_dice_table_name, list[set[int_bar_index]]]:
+        table_duplicates = {}
+        for table_name, dice_table in self._dice_tables.items():
+            bars = self._bar_collection[table_name].get_synchronous_bars()
+
+            bars_by_lilypond = {}
+            for bar_ind, bar in bars.items():
+                bar_data = tuple(b.lilypond_str for b in bar.get_staffs().values())
+                bar_indices = bars_by_lilypond.setdefault(bar_data, set())
+                bar_indices.add(bar_ind)
+
+            table_duplicates[table_name] = [v for k, v in bars_by_lilypond.items() if len(v) > 1]
+        return table_duplicates
+
+    # def count_unique_compositions(self, count_duplicates=False) -> int:
+    #     pass
+
+    def get_nmr_staffs_per_table(self) -> dict[str_dice_table_name, int]:
+        return {table_name: len(bar_collection.get_staff_names())
+                for table_name, bar_collection in self._bar_collection.items()}
+
+    def get_random_bar_selection(self, shuffle_staffs: bool = False, seed: int = None) -> BarSelection:
+        choices = {}
+        for table_name, dice_table in self._dice_tables.items():
+            choices[table_name] = dice_table.get_random_selection(seed)
+        return GroupedStaffsBarSelection(choices)
+
+    def get_default_midi_settings(self) -> MidiSettings:
+        return self._default_midi_settings
+    #
+    # def compile_bars_overview(self, single_page: bool = False) -> LilypondScore:
+    #     pass
+    #
+    # def compile_single_bar(self, table_name: str_dice_table_name, bar_ind: int_bar_index) -> LilypondScore:
+    #     pass
+    #
+    # def compile_composition_score(self, bar_selection: BarSelection, comment: str | None = None) -> LilypondScore:
+    #     pass
+    #
+    # def compile_composition_audio(self, bar_selection: BarSelection,
+    #                               midi_settings: MidiSettings | None = None) -> LilypondScore:
+    #     pass
+
+    @staticmethod
+    def _standard_jinja2_environment_options():
+        """Get a set of standard jinja2 environment options you can use in your templates."""
+        return dict(
+            block_start_string=r'\BLOCK{',
+            block_end_string='}',
+            variable_start_string=r'\VAR{',
+            variable_end_string='}',
+            comment_start_string=r'\#{',
+            comment_end_string='}',
+            line_statement_prefix='%-',
+            line_comment_prefix='%#',
+            trim_blocks=True,
+            autoescape=False,
+            lstrip_blocks=True
+        )
+
+
 class Bar(metaclass=ABCMeta):
     """Representation of a single bar, of a single staff."""
 
@@ -187,6 +283,13 @@ class SynchronousBars(metaclass=ABCMeta):
     right hand piano and the violin. These synchronous bars are connected in this class. For clarity, the different
     bars should be stored in a dictionary with their staff name as key.
     """
+    @abstractmethod
+    def get_staff_names(self) -> list[str_staff_name]:
+        """Get the names of the staffs stored in this synchronous bar.
+
+        Returns:
+            The names of the staffs
+        """
 
     @abstractmethod
     def get_staffs(self) -> dict[str, Bar]:
@@ -211,7 +314,7 @@ class SynchronousBars(metaclass=ABCMeta):
 class BarCollection(metaclass=ABCMeta):
     """Collection of synchronous bars for a single compositional piece.
 
-    The bars are expected to be stored in a dictionary mapping dice table labels (bar indices) to bars.
+    The bars are expected to be stored in a dictionary mapping bar indices to bars.
     """
 
     @abstractmethod
@@ -220,6 +323,14 @@ class BarCollection(metaclass=ABCMeta):
 
         Returns:
             All synchronous bars indexed by their bar index.
+        """
+
+    @abstractmethod
+    def get_staff_names(self) -> list[str_staff_name]:
+        """Get the names of the staffs stored in the synchronous bars.
+
+        Returns:
+            The names of the staffs.
         """
 
     @abstractmethod
@@ -290,6 +401,9 @@ class SimpleSynchronousBars(SynchronousBars):
     """
     bars: dict[str_staff_name, Bar]
 
+    def get_staff_names(self) -> list[str_staff_name]:
+        return list(self.bars.keys())
+
     def get_staffs(self) -> dict[str_staff_name, Bar]:
         return self.bars
 
@@ -311,6 +425,9 @@ class SimpleBarCollection(BarCollection):
 
     def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBars]:
         return self.synchronous_bars
+
+    def get_staff_names(self) -> list[str_staff_name]:
+        return self.synchronous_bars[list(self.synchronous_bars.keys())[0]].get_staff_names()
 
     def get_bars(self, staff_name: str_staff_name) -> dict[int_bar_index, Bar]:
         return {key: sb.get_bar(staff_name) for key, sb in self.synchronous_bars.items()}

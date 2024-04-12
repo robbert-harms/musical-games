@@ -12,6 +12,9 @@ out_dir = Path('/tmp/test2')
 
 dice_game = CPEBachCounterpoint()
 
+print(dice_game.get_default_midi_settings())
+
+
 # dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
 # auto_convert_lilypond_file(out_dir / 'overview.ly')
 #
@@ -28,14 +31,14 @@ dice_game = CPEBachCounterpoint()
 #                                     comment='Test').to_file(out_dir / 'composition_pdf.ly')
 # auto_convert_lilypond_file(out_dir / 'composition_pdf.ly')
 
-midi_settings = dice_game.get_default_midi_settings()
-my_midi_settings = midi_settings.with_updated_instrument('flute', 'treble', 'treble')
-
-dice_game.compile_composition_audio(
-    dice_game.get_random_bar_selection(seed=0),
-    midi_settings=my_midi_settings).to_file(out_dir / 'composition_midi.ly')
-
-auto_convert_lilypond_file(
-    out_dir / 'composition_midi.ly',
-    soundfont=Path('/home/robbert/programming/python/opus_infinity.org/soundfonts/Musyng_Kite.sf2'))
-
+# midi_settings = dice_game.get_default_midi_settings()
+# my_midi_settings = midi_settings.with_updated_instrument('flute', 'treble', 'treble')
+#
+# dice_game.compile_composition_audio(
+#     dice_game.get_random_bar_selection(seed=0),
+#     midi_settings=my_midi_settings).to_file(out_dir / 'composition_midi.ly')
+#
+# auto_convert_lilypond_file(
+#     out_dir / 'composition_midi.ly',
+#     soundfont=Path('/home/robbert/programming/python/opus_infinity.org/soundfonts/Musyng_Kite.sf2'))
+#
