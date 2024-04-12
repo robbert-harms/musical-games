@@ -10,7 +10,7 @@ from importlib.abc import Traversable
 from pathlib import Path
 import re
 
-from musical_games.dice_games2.base import Bar, BarCollection, SimpleBar, SimpleSynchronousBars, SimpleBarCollection, \
+from musical_games.dice_games2.base import Bar, BarCollection, SimpleBar, SimpleBarCollection, \
     SimpleMultiVoiceBar
 
 
@@ -85,7 +85,7 @@ class SimpleBarCollectionCSVReader(BarCollectionCSVReader):
                     bars = []
                     for bar_str in row[1:]:
                         bars.append(self._load_bar(bar_str))
-                    synchronous_bars[int(row[0])] = SimpleSynchronousBars(dict(zip(staff_names, bars)))
+                    synchronous_bars[int(row[0])] = dict(zip(staff_names, bars))
 
         return SimpleBarCollection(synchronous_bars)
 

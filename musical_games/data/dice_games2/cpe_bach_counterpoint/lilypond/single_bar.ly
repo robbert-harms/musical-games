@@ -18,8 +18,8 @@
                 \time 4/4
             }
             {
-                \clef \VAR{ clef }
-                \VAR{ bar.lilypond_str }
+                \clef \VAR{ table_name }
+                \VAR{ synchronous_bar.get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>

@@ -28,7 +28,7 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar in bar_collections['menuet'].get_bars(0).values() }
+                \BLOCK{ for bar in bar_collections['menuet'].get_bars('piano_right_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
@@ -43,7 +43,7 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar in bar_collections['menuet'].get_bars(1).values() }
+                \BLOCK{ for bar in bar_collections['menuet'].get_bars('piano_left_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
@@ -70,7 +70,7 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar in bar_collections['trio'].get_bars(0).values() }
+                \BLOCK{ for bar in bar_collections['trio'].get_bars('piano_right_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
@@ -85,7 +85,7 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar in bar_collections['trio'].get_bars(1).values() }
+                \BLOCK{ for bar in bar_collections['trio'].get_bars('piano_left_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"

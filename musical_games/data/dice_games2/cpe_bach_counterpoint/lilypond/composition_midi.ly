@@ -7,9 +7,9 @@
     <<
         \new Staff
             \with {
-                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('treble', 'treble')}
-                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('treble', 'treble')}
-                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('treble', 'treble')}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('treble', 'piano_right_hand')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('treble', 'piano_right_hand')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('treble', 'piano_right_hand')}"
             }
         <<
             {
@@ -20,8 +20,8 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar in composition_bars['treble'] }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for synchronous_bar in composition_bars['treble'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -29,9 +29,9 @@
         \new Staff
 
             \with {
-                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('bass', 'bass')}
-                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('bass', 'bass')}
-                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('bass', 'bass')}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('bass', 'piano_left_hand')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('bass', 'piano_left_hand')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('bass', 'piano_left_hand')}"
             }
         <<
             {
@@ -42,8 +42,8 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar in composition_bars['bass'] }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for synchronous_bar in composition_bars['bass'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }

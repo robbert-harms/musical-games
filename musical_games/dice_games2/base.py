@@ -8,6 +8,8 @@ __licence__ = 'LGPL v3'
 
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
+from functools import reduce
+from operator import mul
 from pathlib import Path
 from typing import Self, TypeAlias
 
@@ -97,6 +99,21 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def bar_selection_to_bars(self, bar_selection: BarSelection) -> dict[str_dice_table_name, list[SynchronousBar]]:
+        """Transform a bar selection (containing bar indices) to the actual selection of bars.
+
+        The bar selection contains per dice table, and optionally per staff, the bar indices we want to use in a
+        composition. This function should select from the collection of bars hold in this dice game the bars
+        corresponding to the bar indices in the bar selection.
+
+        Args:
+            bar_selection: the selected bar indices contained in a bar selection
+
+        Returns:
+            For each dice table the bars to use as synchronous bars.
+        """
+
+    @abstractmethod
     def get_default_midi_settings(self) -> MidiSettings:
         """Get the default midi settings used when rendering a composition audio.
 
@@ -159,7 +176,7 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
                  author: str,
                  title: str,
                  dice_tables: dict[str_dice_table_name: DiceTable],
-                 bar_collection: dict[str_dice_table_name, BarCollection],
+                 bar_collections: dict[str_dice_table_name, BarCollection],
                  jinja2_environment: jinja2.Environment,
                  default_midi_settings: MidiSettings):
         """Implementation of a simple dice game covering most standard dice games functionality.
@@ -168,14 +185,14 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             author: the author of the dice game
             title: the title of the dice game
             dice_tables: the dice tables indexed by table name
-            bar_collection: the collection of bars per table
+            bar_collections: the collection of bars per table
             jinja2_environment: the jinja2 environment we use for typesetting
             default_midi_settings: the default midi settings
         """
         self._author = author
         self._title = title
         self._dice_tables = dice_tables
-        self._bar_collection = bar_collection
+        self._bar_collections = bar_collections
         self._jinja2_environment = jinja2_environment
         self._default_midi_settings = default_midi_settings
 
@@ -193,7 +210,7 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
     def get_all_duplicate_bars(self) -> dict[str_dice_table_name, list[set[int_bar_index]]]:
         table_duplicates = {}
         for table_name, dice_table in self._dice_tables.items():
-            bars = self._bar_collection[table_name].get_synchronous_bars()
+            bars = self._bar_collections[table_name].get_synchronous_bars()
 
             bars_by_lilypond = {}
             for bar_ind, bar in bars.items():
@@ -204,12 +221,27 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             table_duplicates[table_name] = [v for k, v in bars_by_lilypond.items() if len(v) > 1]
         return table_duplicates
 
-    # def count_unique_compositions(self, count_duplicates=False) -> int:
-    #     pass
+    def count_unique_compositions(self, count_duplicates=False) -> int:
+        def count_unique_bars(table_name: str, bar_indexes: list[int]):
+            """Count the number of unique bars in the provided list of bar numbers."""
+            bars_of_table = self._bar_collections[table_name]
+            bars = [tuple(el.lilypond_str for el in bars_of_table.get_synchronous_bar(bar_index).get_bars())
+                    for bar_index in bar_indexes]
+            return len(set(bars))
+
+        table_counts = []
+        for table_name, table in self._dice_tables.items():
+            if count_duplicates:
+                table_counts.append(table.max_dice_value ** table.nmr_throws)
+            else:
+                table_counts.append(reduce(mul, [count_unique_bars(table_name, column)
+                                                 for column in table.list_columns()]))
+        return reduce(mul, table_counts)
+
 
     def get_nmr_staffs_per_table(self) -> dict[str_dice_table_name, int]:
         return {table_name: len(bar_collection.get_staff_names())
-                for table_name, bar_collection in self._bar_collection.items()}
+                for table_name, bar_collection in self._bar_collections.items()}
 
     def get_random_bar_selection(self, shuffle_staffs: bool = False, seed: int = None) -> BarSelection:
         choices = {}
@@ -217,21 +249,43 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             choices[table_name] = dice_table.get_random_selection(seed)
         return GroupedStaffsBarSelection(choices)
 
+    def bar_selection_to_bars(self, bar_selection: BarSelection) -> dict[str_dice_table_name, list[SynchronousBar]]:
+        composition_bars = {table_name: [] for table_name in self._dice_tables.keys()}
+
+        for table_name in self._dice_tables.keys():
+            for throw_ind in range(self._dice_tables[table_name].nmr_throws):
+                bars_per_index = {}
+                for staff_name in self._bar_collections[table_name].get_staff_names():
+                    bar_ind = bar_selection.get_bar_index(table_name, throw_ind, staff_name)
+                    bars_per_index[staff_name] = self._bar_collections[table_name].get_bar(staff_name, bar_ind)
+                composition_bars[table_name].append(SimpleSynchronousBar(bars_per_index))
+        return composition_bars
+
     def get_default_midi_settings(self) -> MidiSettings:
         return self._default_midi_settings
-    #
-    # def compile_bars_overview(self, single_page: bool = False) -> LilypondScore:
-    #     pass
-    #
-    # def compile_single_bar(self, table_name: str_dice_table_name, bar_ind: int_bar_index) -> LilypondScore:
-    #     pass
-    #
-    # def compile_composition_score(self, bar_selection: BarSelection, comment: str | None = None) -> LilypondScore:
-    #     pass
-    #
-    # def compile_composition_audio(self, bar_selection: BarSelection,
-    #                               midi_settings: MidiSettings | None = None) -> LilypondScore:
-    #     pass
+
+    def compile_bars_overview(self, single_page: bool = False) -> LilypondScore:
+        template = self._jinja2_environment.get_template('bar_overview.ly')
+        return SimpleLilypondScore(template.render(bar_collections=self._bar_collections,
+                                                   render_settings={'single_page': single_page}))
+
+    def compile_single_bar(self, table_name: str_dice_table_name, bar_ind: int_bar_index) -> LilypondScore:
+        template = self._jinja2_environment.get_template('single_bar.ly')
+        synchronous_bar = self._bar_collections[table_name].get_synchronous_bar(bar_ind)
+        return SimpleLilypondScore(template.render(table_name=table_name, synchronous_bar=synchronous_bar))
+
+    def compile_composition_score(self, bar_selection: BarSelection, comment: str | None = None) -> LilypondScore:
+        template = self._jinja2_environment.get_template('composition_pdf.ly')
+        composition_bars = self.bar_selection_to_bars(bar_selection)
+        return SimpleLilypondScore(template.render(composition_bars=composition_bars,
+                                                   render_settings={'comment': comment}))
+
+    def compile_composition_audio(self, bar_selection: BarSelection,
+                                  midi_settings: MidiSettings | None = None) -> LilypondScore:
+        midi_settings = midi_settings or self.get_default_midi_settings()
+        template = self._jinja2_environment.get_template('composition_midi.ly')
+        composition_bars = self.bar_selection_to_bars(bar_selection)
+        return SimpleLilypondScore(template.render(composition_bars=composition_bars, midi_settings=midi_settings))
 
     @staticmethod
     def _standard_jinja2_environment_options():
@@ -276,7 +330,7 @@ class MultiVoiceBar(Bar, metaclass=ABCMeta):
         """
 
 
-class SynchronousBars(metaclass=ABCMeta):
+class SynchronousBar(metaclass=ABCMeta):
     """Representation of a list of bars played synchronously across staves.
 
     Suppose that a piece has a piano and a violin, then at each time point there are three bars being played, left and
@@ -310,6 +364,14 @@ class SynchronousBars(metaclass=ABCMeta):
             The bar of that staff.
         """
 
+    @abstractmethod
+    def get_bars(self) -> list[Bar]:
+        """Get the bars in a list.
+
+        Returns:
+            The list of bars, in the order defined by the dictionary.
+        """
+
 
 class BarCollection(metaclass=ABCMeta):
     """Collection of synchronous bars for a single compositional piece.
@@ -318,11 +380,22 @@ class BarCollection(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBars]:
+    def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBar]:
         """Get the collection of all synchronous bars.
 
         Returns:
             All synchronous bars indexed by their bar index.
+        """
+
+    @abstractmethod
+    def get_synchronous_bar(self, bar_index: int_bar_index) -> SynchronousBar:
+        """Get a synchronous bar at the specified bar index.
+
+        Args:
+            bar_index: the index of the bar to retrieve.
+
+        Returns:
+            The synchronous bar at that bar index.
         """
 
     @abstractmethod
@@ -393,7 +466,7 @@ class SimpleMultiVoiceBar(MultiVoiceBar):
 
 
 @dataclass(frozen=True, slots=True)
-class SimpleSynchronousBars(SynchronousBars):
+class SimpleSynchronousBar(SynchronousBar):
     """Representation of a bar across staffs.
 
     Args:
@@ -410,30 +483,36 @@ class SimpleSynchronousBars(SynchronousBars):
     def get_bar(self, staff_name: str_staff_name) -> Bar:
         return self.bars[staff_name]
 
+    def get_bars(self) -> list[Bar]:
+        return list(self.bars.values())
+
 
 @dataclass(frozen=True, slots=True)
 class SimpleBarCollection(BarCollection):
     """Representation of a collection of bars contained in a dictionary.
 
-    The bars are stored as synchronous bars, splitting them when necessary. Furthermore, the bars are stored in a
-    dictionary such that we can store the bars with their dice table label instead of a numerical index.
+    The bars are stored in a multi-level dictionary, combined into synchronous bars when asked. Furthermore, the bars
+    are stored in a dictionary such that we can store the bars with their dice table label instead of a numerical index.
 
     Args:
-        synchronous_bars: the collection of synchronous bars indexed by their bar index.
+        bar_collection: the collection of synchronous bars indexed by their bar index and staff name.
     """
-    synchronous_bars: dict[int_bar_index, SynchronousBars]
+    bar_collection: dict[int_bar_index, dict[str_staff_name, Bar]]
 
-    def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBars]:
-        return self.synchronous_bars
+    def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBar]:
+        return {bar_index: SimpleSynchronousBar(bars) for bar_index, bars in self.bar_collection.items()}
+
+    def get_synchronous_bar(self, bar_index: int_bar_index) -> SynchronousBar:
+        return SimpleSynchronousBar(self.bar_collection[bar_index])
 
     def get_staff_names(self) -> list[str_staff_name]:
-        return self.synchronous_bars[list(self.synchronous_bars.keys())[0]].get_staff_names()
+        return list(self.bar_collection[1].keys())
 
     def get_bars(self, staff_name: str_staff_name) -> dict[int_bar_index, Bar]:
-        return {key: sb.get_bar(staff_name) for key, sb in self.synchronous_bars.items()}
+        return {bar_index: bars[staff_name] for bar_index, bars in self.bar_collection.items()}
 
     def get_bar(self, staff_name: str_staff_name, bar_index: int_bar_index) -> Bar:
-        return self.synchronous_bars[bar_index].get_bar(staff_name)
+        return self.bar_collection[bar_index][staff_name]
 
 
 class DiceTable(metaclass=ABCMeta):

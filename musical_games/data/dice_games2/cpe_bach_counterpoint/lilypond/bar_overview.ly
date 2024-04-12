@@ -28,7 +28,7 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar in bar_collection.get_bars('treble').values() }
+                \BLOCK{ for bar in bar_collections['treble'].get_bars('piano_right_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
@@ -43,7 +43,7 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar in bar_collection.get_bars('bass').values() }
+                \BLOCK{ for bar in bar_collections['bass'].get_bars('piano_left_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"

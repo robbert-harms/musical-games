@@ -62,8 +62,8 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar in composition_bars['treble'] }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for synchronous_bar in composition_bars['treble'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -78,8 +78,8 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar in composition_bars['bass'] }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for synchronous_bar in composition_bars['bass'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }

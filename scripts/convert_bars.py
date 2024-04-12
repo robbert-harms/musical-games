@@ -9,7 +9,7 @@ from pathlib import Path
 
 from ruyaml import YAML
 
-from musical_games.dice_games2.base import SimpleBar, Bar, SimpleSynchronousBars, SimpleBarCollection, \
+from musical_games.dice_games2.base import SimpleBar, Bar, SimpleSynchronousBar, SimpleBarCollection, \
     SimpleMultiVoiceBar
 from musical_games.dice_games2.data_csv import SimpleBarCollectionCSVWriter
 
@@ -35,7 +35,7 @@ bars_lh = yaml['game_mechanics']['bars']['trio']['piano_left_hand']
 
 sync_bars = {}
 for right_hand, left_hand in list(zip(bars_rh.items(), bars_lh.items())):
-    sync_bars[right_hand[0]] = SimpleSynchronousBars((load_item(right_hand[1]), load_item(left_hand[1])))
+    sync_bars[right_hand[0]] = SimpleSynchronousBar((load_item(right_hand[1]), load_item(left_hand[1])))
 
     # print(f'{right_hand[0]}: SimpleSynchronousBars((SimpleBar("{right_hand[1]}"), SimpleBar("{left_hand[1]}"))),')
 
