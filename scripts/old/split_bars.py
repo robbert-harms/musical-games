@@ -8,7 +8,7 @@ import csv
 
 import pandas as pd
 
-bars = pd.read_csv('/home/robbert/programming/python/musical_games/musical_games/data/dice_games2/cpe_bach_counterpoint/bars.csv')
+bars = pd.read_csv('/musical_games/data/dice_games2/cpe_bach_counterpoint/bars.csv')
 
 bars[['bar_index', 'treble']].to_csv('/tmp/bars_treble.csv', index=False)
 bars[['bar_index', 'bass']].to_csv('/tmp/bars_bass.csv', index=False)

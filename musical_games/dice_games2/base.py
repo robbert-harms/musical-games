@@ -145,12 +145,16 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def compile_composition_score(self, bar_selection: BarSelection, comment: str | None = None) -> LilypondScore:
+    def compile_composition_score(self,
+                                  bar_selection: BarSelection,
+                                  comment: str | None = None,
+                                  single_page: bool = False) -> LilypondScore:
         """Compile a visual composition of this dice game using the selected bars.
 
         Args:
             bar_selection: the selection of bars for the composition
             comment: an optional comment for at the end of the composition
+            single_page: if we want to print the overview on a single large page without page breaks.
 
         Returns:
             A lilypond score meant to be rendered as a PDF.
@@ -274,11 +278,14 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         synchronous_bar = self._bar_collections[table_name].get_synchronous_bar(bar_ind)
         return SimpleLilypondScore(template.render(table_name=table_name, synchronous_bar=synchronous_bar))
 
-    def compile_composition_score(self, bar_selection: BarSelection, comment: str | None = None) -> LilypondScore:
+    def compile_composition_score(self,
+                                  bar_selection: BarSelection,
+                                  comment: str | None = None,
+                                  single_page: bool = False) -> LilypondScore:
         template = self._jinja2_environment.get_template('composition_pdf.ly')
         composition_bars = self.bar_selection_to_bars(bar_selection)
         return SimpleLilypondScore(template.render(composition_bars=composition_bars,
-                                                   render_settings={'comment': comment}))
+                                                   render_settings={'comment': comment, 'single_page': single_page}))
 
     def compile_composition_audio(self, bar_selection: BarSelection,
                                   midi_settings: MidiSettings | None = None) -> LilypondScore:
@@ -315,18 +322,6 @@ class Bar(metaclass=ABCMeta):
 
         Returns:
             A lilypond string of a single bar.
-        """
-
-
-class MultiVoiceBar(Bar, metaclass=ABCMeta):
-    """Representation of a single bar with multiple voices."""
-
-    @abstractmethod
-    def get_voices(self) -> dict[int_voice_index, Bar]:
-        """Get the voices stored in this multi-voice bar.
-
-        Returns:
-            Each voice should be returned as a separate bar object, indexed by their voice number.
         """
 
 
@@ -438,31 +433,6 @@ class SimpleBar(Bar):
         lilypond_str: the lilypond string representation of this bar
     """
     lilypond_str: str
-
-
-@dataclass(frozen=True, slots=True)
-class SimpleMultiVoiceBar(MultiVoiceBar):
-    """Representation of a single bar with multiple voices.
-
-    Since in a piece there may be multiple voices which we may want to connect, we index the voices in this
-    class by a voice index number. As such, if, for example, voice 3 drops out for a section, the indices
-    stay constant.
-
-    Args:
-        A mapping of voice number to a bar.
-    """
-    voices: dict[int_voice_index, Bar]
-
-    @property
-    def lilypond_str(self) -> str:
-        voices_index_to_name = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four'}
-        voice_strings = []
-        for voice_ind, bar in self.voices.items():
-            voice_strings.append("{\\voice" + voices_index_to_name[voice_ind] + ' ' + bar.lilypond_str + '}')
-        return '{<<' + ' \\new Voice '.join(voice_strings) + '>>}'
-
-    def get_voices(self) -> dict[int_voice_index, Bar]:
-        return self.voices
 
 
 @dataclass(frozen=True, slots=True)
