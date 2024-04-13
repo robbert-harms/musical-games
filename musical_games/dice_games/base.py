@@ -269,8 +269,8 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             choices = {}
             for table_name, dice_table in self._dice_tables.items():
                 choices[table_name] = {}
-                for staff_name in self._bar_collections[table_name].get_staff_names():
-                    choices[table_name][staff_name] = dice_table.get_random_selection(seed)
+                for staff_ind, staff_name in enumerate(self._bar_collections[table_name].get_staff_names()):
+                    choices[table_name][staff_name] = dice_table.get_random_selection(seed + staff_ind)
             return PerStaffsBarSelection(choices)
         else:
             choices = {}
