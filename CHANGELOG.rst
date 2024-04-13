@@ -2,6 +2,14 @@
 Changelog
 *********
 
+v0.6.0 (2024-04-13)
+===================
+- Updated the library to a new format, with a cleaner API design.
+- Upgraded package to latest format with toml file.
+- Added typehints to the external library calls.
+- Updated the readme
+
+
 v0.5.2 (2022-02-15)
 ===================
 
