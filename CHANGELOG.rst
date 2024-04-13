@@ -2,6 +2,18 @@
 Changelog
 *********
 
+v0.6.2 (2024-04-13)
+===================
+
+Added
+-----
+- Adds pip release to makefile.
+
+Fixed
+-----
+- Fixed independent staff shuffling.
+
+
 v0.6.1 (2024-04-13)
 ===================
 - Reduced dependencies.
