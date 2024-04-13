@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from functools import reduce
 from operator import mul
 from pathlib import Path
-from typing import Self, TypeAlias
+from typing import Self, TypeAlias, Any
 
 import jinja2
 import numpy as np
@@ -65,6 +65,14 @@ class DiceGame(metaclass=ABCMeta):
 
         Returns:
             A list of duplicate bar sets by bar index for each dice table
+        """
+
+    @abstractmethod
+    def get_duplicate_bars(self, table_name: str_dice_table_name, bar_index: int_bar_index) -> set[int_bar_index]:
+        """Get the set of duplicates of the given bar in the indicated table.
+
+        Returns:
+            The set of duplicates for the indicated bar
         """
 
     @abstractmethod
@@ -225,6 +233,16 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             table_duplicates[table_name] = [v for k, v in bars_by_lilypond.items() if len(v) > 1]
         return table_duplicates
 
+    def get_duplicate_bars(self, table_name: str_dice_table_name, bar_index: int_bar_index) -> list[int_bar_index]:
+        bars = self._bar_collections[table_name].get_synchronous_bars()
+        current_bar = bars[bar_index]
+
+        indices = set()
+        for bar_ind, bar in bars.items():
+            if bar == current_bar:
+                indices.add(bar_ind)
+        return indices
+
     def count_unique_compositions(self, count_duplicates=False) -> int:
         def count_unique_bars(table_name: str, bar_indexes: list[int]):
             """Count the number of unique bars in the provided list of bar numbers."""
@@ -242,16 +260,23 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
                                                  for column in table.list_columns()]))
         return reduce(mul, table_counts)
 
-
     def get_nmr_staffs_per_table(self) -> dict[str_dice_table_name, int]:
         return {table_name: len(bar_collection.get_staff_names())
                 for table_name, bar_collection in self._bar_collections.items()}
 
     def get_random_bar_selection(self, shuffle_staffs: bool = False, seed: int = None) -> BarSelection:
-        choices = {}
-        for table_name, dice_table in self._dice_tables.items():
-            choices[table_name] = dice_table.get_random_selection(seed)
-        return GroupedStaffsBarSelection(choices)
+        if shuffle_staffs:
+            choices = {}
+            for table_name, dice_table in self._dice_tables.items():
+                choices[table_name] = {}
+                for staff_name in self._bar_collections[table_name].get_staff_names():
+                    choices[table_name][staff_name] = dice_table.get_random_selection(seed)
+            return PerStaffsBarSelection(choices)
+        else:
+            choices = {}
+            for table_name, dice_table in self._dice_tables.items():
+                choices[table_name] = dice_table.get_random_selection(seed)
+            return GroupedStaffsBarSelection(choices)
 
     def bar_selection_to_bars(self, bar_selection: BarSelection) -> dict[str_dice_table_name, list[SynchronousBar]]:
         composition_bars = {table_name: [] for table_name in self._dice_tables.keys()}
@@ -737,42 +762,55 @@ class MidiSettings(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def with_updated_instrument(self, midi_instrument: str, table_name: str_dice_table_name,
-                                staff_name: str_staff_name) -> Self:
-        """Get a version of this midi setting but with a different instrument for the given dice table and staff.
+    def with_updated_instrument(self,
+                                midi_instrument: str,
+                                table_name: str_dice_table_name | list[str_dice_table_name] | None = None,
+                                staff_name: str_staff_name | list[str_staff_name] | None = None) -> Self:
+        """Get a version of this midi setting but with a different instrument.
+
+        If no dice table name and/or staff name is provided, we apply the update to respectively all available
+        tables and/or staffs.
 
         Args:
             midi_instrument: the new instrument name to insert
-            table_name: the specific table
-            staff_name: the specific staff
+            table_name: a specific table or list of tables
+            staff_name: a specific staff or list of staffs
 
         Returns:
             A new instance of this midi settings.
         """
 
     @abstractmethod
-    def with_updated_min_volume(self, min_volume: float, table_name: str_dice_table_name,
-                                staff_name: str_staff_name) -> Self:
-        """Get a version of this midi setting but with a different minimum volume for the given dice table and staff.
+    def with_updated_min_volume(self, min_volume: float,
+                                table_name: str_dice_table_name | list[str_dice_table_name] | None = None,
+                                staff_name: str_staff_name | list[str_staff_name] | None = None) -> Self:
+        """Get a version of this midi setting but with a different minimum volume.
+
+        If no dice table name and/or staff name is provided, we apply the update to respectively all available
+        tables and/or staffs.
 
         Args:
             min_volume: the new minimum volume
-            table_name: the specific table
-            staff_name: the specific staff
+            table_name: a specific table or list of tables
+            staff_name: a specific staff or list of staffs
 
         Returns:
             A new instance of this midi settings.
         """
 
     @abstractmethod
-    def with_updated_max_volume(self, max_volume: float, table_name: str_dice_table_name,
-                                staff_name: str_staff_name) -> Self:
-        """Get a version of this midi setting but with a different maximum volume for the given dice table and staff.
+    def with_updated_max_volume(self, max_volume: float,
+                                table_name: str_dice_table_name | list[str_dice_table_name] | None = None,
+                                staff_name: str_staff_name | list[str_staff_name] | None = None) -> Self:
+        """Get a version of this midi setting but with a different maximum volume.
+
+        If no dice table name and/or staff name is provided, we apply the update to respectively all available
+        tables and/or staffs.
 
         Args:
             max_volume: the new maximum volume
-            table_name: the specific table
-            staff_name: the specific staff
+            table_name: a specific table or list of tables
+            staff_name: a specific staff or list of staffs
 
         Returns:
             A new instance of this midi settings.
@@ -801,18 +839,61 @@ class SimpleMidiSettings(MidiSettings):
     def get_max_volume(self, table_name: str_dice_table_name, staff_name: str_staff_name) -> float:
         return self.max_volumes[table_name][staff_name]
 
-    def with_updated_instrument(self, midi_instrument: str, table_name: str_dice_table_name,
-                                staff_name: str_staff_name) -> Self:
-        updated_dict = self.midi_instruments | {table_name: (self.midi_instruments[table_name]
-                                                             | {staff_name: midi_instrument})}
-        return type(self)(updated_dict, self.min_volumes, self.max_volumes)
+    def with_updated_instrument(self,
+                                midi_instrument: str,
+                                table_name: str_dice_table_name | list[str_dice_table_name] | None = None,
+                                staff_name: str_staff_name | list[str_staff_name] | None = None) -> Self:
+        return type(self)(self._update_nested_dict(self.midi_instruments, midi_instrument, table_name, staff_name),
+                          self.min_volumes, self.max_volumes)
 
-    def with_updated_min_volume(self, min_volume: float, table_name: str_dice_table_name,
-                                staff_name: str_staff_name) -> Self:
-        updated_dict = self.min_volumes | {table_name: (self.min_volumes[table_name] | {staff_name: min_volume})}
-        return type(self)(self.midi_instruments, updated_dict, self.max_volumes)
+    def with_updated_min_volume(self, min_volume: float,
+                                table_name: str_dice_table_name | list[str_dice_table_name] | None = None,
+                                staff_name: str_staff_name | list[str_staff_name] | None = None) -> Self:
+        return type(self)(self.midi_instruments,
+                          self._update_nested_dict(self.min_volumes, min_volume, table_name, staff_name),
+                          self.max_volumes)
 
-    def with_updated_max_volume(self, max_volume: float, table_name: str_dice_table_name,
-                                staff_name: str_staff_name) -> Self:
-        updated_dict = self.max_volumes | {table_name: (self.max_volumes[table_name] | {staff_name: max_volume})}
-        return type(self)(self.midi_instruments, self.min_volumes, updated_dict)
+    def with_updated_max_volume(self, max_volume: float,
+                                table_name: str_dice_table_name | list[str_dice_table_name] | None = None,
+                                staff_name: str_staff_name | list[str_staff_name] | None = None) -> Self:
+        return type(self)(self.midi_instruments,
+                          self.min_volumes,
+                          self._update_nested_dict(self.max_volumes, max_volume, table_name, staff_name))
+
+    def _update_nested_dict(self,
+                            dict_to_update: dict[str_dice_table_name, dict[str_staff_name, Any]],
+                            new_value: Any,
+                            table_names: str_dice_table_name | list[str_dice_table_name] | None,
+                            staff_names: str_staff_name | list[str_staff_name] | None):
+        """Update one of the midi settings dictionary with a new value.
+
+        Args:
+            dict_to_update: the dictionary to update
+            new_value: the new value to insert for the given table or staff
+            table_names: the tables to update
+            staff_names: the staffs to update
+        """
+        def get_updated_dict(dict_to_update, table_name, staff_name, new_value):
+            return dict_to_update | {table_name: (dict_to_update[table_name] | {staff_name: new_value})}
+
+        if table_names is None:
+            tables = list(self.midi_instruments.keys())
+        elif isinstance(table_names, str):
+            tables = [table_names]
+        else:
+            tables = table_names
+
+        updated_dict = dict_to_update
+        for table_name in tables:
+            if staff_names is None:
+                staffs = list(dict_to_update[table_name].keys())
+            elif isinstance(staff_names, str):
+                staffs = [staff_names]
+            else:
+                staffs = staff_names
+
+            for staff_name in staffs:
+                if staff_name in dict_to_update[table_name]:
+                    updated_dict = get_updated_dict(updated_dict, table_name, staff_name, new_value)
+
+        return updated_dict

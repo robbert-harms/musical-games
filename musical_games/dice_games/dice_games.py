@@ -9,8 +9,7 @@ from importlib import resources
 import jinja2
 import numpy as np
 
-from musical_games.dice_games.base import (SimpleDiceTable, SimpleMidiSettings,
-                                           str_dice_table_name, str_staff_name, SimpleDiceGame)
+from musical_games.dice_games.base import (SimpleDiceTable, SimpleMidiSettings, SimpleDiceGame)
 from musical_games.dice_games.data_csv import SimpleBarCollectionCSVReader
 
 

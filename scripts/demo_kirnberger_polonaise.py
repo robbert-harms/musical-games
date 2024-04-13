@@ -20,10 +20,14 @@ dice_game.compile_single_bar('polonaise', 1).to_file(out_dir / 'bar_polonaise_1.
 auto_convert_lilypond_file(out_dir / 'bar_polonaise_1.ly')
 
 print(dice_game.get_all_duplicate_bars())
+print(dice_game.get_duplicate_bars('polonaise', 88))
 print(dice_game.count_unique_compositions(count_duplicates=True))
 print(dice_game.count_unique_compositions(count_duplicates=False))
 
-dice_game.compile_composition_score(dice_game.get_random_bar_selection(seed=0),
+print(dice_game.get_random_bar_selection(shuffle_staffs=False, seed=0))
+print(dice_game.get_random_bar_selection(shuffle_staffs=True, seed=0))
+
+dice_game.compile_composition_score(dice_game.get_random_bar_selection(shuffle_staffs=True, seed=0),
                                     comment='Test', single_page=True).to_file(out_dir / 'composition_pdf.ly')
 auto_convert_lilypond_file(out_dir / 'composition_pdf.ly')
 
