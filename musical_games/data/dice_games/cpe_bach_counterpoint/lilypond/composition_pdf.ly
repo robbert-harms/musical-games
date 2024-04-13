@@ -62,8 +62,8 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index in range(6) }
-                    \VAR{game_mechanics.get_bar('treble', 'piano_right_hand',  bar_nmrs['treble']['piano_right_hand'][bar_index])}
+                \BLOCK{ for synchronous_bar in composition_bars['treble'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -78,8 +78,8 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar_index in range(6) }
-                    \VAR{game_mechanics.get_bar('bass', 'piano_left_hand',  bar_nmrs['bass']['piano_left_hand'][bar_index])}
+                \BLOCK{ for synchronous_bar in composition_bars['bass'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }

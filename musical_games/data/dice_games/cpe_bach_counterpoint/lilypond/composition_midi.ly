@@ -7,9 +7,9 @@
     <<
         \new Staff
             \with {
-                midiMinimumVolume = #\VAR{render_settings.treble_midi_settings.min_volume}
-                midiMaximumVolume = #\VAR{render_settings.treble_midi_settings.max_volume}
-                midiInstrument = #"\VAR{render_settings.treble_midi_settings.instrument}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('treble', 'piano_right_hand')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('treble', 'piano_right_hand')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('treble', 'piano_right_hand')}"
             }
         <<
             {
@@ -20,8 +20,8 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index in range(6) }
-                    \VAR{game_mechanics.get_bar('treble', 'piano_right_hand',  bar_nmrs['treble']['piano_right_hand'][bar_index])}
+                \BLOCK{ for synchronous_bar in composition_bars['treble'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -29,9 +29,9 @@
         \new Staff
 
             \with {
-                midiMinimumVolume = #\VAR{render_settings.bass_midi_settings.min_volume}
-                midiMaximumVolume = #\VAR{render_settings.bass_midi_settings.max_volume}
-                midiInstrument = #"\VAR{render_settings.bass_midi_settings.instrument}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('bass', 'piano_left_hand')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('bass', 'piano_left_hand')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('bass', 'piano_left_hand')}"
             }
         <<
             {
@@ -42,8 +42,8 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar_index in range(6) }
-                    \VAR{game_mechanics.get_bar('bass', 'piano_left_hand',  bar_nmrs['bass']['piano_left_hand'][bar_index])}
+                \BLOCK{ for synchronous_bar in composition_bars['bass'] }
+                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }

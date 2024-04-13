@@ -2,7 +2,7 @@
 \paper {
     print-all-headers = ##t
 
-    \BLOCK{ if render_settings['large_page'] }
+    \BLOCK{ if render_settings['single_page'] }
         system-system-spacing = #'((basic-distance . 15))
         paper-height = 3400\mm  %% default is 297 for a4
     \BLOCK{ endif }
@@ -30,8 +30,8 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['violin_1'].items() }
-                    \VAR{bar}
+                \BLOCK{ for bar in bar_collections['polonaise'].get_bars('violin_1').values() }
+                    \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
             }
@@ -47,8 +47,8 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['violin_2'].items() }
-                    \VAR{bar}
+                \BLOCK{ for bar in bar_collections['polonaise'].get_bars('violin_2').values() }
+                    \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
             }
@@ -66,8 +66,8 @@
                 }
                 {
                     \clef treble
-                    \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['piano_right_hand'].items() }
-                        \VAR{bar}
+                    \BLOCK{ for bar in bar_collections['polonaise'].get_bars('piano_right_hand').values() }
+                        \VAR{bar.lilypond_str}
                     \BLOCK{ endfor }
                     \bar "|"
                 }
@@ -82,8 +82,8 @@
                 }
                 {
                     \clef bass
-                    \BLOCK{ for bar_index, bar in game_mechanics.bars['polonaise']['piano_left_hand'].items() }
-                        \VAR{bar}
+                    \BLOCK{ for bar in bar_collections['polonaise'].get_bars('piano_left_hand').values() }
+                        \VAR{bar.lilypond_str}
                     \BLOCK{ endfor }
                     \bar "|"
                 }

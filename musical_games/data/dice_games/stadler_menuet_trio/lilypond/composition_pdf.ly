@@ -4,7 +4,7 @@
     score-markup-spacing = #'((basic-distance . 10))
     markup-system-spacing = #'((minimum-distance = 0))
 
-    \BLOCK{ if render_settings['large_page'] }
+    \BLOCK{ if render_settings['single_page'] }
         paper-height = 360\mm  %% default is 297 for a4
     \BLOCK{ endif }
 }
@@ -33,12 +33,12 @@
                 \clef treble
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8) }
-                        \VAR{game_mechanics.get_bar('menuet', 'piano_right_hand',  bar_nmrs['menuet']['piano_right_hand'][bar_index])}
+                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
                     \BLOCK{ endfor }
                 }
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{game_mechanics.get_bar('menuet', 'piano_right_hand',  bar_nmrs['menuet']['piano_right_hand'][bar_index])}
+                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
                     \BLOCK{ endfor }
                 }
             }
@@ -55,12 +55,12 @@
                 \clef bass
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(8) }
-		                \VAR{game_mechanics.get_bar('menuet', 'piano_left_hand',  bar_nmrs['menuet']['piano_left_hand'][bar_index])}
+		                \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \repeat volta 2{
     		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{game_mechanics.get_bar('menuet', 'piano_left_hand',  bar_nmrs['menuet']['piano_left_hand'][bar_index])}
+    		            \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "Fine"}
@@ -92,12 +92,12 @@
                 \clef treble
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8) }
-                        \VAR{game_mechanics.get_bar('trio', 'piano_right_hand',  bar_nmrs['trio']['piano_right_hand'][bar_index])}
+                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
                     \BLOCK{ endfor }
                 }
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{game_mechanics.get_bar('trio', 'piano_right_hand',  bar_nmrs['trio']['piano_right_hand'][bar_index])}
+                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
                     \BLOCK{ endfor }
                 }
             }
@@ -114,12 +114,12 @@
                 \clef bass
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(8) }
-		                \VAR{game_mechanics.get_bar('trio', 'piano_left_hand',  bar_nmrs['trio']['piano_left_hand'][bar_index])}
+		                \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \repeat volta 2{
     		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{game_mechanics.get_bar('trio', 'piano_left_hand',  bar_nmrs['trio']['piano_left_hand'][bar_index])}
+    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "D.C. al Fine"}

@@ -1,7 +1,7 @@
 \version "2.19.81"
 \paper {
     print-all-headers = ##t
-    \BLOCK{ if render_settings['large_page'] }
+    \BLOCK{ if render_settings['single_page'] }
         system-system-spacing = #'((basic-distance . 15))
         paper-height = 420\mm  %% default is 297 for a4
     \BLOCK{ endif }
@@ -28,8 +28,8 @@
             }
             {
                 \clef treble
-                \BLOCK{ for bar_index, bar in game_mechanics.bars['treble']['piano_right_hand'].items() }
-                    \VAR{bar}
+                \BLOCK{ for bar in bar_collections['treble'].get_bars('piano_right_hand').values() }
+                    \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
             }
@@ -43,8 +43,8 @@
             }
             {
                 \clef bass
-                \BLOCK{ for bar_index, bar in game_mechanics.bars['bass']['piano_left_hand'].items() }
-                    \VAR{bar}
+                \BLOCK{ for bar in bar_collections['bass'].get_bars('piano_left_hand').values() }
+                    \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
             }

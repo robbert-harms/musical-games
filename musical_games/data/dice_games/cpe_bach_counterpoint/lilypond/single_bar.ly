@@ -19,11 +19,7 @@
             }
             {
                 \clef \VAR{ table_name }
-                \BLOCK{ if table_name == 'treble' }
-                    \VAR{ game_mechanics.bars[table_name]['piano_right_hand'][bar_nmr] }
-                \BLOCK{ else }
-                    \VAR{ game_mechanics.bars[table_name]['piano_left_hand'][bar_nmr] }
-                \BLOCK{ endif }
+                \VAR{ synchronous_bar.get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>

@@ -7,9 +7,9 @@
     <<
         \new Staff
             \with {
-                midiMinimumVolume = #\VAR{render_settings['violin_1_midi_settings'].min_volume}
-                midiMaximumVolume = #\VAR{render_settings['violin_1_midi_settings'].max_volume}
-                midiInstrument = #"\VAR{render_settings['violin_1_midi_settings'].instrument}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('polonaise', 'violin_1')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('polonaise', 'violin_1')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('polonaise', 'violin_1')}"
             }
         <<
             {
@@ -21,20 +21,20 @@
             {
                 \clef treble
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'violin_1',  bar_nmrs['polonaise']['violin_1'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_1').lilypond_str}
                 \BLOCK{ endfor }
                 % D.S. al fine
                 \BLOCK{ for bar_index in range(2, 6) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'violin_1',  bar_nmrs['polonaise']['violin_1'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_1').lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
         >>
         \new Staff
             \with {
-                midiMinimumVolume = #\VAR{render_settings['violin_2_midi_settings'].min_volume}
-                midiMaximumVolume = #\VAR{render_settings['violin_2_midi_settings'].max_volume}
-                midiInstrument = #"\VAR{render_settings['violin_2_midi_settings'].instrument}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('polonaise', 'violin_2')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('polonaise', 'violin_2')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('polonaise', 'violin_2')}"
             }
         <<
             {
@@ -46,20 +46,20 @@
             {
                 \clef treble
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'violin_2',  bar_nmrs['polonaise']['violin_2'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_2').lilypond_str}
                 \BLOCK{ endfor }
                 % D.S. al fine
                 \BLOCK{ for bar_index in range(2, 6) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'violin_2',  bar_nmrs['polonaise']['violin_2'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_2').lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
         >>
         \new Staff
             \with {
-                midiMinimumVolume = #\VAR{render_settings['piano_rh_midi_settings'].min_volume}
-                midiMaximumVolume = #\VAR{render_settings['piano_rh_midi_settings'].max_volume}
-                midiInstrument = #"\VAR{render_settings['piano_rh_midi_settings'].instrument}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('polonaise', 'piano_right_hand')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('polonaise', 'piano_right_hand')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('polonaise', 'piano_right_hand')}"
             }
         <<
             {
@@ -71,20 +71,20 @@
             {
                 \clef treble
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'piano_right_hand',  bar_nmrs['polonaise']['piano_right_hand'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_right_hand').lilypond_str}
                 \BLOCK{ endfor }
                 % D.S. al fine
                 \BLOCK{ for bar_index in range(2, 6) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'piano_right_hand',  bar_nmrs['polonaise']['piano_right_hand'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_right_hand').lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
         >>
         \new Staff
             \with {
-                midiMinimumVolume = #\VAR{render_settings['piano_lh_midi_settings'].min_volume}
-                midiMaximumVolume = #\VAR{render_settings['piano_lh_midi_settings'].max_volume}
-                midiInstrument = #"\VAR{render_settings['piano_lh_midi_settings'].instrument}"
+                midiMinimumVolume = #\VAR{midi_settings.get_min_volume('polonaise', 'piano_left_hand')}
+                midiMaximumVolume = #\VAR{midi_settings.get_max_volume('polonaise', 'piano_left_hand')}
+                midiInstrument = #"\VAR{midi_settings.get_midi_instrument('polonaise', 'piano_left_hand')}"
             }
         <<
             {
@@ -96,11 +96,11 @@
             {
                 \clef bass
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'piano_left_hand',  bar_nmrs['polonaise']['piano_left_hand'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_left_hand').lilypond_str}
                 \BLOCK{ endfor }
                 % D.S. al fine
                 \BLOCK{ for bar_index in range(2, 6) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'piano_left_hand',  bar_nmrs['polonaise']['piano_left_hand'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_left_hand').lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }

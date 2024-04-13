@@ -5,7 +5,7 @@
     markup-system-spacing = #'((minimum-distance = 0))
     system-system-spacing = #'((basic-distance . 15))
 
-    \BLOCK{ if render_settings['large_page'] }
+    \BLOCK{ if render_settings['single_page'] }
         paper-height = 370\mm  %% default is 297 for a4
     \BLOCK{ endif }
 }
@@ -33,7 +33,7 @@
             {
                 \clef treble
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'violin_1',  bar_nmrs['polonaise']['violin_1'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_1').lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -50,7 +50,7 @@
             {
                 \clef treble
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{game_mechanics.get_bar('polonaise', 'violin_2',  bar_nmrs['polonaise']['violin_2'][bar_index])}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_2').lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -69,7 +69,7 @@
                 {
                     \clef treble
                     \BLOCK{ for bar_index in range(14) }
-                        \VAR{game_mechanics.get_bar('polonaise', 'piano_right_hand',  bar_nmrs['polonaise']['piano_right_hand'][bar_index])}
+                        \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_right_hand').lilypond_str}
                     \BLOCK{ endfor }
                     \bar "|."
                 }
@@ -85,7 +85,7 @@
                 {
                     \clef bass
                     \BLOCK{ for bar_index in range(14) }
-                        \VAR{game_mechanics.get_bar('polonaise', 'piano_left_hand',  bar_nmrs['polonaise']['piano_left_hand'][bar_index])}
+                        \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_left_hand').lilypond_str}
                         \BLOCK{ if bar_index == 1}
                             \mark \markup { \musicglyph #"scripts.segno" }
                         \BLOCK{ elif bar_index == 5 }

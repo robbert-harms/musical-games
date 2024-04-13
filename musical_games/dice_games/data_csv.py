@@ -9,7 +9,7 @@ from abc import ABCMeta, abstractmethod
 from importlib.abc import Traversable
 from pathlib import Path
 
-from musical_games.dice_games2.base import BarCollection, SimpleBar, SimpleBarCollection
+from musical_games.dice_games.base import BarCollection, SimpleBar, SimpleBarCollection
 
 
 class BarCollectionCSVWriter(metaclass=ABCMeta):

@@ -24,7 +24,7 @@
             }
             {
                 \clef treble
-                \VAR{ game_mechanics.bars[table_name]['piano_right_hand'][bar_nmr] }
+                \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
                 \bar "|."
             }
         >>
@@ -41,7 +41,7 @@
             }
             {
                 \clef bass
-                \VAR{ game_mechanics.bars[table_name]['piano_left_hand'][bar_nmr] }
+                \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
                 \bar "|."
             }
         >>

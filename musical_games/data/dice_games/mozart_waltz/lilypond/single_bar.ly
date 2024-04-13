@@ -23,7 +23,7 @@
             }
             {
                 \clef treble
-                \VAR{ game_mechanics.bars[table_name]['piano_right_hand'][bar_nmr] }
+                \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
                 \bar "|."
             }
         >>
@@ -35,10 +35,10 @@
             }
             {
                 \clef bass
-                \BLOCK{ if game_mechanics.bars['waltz']['piano_left_hand_alternative'][bar_nmr] }
-                    << {\voiceOne \VAR{ game_mechanics.bars['waltz']['piano_left_hand'][bar_nmr] } } \new Voice { \voiceTwo \VAR{ game_mechanics.bars['waltz']['piano_left_hand_alternative'][bar_nmr] }} >>
+                \BLOCK{ if synchronous_bar.get_bar('piano_left_hand_alternative').lilypond_str != '' }
+                    <<{\voiceOne \VAR{synchronous_bar.get_bar('piano_left_hand').lilypond_str}} \new Voice {\voiceTwo \VAR{synchronous_bar.get_bar('piano_left_hand_alternative').lilypond_str}}>>
                 \BLOCK{ else }
-                    \VAR{ game_mechanics.bars['waltz']['piano_left_hand'][bar_nmr] }
+                    \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
                 \BLOCK{ endif }
                 \bar "|."
             }

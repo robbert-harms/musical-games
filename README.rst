@@ -2,6 +2,7 @@
 Musical Games
 #############
 This package features an implementation of various musical dice games by Mozart, Kirnberger and Stadler.
+These dice games are also known as "Musikalisches Würfelspiel" (German for "musical dice game").
 
 The earliest printed edition of a dice game is Johann Philipp Kirnberger's "Der allezeit fertige Menuetten- und Polonaisencomponist"
 (The ever-ready minuet and polonaise composer"), published in 1757.
@@ -18,8 +19,9 @@ To play a dice game, one would need:
 
 The measures and tables where composed by the composer of the dice game and were organized such,
 that random compilations made a musical composition.
-The music is not combined entirely random, for each bar in the piece you are composing,
-after throwing the dice, you need to look up the measure corresponding to your dice throw and your bar index.
+To play the game, you would have to throw the dice, and then look up the measure
+corresponding to your dice throw and your bar index in the dice table.
+Having found the right bar number, you then select that bar from the measures sheet provided.
 
 This software package automizes the production of these musical pieces.
 All pieces (tables sheets and measures) have been inserted into this software package and
@@ -38,13 +40,8 @@ For complete functionality, this package requires the following packages to be i
 **********
 Python API
 **********
-
-
-
-**********************
-Command Line Interface
-**********************
-
+The major component of this library is the class "DiceGame". All dicegames implement this class and its funcions.
+For use cases, please see the demo's in the `scripts` folder.
 
 
 *****************

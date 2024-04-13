@@ -20,7 +20,7 @@
             }
             {
                 \clef treble
-                \VAR{ game_mechanics.bars[table_name]['violin_1'][bar_nmr] }
+                \VAR{ synchronous_bar.get_bar('violin_1').lilypond_str }
                 \bar "|."
             }
         >>
@@ -33,7 +33,7 @@
             }
             {
                 \clef treble
-                \VAR{ game_mechanics.bars[table_name]['violin_2'][bar_nmr] }
+                \VAR{ synchronous_bar.get_bar('violin_2').lilypond_str }
                 \bar "|."
             }
         >>
@@ -48,7 +48,7 @@
                 }
                 {
                     \clef treble
-                    \VAR{ game_mechanics.bars[table_name]['piano_right_hand'][bar_nmr] }
+                    \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
                     \bar "|."
                 }
             >>
@@ -60,7 +60,7 @@
                 }
                 {
                     \clef bass
-                    \VAR{ game_mechanics.bars[table_name]['piano_left_hand'][bar_nmr] }
+                    \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
                     \bar "|."
                 }
             >>

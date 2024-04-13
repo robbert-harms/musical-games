@@ -5,7 +5,7 @@ __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
 from pathlib import Path
-from musical_games.dice_games2.dice_games import CPEBachCounterpoint
+from musical_games.dice_games.dice_games import CPEBachCounterpoint
 from musical_games.utils import auto_convert_lilypond_file
 
 out_dir = Path('/tmp/test2')
