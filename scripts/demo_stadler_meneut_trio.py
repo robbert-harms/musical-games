@@ -6,12 +6,12 @@ __licence__ = 'LGPL v3'
 
 from pathlib import Path
 
-from musical_games.dice_games2.dice_games import KirnbergerMenuetTrio
+from musical_games.dice_games2.dice_games import StadlerMenuetTrio
 from musical_games.utils import auto_convert_lilypond_file
 
 out_dir = Path('/tmp/test2')
 
-dice_game = KirnbergerMenuetTrio()
+dice_game = StadlerMenuetTrio()
 
 dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
 auto_convert_lilypond_file(out_dir / 'overview.ly')
@@ -26,7 +26,7 @@ print(dice_game.count_unique_compositions(count_duplicates=True))
 print(dice_game.count_unique_compositions(count_duplicates=False))
 
 dice_game.compile_composition_score(dice_game.get_random_bar_selection(seed=0),
-                                    comment='Test').to_file(out_dir / 'composition_pdf.ly')
+                                    comment='Test', single_page=True).to_file(out_dir / 'composition_pdf.ly')
 auto_convert_lilypond_file(out_dir / 'composition_pdf.ly')
 
 midi_settings = dice_game.get_default_midi_settings()
