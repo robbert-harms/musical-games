@@ -2,6 +2,11 @@
 Changelog
 *********
 
+v0.6.1 (2024-04-13)
+===================
+- Reduced dependencies.
+
+
 v0.6.0 (2024-04-13)
 ===================
 - Updated the library to a new format, with a cleaner API design.
