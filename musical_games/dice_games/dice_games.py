@@ -191,7 +191,9 @@ class MozartWaltz(SimpleDiceGame):
 class StadlerMenuetTrio(SimpleDiceGame):
 
     def __init__(self):
-        """Implementation of a Menuet and Trio dice game by Kirnberger.
+        """Implementation of a Menuet and Trio dice game by Stadler.
+
+        A similar dice game has been made by Haydn.
 
         In this dice game, there is a dice table for the menuet and one for the trio.
         """
@@ -237,41 +239,3 @@ class StadlerMenuetTrio(SimpleDiceGame):
 
         super().__init__('Stadler', 'Menuet and Trio', dice_tables, bar_collections,
                          jinja2_environment, midi_settings)
-
-
-
-class HaydnMenuetTrio(SimpleDiceGame):
-
-    def __init__(self):
-        """Implementation of a Menuet and Trio dice game by Kirnberger.
-
-        In this dice game, there is a dice table for the menuet and one for the trio.
-        """
-        dice_tables = {
-            'menuet': SimpleDiceTable(np.array([
-                ])),
-            'trio': SimpleDiceTable(np.array([
-                ])),
-        }
-
-        #
-        # csv_reader = SimpleBarCollectionCSVReader()
-        # bar_collections = {'menuet': csv_reader.read_csv(resources.files('musical_games') /
-        #                                                  'data/dice_games/stadler_menuet_trio/menuet_bars.csv'),
-        #                    'trio': csv_reader.read_csv(resources.files('musical_games') /
-        #                                                'data/dice_games/stadler_menuet_trio/trio_bars.csv')}
-        #
-        # template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/stadler_menuet_trio/lilypond')
-        # env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        # jinja2_environment = jinja2.Environment(**env_options)
-        #
-        # midi_settings = SimpleMidiSettings(
-        #     {'menuet': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'},
-        #      'trio': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'}},
-        #     {'menuet': {'piano_right_hand': 0, 'piano_left_hand': 0},
-        #      'trio': {'piano_right_hand': 0, 'piano_left_hand': 0}},
-        #     {'menuet': {'piano_right_hand': 1, 'piano_left_hand': 0.75},
-        #      'trio': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
-        #
-        # super().__init__('Stadler', 'Menuet and Trio', dice_tables, bar_collections,
-        #                  jinja2_environment, midi_settings)
