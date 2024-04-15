@@ -11,7 +11,8 @@ from musical_games.external.images import trim_image
 from musical_games.external.utils import run_command
 
 
-def typeset_lilypond(lilypond_in: Path, output_basename: Path, pdf: bool = True, png: bool = True, ps: bool = False):
+def typeset_lilypond(lilypond_in: Path, output_basename: Path, pdf: bool = True, png: bool = True, ps: bool = False,
+                     trim_png: bool = True):
     """Typeset a lilypond file and produce midi and/or a composition from the input file.
 
     This runs the shell command lilypond to on the inputs. Note that Midi output needs to be defined in the lilypond
@@ -23,6 +24,7 @@ def typeset_lilypond(lilypond_in: Path, output_basename: Path, pdf: bool = True,
         pdf: if we want pdf output
         png: if we want png output
         ps: if we want postscript output
+        trim_png: if we want to automatically trim the PNG images.
 
     Raises:
         RuntimeError: if the compilation of the lilypond file failed somehow.
@@ -48,8 +50,9 @@ def typeset_lilypond(lilypond_in: Path, output_basename: Path, pdf: bool = True,
     ps_list = [output_basename.with_suffix('.ps')] if ps else []
     midi_list = _get_midi_list(output_basename)
 
-    for png in png_list:
-        trim_image(png)
+    if trim_png:
+        for png in png_list:
+            trim_image(png)
 
     return LilypondTypesetResults(pdf_list, png_list, ps_list, midi_list)
 
