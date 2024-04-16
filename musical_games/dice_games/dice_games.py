@@ -188,6 +188,42 @@ class MozartWaltz(SimpleDiceGame):
                          jinja2_environment, midi_settings)
 
 
+class MozartContredanse(SimpleDiceGame):
+
+    def __init__(self):
+        """Implementation of a Contredanse dice game by Mozart."""
+        dice_tables = {
+            'contredanse': SimpleDiceTable(np.array([
+                [70, 14, 164, 122, 25, 153, 18, 167, 155, 3, 162, 170, 13, 166, 95, 5],
+                [10, 64, 100, 12, 149, 30, 161, 11, 148, 28, 135, 173, 169, 174, 2, 20],
+                [33, 1, 160, 163, 77, 156, 168, 172, 22, 176, 62, 126, 31, 24, 159, 41],
+                [36, 114, 8, 35, 111, 39, 137, 44, 4, 157, 38, 9, 151, 32, 17, 171],
+                [105, 150, 57, 71, 117, 52, 132, 130, 136, 91, 138, 19, 134, 101, 154, 146],
+                [165, 152, 112, 15, 147, 27, 73, 102, 144, 104, 87, 107, 128, 48, 109, 74],
+                [7, 81, 131, 37, 21, 125, 49, 115, 116, 133, 72, 141, 94, 80, 129, 65],
+                [142, 106, 40, 69, 43, 140, 23, 89, 66, 124, 26, 84, 75, 103, 96, 127],
+                [99, 68, 86, 139, 120, 92, 143, 83, 93, 55, 29, 51, 42, 110, 108, 98],
+                [85, 45, 90, 158, 82, 123, 78, 58, 61, 34, 119, 46, 59, 54, 60, 47],
+                [145, 97, 6, 121, 56, 67, 63, 16, 50, 79, 175, 76, 113, 88, 53, 118]]))
+        }
+
+        csv_reader = SimpleBarCollectionCSVReader()
+        bar_collections = {'contredanse': csv_reader.read_csv(resources.files('musical_games') /
+                                                        'data/dice_games/mozart_contredanse/contredanse_bars.csv')}
+
+        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/mozart_contredanse/lilypond')
+        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
+        jinja2_environment = jinja2.Environment(**env_options)
+
+        midi_settings = SimpleMidiSettings(
+            {'contredanse': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'}},
+            {'contredanse': {'piano_right_hand': 0, 'piano_left_hand': 0}},
+            {'contredanse': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
+
+        super().__init__('Mozart', 'Contredanse', dice_tables, bar_collections,
+                         jinja2_environment, midi_settings)
+
+
 class StadlerMenuetTrio(SimpleDiceGame):
 
     def __init__(self):
