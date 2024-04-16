@@ -6,6 +6,8 @@ __maintainer__ = 'Robbert Harms'
 __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
+import math
+import random
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from functools import reduce
@@ -14,8 +16,6 @@ from pathlib import Path
 from typing import Self, TypeAlias, Any
 
 import jinja2
-import numpy as np
-from numpy.random import RandomState
 
 
 int_bar_index: TypeAlias = int
@@ -57,14 +57,15 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_all_duplicate_bars(self) -> dict[str_dice_table_name, list[set[int_bar_index]]]:
+    def get_all_duplicate_dice_table_elements(self) -> dict[str_dice_table_name, list[set[DiceTableElement]]]:
         """Get a list of all the duplicate bars for each dice table.
 
-        For each dice table, this should scan the bars belonging to that dice table for duplicates. We return each
-        set of duplicates as a set containing all the bar indices having duplicates.
+        For each dice table, this should scan the musical entries corresponding to each element in the dice table
+        for duplicate measures. We return each set of duplicates as a set containing all the dice table elements
+        having duplicates.
 
         Returns:
-            A list of duplicate bar sets by bar index for each dice table
+            A list of duplicate dice table elements for each dice table.
         """
 
     @abstractmethod
@@ -208,6 +209,10 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         self._jinja2_environment = jinja2_environment
         self._default_midi_settings = default_midi_settings
 
+        self._dice_bars_tables = {}
+        for table_name, dice_table in self._dice_tables.items():
+            self._dice_bars_tables[table_name] = SimpleDiceBarsTable(dice_table, self._bar_collections[table_name])
+
     @property
     def author(self) -> str:
         return self._author
@@ -219,18 +224,10 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
     def get_dice_tables(self) -> dict[str_dice_table_name, DiceTable]:
         return self._dice_tables
 
-    def get_all_duplicate_bars(self) -> dict[str_dice_table_name, list[set[int_bar_index]]]:
+    def get_all_duplicate_dice_table_elements(self) -> dict[str_dice_table_name, list[set[DiceTableElement]]]:
         table_duplicates = {}
         for table_name, dice_table in self._dice_tables.items():
-            bars = self._bar_collections[table_name].get_synchronous_bars()
-
-            bars_by_lilypond = {}
-            for bar_ind, bar in bars.items():
-                bar_data = tuple(b.lilypond_str for b in bar.get_staffs().values())
-                bar_indices = bars_by_lilypond.setdefault(bar_data, set())
-                bar_indices.add(bar_ind)
-
-            table_duplicates[table_name] = [v for k, v in bars_by_lilypond.items() if len(v) > 1]
+            table_duplicates[table_name] = self._dice_bars_tables[table_name].get_duplicates()
         return table_duplicates
 
     def get_duplicate_bars(self, table_name: str_dice_table_name, bar_index: int_bar_index) -> list[int_bar_index]:
@@ -394,7 +391,7 @@ class SynchronousBar(metaclass=ABCMeta):
 
 
 class BarCollection(metaclass=ABCMeta):
-    """Collection of synchronous bars for a single compositional piece.
+    """Collection of synchronous bars.
 
     The bars are expected to be stored in a dictionary mapping bar indices to bars.
     """
@@ -513,13 +510,20 @@ class SimpleBarCollection(BarCollection):
 class DiceTable(metaclass=ABCMeta):
     """Representation of a dice table used in playing the dice games.
 
-    This assumes all entries in the dice game tables are integers mapping to a bars in the bar table.
+    This assumes all entries in the dice game tables are one or more bar indices mapping to a bars in the bar table.
+
+    Dice tables may select multiple bars per dice throw. This is used in some of the games, for instance Gerlach.
     """
 
     @property
     @abstractmethod
     def nmr_dices(self) -> int:
         """Get the number of dices this table needs."""
+
+    @property
+    @abstractmethod
+    def max_measures_per_throw(self) -> int:
+        """Get the maximum of measures selected per dice throw."""
 
     @property
     @abstractmethod
@@ -532,74 +536,339 @@ class DiceTable(metaclass=ABCMeta):
         """Get the maximum number of throws needed to select all the columns from this dice table."""
 
     @abstractmethod
-    def list_rows(self) -> list[list[int]]:
-        """Get a list with the list of row values"""
+    def get_element(self, row: int, column: int) -> DiceTableElement:
+        """Get the dice table element at the specified location.
+
+        Args:
+            row: the row index
+            column: the column index
+
+        Returns:
+            The dice table element
+        """
 
     @abstractmethod
-    def list_columns(self) -> list[list[int]]:
-        """Get a list with the list of column values"""
+    def list_rows(self) -> list[list[DiceTableElement]]:
+        """Get a list with the list of row values.
+
+        This returns a row view of the dice table, with for each row a list of dice table elements in the row.
+
+        Returns:
+            A row view of the dice table.
+        """
 
     @abstractmethod
-    def get_column(self, column_ind: int) -> list[int]:
+    def list_columns(self) -> list[list[DiceTableElement]]:
+        """Get a list with the list of column values
+
+        This returns a column view of the dice table, with for each column a list of dice table elements in the column.
+
+        Returns:
+            A column view of the dice table.
+        """
+
+    @abstractmethod
+    def get_column(self, column_ind: int) -> list[DiceTableElement]:
         """Get the column of the dice table at the indicated index.
 
         Args:
             column_ind: the index of the column (0 based)
 
         Returns:
-            The dice game labels in the indicated column
+            The dice game elements in the indicated column
         """
 
     @abstractmethod
-    def get_row(self, row_ind: int) -> list[int]:
+    def get_row(self, row_ind: int) -> list[DiceTableElement]:
         """Get the row of the dice table at the indicated index.
 
         Args:
             row_ind: the index of the row (0 based)
 
         Returns:
-            The dice game labels in the indicated row
+            The dice game elements in the indicated row
         """
 
-
-@dataclass(slots=True, frozen=True)
-class SimpleDiceTable(DiceTable):
-    """Implementation of a dice table using a numpy array."""
-    table: np.ndarray
-
-    @property
-    def nmr_dices(self) -> int:
-        return self.max_dice_value % 2
-
-    @property
-    def max_dice_value(self) -> int:
-        return self.table.shape[0]
-
-    @property
-    def nmr_throws(self) -> int:
-        return self.table.shape[1]
-
-    def list_rows(self) -> list[list[int]]:
-        return self.table.tolist()
-
-    def list_columns(self) -> list[list[int]]:
-        return self.table.T.tolist()
-
-    def get_column(self, column_ind: int) -> list[int]:
-        return self.table[:, column_ind].tolist()
-
-    def get_row(self, row_ind: int) -> list[int]:
-        return self.table[row_ind, :].tolist()
-
-    def get_random_selection(self, seed: int = None) -> list[int]:
+    @abstractmethod
+    def get_random_selection(self, seed: int = None) -> list[DiceTableElement]:
         """Get a random selection of bar numbers
 
         Returns:
             A list of random bar numbers from the table
         """
-        prng = RandomState(seed)
-        dice_throws = prng.randint(0, self.table.shape[0], self.table.shape[1])
-        return self.table[dice_throws, range(self.table.shape[1])].tolist()
+
+
+class DiceTableElement(metaclass=ABCMeta):
+    """Representation of an element in a dice table."""
+
+    @property
+    @abstractmethod
+    def row_ind(self) -> int:
+        """Get the row index of this selection.
+
+        Returns:
+            The row from which this bar selection was made.
+        """
+
+    @property
+    @abstractmethod
+    def column_ind(self) -> int:
+        """Get the column index of this selection.
+
+        Returns:
+            The column from which this bar selection was made.
+        """
+
+    @property
+    @abstractmethod
+    def nmr_bars_selected(self) -> int:
+        """Get the number of bars selected by this selection.
+
+        Returns:
+            The number of bars selected by this measure.
+        """
+
+    @abstractmethod
+    def get_bar_indices(self) -> tuple[int_bar_index, ...]:
+        """Get the bar indices.
+
+        Returns:
+            The tuple of bars. This may contain only one element in the case of single selection.
+        """
+
+
+@dataclass(frozen=True, slots=True)
+class SimpleDiceTableElement(DiceTableElement):
+    """Dataclass implementation of the dice table element selection.
+
+    Args:
+        row: the row from which this element was selected
+        column: the column from which this element was selected
+        bar_indices: the selected bar indices
+    """
+    row: int
+    column: int
+    bar_indices: tuple[int_bar_index, ...]
+
+    @property
+    def row_ind(self) -> int:
+        return self.row
+
+    @property
+    def column_ind(self) -> int:
+        return self.column
+
+    @property
+    def nmr_bars_selected(self) -> int:
+        return len(self.bar_indices)
+
+    def get_bar_indices(self) -> tuple[int_bar_index, ...]:
+        return self.bar_indices
+
+
+@dataclass(slots=True, frozen=True)
+class SimpleDiceTable(DiceTable):
+    """Implementation of a dice table.
+
+    Args:
+        table: the dice table as a list of rows, with for each row the dice table elements
+        max_measures_per_throw: the maximum selected measures in the dice table.
+    """
+    table: list[list[DiceTableElement]]
+    max_measures_per_throw: int
+
+    @classmethod
+    def from_lists(cls, array: list[list[int_bar_index | tuple[int_bar_index, ...]]]) -> Self:
+        """Load this dice table from a simple list table of indices.
+
+        Args:
+            array: array with for each element one or more bar indices.
+
+        Returns:
+            An instance of this class.
+        """
+        table = []
+        max_measures_per_throw = 1
+
+        for row_ind, row in enumerate(array):
+            table_column = []
+            for column_ind, value in enumerate(row):
+                value_tuple = value
+                if isinstance(value, int_bar_index):
+                    value_tuple = (value,)
+                table_column.append(SimpleDiceTableElement(row_ind, column_ind, value_tuple))
+
+                if len(value_tuple) > max_measures_per_throw:
+                    max_measures_per_throw = len(value_tuple)
+
+            table.append(table_column)
+
+        return cls(table, max_measures_per_throw)
+
+    @property
+    def nmr_dices(self) -> int:
+        return math.ceil(self.max_dice_value / 6)
+
+    @property
+    def max_dice_value(self) -> int:
+        return len(self.table)
+
+    @property
+    def nmr_throws(self) -> int:
+        return len(self.table[0])
+
+    def get_element(self, row: int, column: int) -> DiceTableElement:
+        return self.table[row][column]
+
+    def list_rows(self) -> list[list[DiceTableElement]]:
+        return self.table
+
+    def list_columns(self) -> list[list[DiceTableElement]]:
+        columns = []
+        for column_ind in range(len(self.table[0])):
+            column = []
+            for row in self.table:
+                column.append(row[column_ind])
+            columns.append(column)
+        return columns
+
+    def get_column(self, column_ind: int) -> list[DiceTableElement]:
+        return self.list_columns()[column_ind]
+
+    def get_row(self, row_ind: int) -> list[DiceTableElement]:
+        return self.list_rows()[row_ind]
+
+    def get_random_selection(self, seed: int = None) -> list[DiceTableElement]:
+        random.seed(seed)
+        max_val = self.max_dice_value
+        selected_elements = []
+        for throw_ind in range(self.nmr_throws):
+            dice_throw = random.randint(0, max_val)
+            selected_elements.append(self.get_element(dice_throw, throw_ind))
+        return selected_elements
+
+
+class DiceBarsTable(metaclass=ABCMeta):
+    """Representation of a table filled with measures.
+
+    A dice table lists all the bar indices chosen at random for each dice throw. The bar collection lists all the
+    synchronous bars belonging to such dice table. This table combines these two as a look-up table in which
+    each entry in the look-up table is a tuple of synchronous bars as selected by the dice table.
+    """
+
+    @abstractmethod
+    def get_entry(self, row_ind: int, column_ind: int) -> tuple[SynchronousBar, ...]:
+        """Get the synchronous bars related to this table entry.
+
+        Args:
+            row_ind: the row index
+            column_ind: the column index
+
+        Returns:
+            The tuple of synchronous bars at that entry. Most dice table games have only
+            one bar per entry, some have two.
+        """
+
+    @abstractmethod
+    def get_selection(self, dice_table_elements: list[DiceTableElement]) -> list[tuple[SynchronousBar, ...]]:
+        """For each element in the list of dice table elements, lookup the corresponding synchronous bars.
+
+        Args:
+            dice_table_elements: a selection of dice table elements
+
+        Returns:
+            The tuplets of synchronous bars at each location.
+        """
+
+    @abstractmethod
+    def get_duplicates(self) -> list[set[DiceTableElement]]:
+        """Get a list of dice table elements whose corresponding bars are duplicates of each other.
+
+        Returns:
+            A list with the sets of duplicates
+        """
+
+
+class SimpleDiceBarsTable(DiceBarsTable):
+
+    def __init__(self, dice_table: DiceTable, bars_collection: BarCollection):
+        """Implements the dice bars table.
+
+        Args:
+            dice_table: the dice table
+            bars_collection: the corresponding collection of bars.
+        """
+        self._dice_table = dice_table
+        self._bars_collection = bars_collection
+        self._bars_table = self._convert_dice_table(self._dice_table, self._bars_collection)
+
+    def get_entry(self, row_ind: int, column_ind: int) -> tuple[SynchronousBar, ...]:
+        return self._bars_table[row_ind][column_ind]
+
+    def get_selection(self, dice_table_elements: list[DiceTableElement]) -> list[tuple[SynchronousBar, ...]]:
+        bars = []
+        for element in dice_table_elements:
+            bars.append(self._bars_table[element.row_ind][element.column_ind])
+        return bars
+
+    def get_duplicates(self) -> list[set[DiceTableElement]]:
+        flat_dice_table = self._flatten_table(self._dice_table.list_rows())
+        flat_bars_table = self._flatten_table(self._bars_table)
+
+        bars_by_lilypond = {}
+        for flat_ind, bar_items in enumerate(flat_bars_table):
+            bar_data = []
+            for bar in bar_items:
+                for staff in bar.get_staffs().values():
+                    bar_data.append(staff.lilypond_str)
+
+            bar_indices = bars_by_lilypond.setdefault(tuple(bar_data), set())
+            bar_indices.add(flat_ind)
+
+        flat_table_duplicates = [v for k, v in bars_by_lilypond.items() if len(v) > 1]
+
+        duplicate_table_elements = []
+        for flat_table_indices in flat_table_duplicates:
+            table_elements = []
+            for flat_index in flat_table_indices:
+                table_elements.append(flat_dice_table[flat_index])
+            duplicate_table_elements.append(set(table_elements))
+
+        return duplicate_table_elements
+
+    @staticmethod
+    def _flatten_table(table: list[list[Any]]) -> list[list[Any]]:
+        """Flatten one of the tables."""
+        elements = []
+        for row in table:
+            for element in row:
+                elements.append(element)
+        return elements
+
+    @staticmethod
+    def _convert_dice_table(dice_table: DiceTable,
+                            bars_collection: BarCollection) -> list[list[tuple[SynchronousBar, ...]]]:
+        """Convert the dice table to a table of bars using the bar collection.
+
+        This looks up each entry in the dice table, gets the bar indices in that entry, retrieves those entries
+        from the bar collection and puts all of these in a new table with the same shape as the dice table.
+
+        Args:
+            dice_table: the dice table
+            bars_collection: the collection of synchronous bars.
+        """
+        bars_table = []
+        for dice_table_row in dice_table.list_rows():
+            bars_in_row = []
+            for dice_table_element in dice_table_row:
+                bar_indices = dice_table_element.get_bar_indices()
+
+                synchronous_bars = []
+                for bar_index in bar_indices:
+                    synchronous_bars.append(bars_collection.get_synchronous_bar(bar_index))
+                bars_in_row.append(tuple(synchronous_bars))
+            bars_table.append(bars_in_row)
+        return bars_table
 
 
 class LilypondScore(metaclass=ABCMeta):
