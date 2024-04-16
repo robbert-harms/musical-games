@@ -23,11 +23,10 @@ dice_game = CPEBachCounterpoint()
 # auto_convert_lilypond_file(out_dir / 'bar_bass_1.ly')
 
 # print(dice_game.get_all_duplicate_dice_table_elements())
+# print(dice_game.count_unique_compositions(count_duplicates=True))
+# print(dice_game.count_unique_compositions(count_duplicates=False))
 
-print(dice_game.get_duplicate_bars())
-
-print(dice_game.count_unique_compositions(count_duplicates=True))
-print(dice_game.count_unique_compositions(count_duplicates=False))
+print(dice_game.get_random_bar_selection(shuffle_staffs=False))
 
 # dice_game.compile_composition_score(dice_game.get_random_bar_selection(seed=0),
 #                                     comment='Test').to_file(out_dir / 'composition_pdf.ly')

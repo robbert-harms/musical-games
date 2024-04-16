@@ -22,7 +22,7 @@ class CPEBachCounterpoint(SimpleDiceGame):
         """
         dice_tables = {
             'treble': SimpleDiceTable.from_lists([
-                [1, 10, 19, 28, 37, 46],
+                [(1, 2), 10, 19, 28, 37, 46],
                 [2, 11, 20, 29, 38, 47],
                 [3, 12, 21, 30, 39, 48],
                 [4, 13, 22, 31, 40, 49],

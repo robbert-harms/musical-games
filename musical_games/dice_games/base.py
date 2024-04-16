@@ -69,14 +69,6 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_duplicate_bars(self, table_name: str_dice_table_name, bar_index: int_bar_index) -> set[int_bar_index]:
-        """Get the set of duplicates of the given bar in the indicated table.
-
-        Returns:
-            The set of duplicates for the indicated bar
-        """
-
-    @abstractmethod
     def count_unique_compositions(self, count_duplicates=False) -> int:
         """Count the number of unique compositions possible by this dice game.
 
@@ -230,22 +222,18 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             table_duplicates[table_name] = self._dice_bars_tables[table_name].get_duplicates()
         return table_duplicates
 
-    def get_duplicate_bars(self, table_name: str_dice_table_name, bar_index: int_bar_index) -> list[int_bar_index]:
-        bars = self._bar_collections[table_name].get_synchronous_bars()
-        current_bar = bars[bar_index]
-
-        indices = set()
-        for bar_ind, bar in bars.items():
-            if bar == current_bar:
-                indices.add(bar_ind)
-        return indices
-
     def count_unique_compositions(self, count_duplicates=False) -> int:
-        def count_unique_bars(table_name: str, bar_indexes: list[int]):
-            """Count the number of unique bars in the provided list of bar numbers."""
-            bars_of_table = self._bar_collections[table_name]
-            bars = [tuple(el.lilypond_str for el in bars_of_table.get_synchronous_bar(bar_index).get_bars())
-                    for bar_index in bar_indexes]
+        def count_unique_bars(table_name: str, throw_ind: int):
+            """Count the number of unique bars for the indicated throw index (column)."""
+            dice_table_column = self._dice_tables[table_name].get_column(throw_ind)
+            bars_in_column = self._dice_bars_tables[table_name].get_selection(dice_table_column)
+
+            bars = []
+            for bar_tuplet in bars_in_column:
+                bars_lilypond_str = []
+                for bar in bar_tuplet:
+                    bars_lilypond_str.append(tuple(el.lilypond_str for el in bar.get_bars()))
+                bars.append(tuple(bars_lilypond_str))
             return len(set(bars))
 
         table_counts = []
@@ -253,8 +241,8 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             if count_duplicates:
                 table_counts.append(table.max_dice_value ** table.nmr_throws)
             else:
-                table_counts.append(reduce(mul, [count_unique_bars(table_name, column)
-                                                 for column in table.list_columns()]))
+                table_counts.append(reduce(mul, [count_unique_bars(table_name, throw_ind)
+                                                 for throw_ind in range(table.nmr_throws)]))
         return reduce(mul, table_counts)
 
     def get_nmr_staffs_per_table(self) -> dict[str_dice_table_name, int]:
@@ -740,7 +728,7 @@ class SimpleDiceTable(DiceTable):
 
     def get_random_selection(self, seed: int = None) -> list[DiceTableElement]:
         random.seed(seed)
-        max_val = self.max_dice_value
+        max_val = self.max_dice_value - 1
         selected_elements = []
         for throw_ind in range(self.nmr_throws):
             dice_throw = random.randint(0, max_val)
