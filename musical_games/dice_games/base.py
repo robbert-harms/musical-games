@@ -15,6 +15,7 @@ from operator import mul
 from pathlib import Path
 from typing import Self, TypeAlias, Any
 
+from frozendict import frozendict
 import jinja2
 
 
@@ -227,14 +228,7 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             """Count the number of unique bars for the indicated throw index (column)."""
             dice_table_column = self._dice_tables[table_name].get_column(throw_ind)
             bars_in_column = self._dice_bars_tables[table_name].get_selection(dice_table_column)
-
-            bars = []
-            for bar_tuplet in bars_in_column:
-                bars_lilypond_str = []
-                for bar in bar_tuplet:
-                    bars_lilypond_str.append(tuple(el.lilypond_str for el in bar.get_bars()))
-                bars.append(tuple(bars_lilypond_str))
-            return len(set(bars))
+            return len(set(bars_in_column))
 
         table_counts = []
         for table_name, table in self._dice_tables.items():
@@ -263,16 +257,32 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
                 choices[table_name] = dice_table.get_random_selection(seed)
             return GroupedStaffsBarSelection(choices)
 
-    def bar_selection_to_bars(self, bar_selection: BarSelection) -> dict[str_dice_table_name, list[SynchronousBar]]:
+    def bar_selection_to_bars(self,
+                              bar_selection: BarSelection) -> dict[str_dice_table_name, list[tuple[SynchronousBar]]]:
         composition_bars = {table_name: [] for table_name in self._dice_tables.keys()}
 
         for table_name in self._dice_tables.keys():
-            for throw_ind in range(self._dice_tables[table_name].nmr_throws):
-                bars_per_index = {}
-                for staff_name in self._bar_collections[table_name].get_staff_names():
-                    bar_ind = bar_selection.get_bar_index(table_name, throw_ind, staff_name)
-                    bars_per_index[staff_name] = self._bar_collections[table_name].get_bar(staff_name, bar_ind)
-                composition_bars[table_name].append(SimpleSynchronousBar(bars_per_index))
+            staff_names = self._bar_collections[table_name].get_staff_names()
+
+            bars_per_staff = {}
+            for staff_name in staff_names:
+                staff_selection = bar_selection.get_dice_table_elements(table_name, staff_name)
+                bars_in_selection = self._dice_bars_tables[table_name].get_selection(staff_selection)
+
+                staff_bars = []
+                for synchronous_bars in bars_in_selection:
+                    for synchronous_bar in synchronous_bars:
+                        staff_bars.append(synchronous_bar.get_bar(staff_name))
+                bars_per_staff[staff_name] = staff_bars
+
+            complete_bars = []
+            for composition_ind in range(len(bars_per_staff[staff_names[0]])):
+                sync_bars = {}
+                for staff_name in staff_names:
+                    sync_bars[staff_name] = bars_per_staff[staff_name][composition_ind]
+                complete_bars.append(SimpleSynchronousBar(frozendict(sync_bars)))
+
+            composition_bars[table_name] = complete_bars
         return composition_bars
 
     def get_default_midi_settings(self) -> MidiSettings:
@@ -452,13 +462,17 @@ class SimpleSynchronousBar(SynchronousBar):
     Args:
         bars: the bars per staff.
     """
-    bars: dict[str_staff_name, Bar]
+    bars: frozendict[str_staff_name, Bar]
+
+    def __post_init__(self):
+        if not isinstance(self.bars, frozendict):
+            raise ValueError('Expects bars to be of type frozendict.')
 
     def get_staff_names(self) -> list[str_staff_name]:
         return list(self.bars.keys())
 
     def get_staffs(self) -> dict[str_staff_name, Bar]:
-        return self.bars
+        return dict(self.bars)
 
     def get_bar(self, staff_name: str_staff_name) -> Bar:
         return self.bars[staff_name]
@@ -480,10 +494,10 @@ class SimpleBarCollection(BarCollection):
     bar_collection: dict[int_bar_index, dict[str_staff_name, Bar]]
 
     def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBar]:
-        return {bar_index: SimpleSynchronousBar(bars) for bar_index, bars in self.bar_collection.items()}
+        return {bar_index: SimpleSynchronousBar(frozendict(bars)) for bar_index, bars in self.bar_collection.items()}
 
     def get_synchronous_bar(self, bar_index: int_bar_index) -> SynchronousBar:
-        return SimpleSynchronousBar(self.bar_collection[bar_index])
+        return SimpleSynchronousBar(frozendict(self.bar_collection[bar_index]))
 
     def get_staff_names(self) -> list[str_staff_name]:
         return list(self.bar_collection[1].keys())
@@ -803,17 +817,12 @@ class SimpleDiceBarsTable(DiceBarsTable):
         flat_dice_table = self._flatten_table(self._dice_table.list_rows())
         flat_bars_table = self._flatten_table(self._bars_table)
 
-        bars_by_lilypond = {}
+        bars_grouped_by_index = {}
         for flat_ind, bar_items in enumerate(flat_bars_table):
-            bar_data = []
-            for bar in bar_items:
-                for staff in bar.get_staffs().values():
-                    bar_data.append(staff.lilypond_str)
-
-            bar_indices = bars_by_lilypond.setdefault(tuple(bar_data), set())
+            bar_indices = bars_grouped_by_index.setdefault(bar_items, set())
             bar_indices.add(flat_ind)
 
-        flat_table_duplicates = [v for k, v in bars_by_lilypond.items() if len(v) > 1]
+        flat_table_duplicates = [v for k, v in bars_grouped_by_index.items() if len(v) > 1]
 
         duplicate_table_elements = []
         for flat_table_indices in flat_table_duplicates:
@@ -906,11 +915,11 @@ class BarSelection(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def get_bar_index(self,
-                      table_name: str_dice_table_name,
-                      throw_ind: int,
-                      staff_name: str_staff_name | None = None) -> int_bar_index:
-        """Get the bar index for a specific dice table, a specified throw index and optionally a specific staff.
+    def get_dice_table_element(self,
+                               table_name: str_dice_table_name,
+                               throw_ind: int,
+                               staff_name: str_staff_name | None = None) -> DiceTableElement:
+        """Get the dice table element for a specific dice table, throw index and optionally a specific staff.
 
         Args:
             table_name: the name of the dice table we have indices for
@@ -918,14 +927,14 @@ class BarSelection(metaclass=ABCMeta):
             staff_name: optionally, within the table, the staff for which we are selecting bar indices.
 
         Returns:
-            The selected bar for this dice table, dice throw and staff.
+            The dice table elements for this dice table, dice throw and staff.
         """
 
     @abstractmethod
-    def get_bar_indices(self,
-                        table_name: str_dice_table_name,
-                        staff_name: str_staff_name | None = None) -> list[int_bar_index]:
-        """Get the bar indices chosen for the specific dice table and staff (within that dice table).
+    def get_dice_table_elements(self,
+                                table_name: str_dice_table_name,
+                                staff_name: str_staff_name | None = None) -> list[DiceTableElement]:
+        """Get the dice table elements chosen for the specific dice table and staff (within that dice table).
 
         For a given table, this may either return the same bar indices for each staff, or a different list per staff.
 
@@ -934,7 +943,7 @@ class BarSelection(metaclass=ABCMeta):
             staff_name: optionally, within the table, the staff for which we are selecting bar indices.
 
         Returns:
-            The selected bar for this dice table, dice throw and staff.
+            The selected dice table elements for this dice table, dice throw and staff.
         """
 
 
@@ -943,20 +952,20 @@ class GroupedStaffsBarSelection(BarSelection):
     """Bar selection where we select the same bar indices for each staff of a dice table.
 
     Args:
-        bar_indices: for each table key, the list of bars we want to select in the composition.
+        dice_table_elements: for each table key, the list of dice table elements we want to select in the composition.
     """
-    bar_indices: dict[str_dice_table_name, list[int_bar_index]]
+    dice_table_elements: dict[str_dice_table_name, list[DiceTableElement]]
 
-    def get_bar_index(self,
-                      table_name: str_dice_table_name,
-                      throw_ind: int,
-                      staff_name: str_staff_name | None = None) -> int_bar_index:
-        return self.bar_indices[table_name][throw_ind]
+    def get_dice_table_element(self,
+                               table_name: str_dice_table_name,
+                               throw_ind: int,
+                               staff_name: str_staff_name | None = None) -> DiceTableElement:
+       return self.dice_table_elements[table_name][throw_ind]
 
-    def get_bar_indices(self,
-                        table_name: str_dice_table_name,
-                        staff_name: str_staff_name | None = None) -> list[int_bar_index]:
-        return self.bar_indices[table_name]
+    def get_dice_table_elements(self,
+                                table_name: str_dice_table_name,
+                                staff_name: str_staff_name | None = None) -> list[DiceTableElement]:
+        return self.dice_table_elements[table_name]
 
 
 @dataclass(slots=True, frozen=True)
@@ -964,20 +973,21 @@ class PerStaffsBarSelection(BarSelection):
     """Bar selection where we may select different bar indices for each staff of a dice table.
 
     Args:
-        bar_indices: for each table key, and for each staff, the list of bars we want to select in the composition.
+        dice_table_elements: for each table key, and for each staff, the list of bars we want to
+            select in the composition.
     """
-    bar_indices: dict[str_dice_table_name, dict[str_staff_name, list[int_bar_index]]]
+    dice_table_elements: dict[str_dice_table_name, dict[str_staff_name, list[DiceTableElement]]]
 
-    def get_bar_index(self,
-                      table_name: str_dice_table_name,
-                      throw_ind: int,
-                      staff_name: str_staff_name | None = None) -> int_bar_index:
-        return self.bar_indices[table_name][staff_name][throw_ind]
+    def get_dice_table_element(self,
+                               table_name: str_dice_table_name,
+                               throw_ind: int,
+                               staff_name: str_staff_name | None = None) -> DiceTableElement:
+        return self.dice_table_elements[table_name][staff_name][throw_ind]
 
-    def get_bar_indices(self,
-                        table_name: str_dice_table_name,
-                        staff_name: str_staff_name | None = None) -> list[int_bar_index]:
-        return self.bar_indices[table_name][staff_name]
+    def get_dice_table_elements(self,
+                                table_name: str_dice_table_name,
+                                staff_name: str_staff_name | None = None) -> list[DiceTableElement]:
+        return self.dice_table_elements[table_name][staff_name]
 
 
 class MidiSettings(metaclass=ABCMeta):

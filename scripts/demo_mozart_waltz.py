@@ -23,7 +23,7 @@ print(dice_game.get_all_duplicate_dice_table_elements())
 print(dice_game.count_unique_compositions(count_duplicates=True))
 print(dice_game.count_unique_compositions(count_duplicates=False))
 
-dice_game.compile_composition_score(dice_game.get_random_bar_selection(seed=0),
+dice_game.compile_composition_score(dice_game.get_random_bar_selection(seed=1, shuffle_staffs=False),
                                     comment='Test', single_page=True).to_file(out_dir / 'composition_pdf.ly')
 auto_convert_lilypond_file(out_dir / 'composition_pdf.ly')
 
