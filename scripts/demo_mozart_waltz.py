@@ -19,7 +19,7 @@ auto_convert_lilypond_file(out_dir / 'overview.ly')
 dice_game.compile_single_bar('waltz', 5).to_file(out_dir / 'bar_waltz_1.ly')
 auto_convert_lilypond_file(out_dir / 'bar_waltz_1.ly')
 
-print(dice_game.get_all_duplicate_dice_table_elements())
+print(dice_game.get_duplicate_dice_table_elements('waltz'))
 print(dice_game.count_unique_compositions(count_duplicates=True))
 print(dice_game.count_unique_compositions(count_duplicates=False))
 

@@ -58,15 +58,27 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_all_duplicate_dice_table_elements(self) -> dict[str_dice_table_name, list[set[DiceTableElement]]]:
-        """Get a list of all the duplicate bars for each dice table.
+    def get_bar_collections(self, dice_table_name: str_dice_table_name) -> BarCollection:
+        """Get the collection of bars belonging to a specific dice table.
 
-        For each dice table, this should scan the musical entries corresponding to each element in the dice table
-        for duplicate measures. We return each set of duplicates as a set containing all the dice table elements
+        Args:
+            dice_table_name: the name of the dice table
+
+        Returns:
+            The collection of bars for that dice table as a bar collection object.
+        """
+
+    @abstractmethod
+    def get_duplicate_dice_table_elements(self,
+                                          dice_table_name: str_dice_table_name) -> list[tuple[DiceTableElement, ...]]:
+        """Get a list of all the duplicate bars for a specific dice table.
+
+        For a given dice table, this should scan for duplicate measures in the musical entries corresponding to each
+        element in the dice table. We return each set of duplicates as a tuple containing all the dice table elements
         having duplicates.
 
         Returns:
-            A list of duplicate dice table elements for each dice table.
+            A list of duplicate dice table elements.
         """
 
     @abstractmethod
@@ -81,15 +93,7 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_nmr_staffs_per_table(self) -> dict[str_dice_table_name, int]:
-        """Get the number of staffs available per dice table.
-
-        Returns:
-            Per dice table, the number of staffs available in the measures table.
-        """
-
-    @abstractmethod
-    def get_random_bar_selection(self, shuffle_staffs: bool = False, seed: int = None) -> BarSelection:
+    def get_random_bar_selection(self, seed: int = None, shuffle_staffs: bool = False) -> BarSelection:
         """Get a random bar selection we may use to create a composition.
 
         Args:
@@ -217,17 +221,18 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
     def get_dice_tables(self) -> dict[str_dice_table_name, DiceTable]:
         return self._dice_tables
 
-    def get_all_duplicate_dice_table_elements(self) -> dict[str_dice_table_name, list[set[DiceTableElement]]]:
-        table_duplicates = {}
-        for table_name, dice_table in self._dice_tables.items():
-            table_duplicates[table_name] = self._dice_bars_tables[table_name].get_duplicates()
-        return table_duplicates
+    def get_bar_collections(self, dice_table_name: str_dice_table_name) -> BarCollection:
+        return self._bar_collections[dice_table_name]
+
+    def get_duplicate_dice_table_elements(self,
+                                          dice_table_name: str_dice_table_name) -> list[tuple[DiceTableElement, ...]]:
+        return self._dice_bars_tables[dice_table_name].get_duplicates()
 
     def count_unique_compositions(self, count_duplicates=False) -> int:
         def count_unique_bars(table_name: str, throw_ind: int):
             """Count the number of unique bars for the indicated throw index (column)."""
             dice_table_column = self._dice_tables[table_name].get_column(throw_ind)
-            bars_in_column = self._dice_bars_tables[table_name].get_selection(dice_table_column)
+            bars_in_column = self._bar_collections[table_name].get_synchronous_selection(dice_table_column)
             return len(set(bars_in_column))
 
         table_counts = []
@@ -239,11 +244,7 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
                                                  for throw_ind in range(table.nmr_throws)]))
         return reduce(mul, table_counts)
 
-    def get_nmr_staffs_per_table(self) -> dict[str_dice_table_name, int]:
-        return {table_name: len(bar_collection.get_staff_names())
-                for table_name, bar_collection in self._bar_collections.items()}
-
-    def get_random_bar_selection(self, shuffle_staffs: bool = False, seed: int = None) -> BarSelection:
+    def get_random_bar_selection(self, seed: int = None, shuffle_staffs: bool = False) -> BarSelection:
         if shuffle_staffs:
             choices = {}
             for table_name, dice_table in self._dice_tables.items():
@@ -267,12 +268,12 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
             bars_per_staff = {}
             for staff_name in staff_names:
                 staff_selection = bar_selection.get_dice_table_elements(table_name, staff_name)
-                bars_in_selection = self._dice_bars_tables[table_name].get_selection(staff_selection)
+                selected_bar_tuplets = self._bar_collections[table_name].get_bar_selection(staff_name, staff_selection)
 
                 staff_bars = []
-                for synchronous_bars in bars_in_selection:
-                    for synchronous_bar in synchronous_bars:
-                        staff_bars.append(synchronous_bar.get_bar(staff_name))
+                for bar_tuplet in selected_bar_tuplets:
+                    for bar in bar_tuplet:
+                        staff_bars.append(bar)
                 bars_per_staff[staff_name] = staff_bars
 
             complete_bars = []
@@ -346,12 +347,13 @@ class Bar(metaclass=ABCMeta):
 
 
 class SynchronousBar(metaclass=ABCMeta):
-    """Representation of a list of bars played synchronously across staves.
+    """Representation of a list of bars played synchronously across staffs.
 
     Suppose that a piece has a piano and a violin, then at each time point there are three bars being played, left and
     right hand piano and the violin. These synchronous bars are connected in this class. For clarity, the different
     bars should be stored in a dictionary with their staff name as key.
     """
+
     @abstractmethod
     def get_staff_names(self) -> list[str_staff_name]:
         """Get the names of the staffs stored in this synchronous bar.
@@ -444,6 +446,38 @@ class BarCollection(metaclass=ABCMeta):
             The specific bar in the given staff and bar index locations.
         """
 
+    @abstractmethod
+    def get_synchronous_selection(self,
+                                  dice_table_elements: list[DiceTableElement]) -> list[tuple[SynchronousBar, ...]]:
+        """Convert a selection of dice table elements into a list of synchronous bar tuplets.
+
+        Since each dice table element may point to multiple consecutive synchronous bars, we need to return a tuple of
+        synchronous bars per listed dice table element.
+
+        Args:
+            dice_table_elements: the dice table elements we wish to lookup
+
+        Returns:
+            The synchronous bars for each dice table element in the list
+        """
+
+    @abstractmethod
+    def get_bar_selection(self,
+                          staff_name: str_staff_name,
+                          dice_table_elements: list[DiceTableElement]) -> list[tuple[Bar, ...]]:
+        """Convert a selection of dice table elements into a list of bar tuplets.
+
+        Since each dice table element may point to multiple consecutive bars, we need to return a tuple of
+        bars per listed dice table element.
+
+        Args:
+            dice_table_elements: the dice table elements we wish to lookup
+            staff_name: only return the values of this specific staff.
+
+        Returns:
+            The selection of bars for each dice table element and the specific staff
+        """
+
 
 @dataclass(frozen=True, slots=True)
 class SimpleBar(Bar):
@@ -507,6 +541,28 @@ class SimpleBarCollection(BarCollection):
 
     def get_bar(self, staff_name: str_staff_name, bar_index: int_bar_index) -> Bar:
         return self.bar_collection[bar_index][staff_name]
+
+    def get_synchronous_selection(self,
+                                  dice_table_elements: list[DiceTableElement]) -> list[tuple[SynchronousBar, ...]]:
+        bars = []
+        for element in dice_table_elements:
+            bar_tuplets = []
+            for bar_index in element.get_bar_indices():
+                bar_tuplets.append(self.get_synchronous_bar(bar_index))
+            bars.append(tuple(bar_tuplets))
+        return bars
+
+    def get_bar_selection(self,
+                          staff_name: str_staff_name,
+                          dice_table_elements: list[DiceTableElement]) -> list[tuple[Bar, ...]]:
+        bars = []
+        for element in dice_table_elements:
+            bar_tuplets = []
+            for bar_index in element.get_bar_indices():
+                bar_tuplets.append(self.get_bar(staff_name, bar_index))
+            bars.append(tuple(bar_tuplets))
+        return bars
+
 
 
 class DiceTable(metaclass=ABCMeta):
@@ -754,8 +810,8 @@ class DiceBarsTable(metaclass=ABCMeta):
     """Representation of a table filled with measures.
 
     A dice table lists all the bar indices chosen at random for each dice throw. The bar collection lists all the
-    synchronous bars belonging to such dice table. This table combines these two as a look-up table in which
-    each entry in the look-up table is a tuple of synchronous bars as selected by the dice table.
+    synchronous bars belonging to such a dice table. This table combines these two as a look-up table in which
+    each entry in the look-up table is a tuple of synchronous bars as selected by the dice table elements.
     """
 
     @abstractmethod
@@ -783,7 +839,7 @@ class DiceBarsTable(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_duplicates(self) -> list[set[DiceTableElement]]:
+    def get_duplicates(self) -> list[tuple[DiceTableElement, ...]]:
         """Get a list of dice table elements whose corresponding bars are duplicates of each other.
 
         Returns:
@@ -808,12 +864,9 @@ class SimpleDiceBarsTable(DiceBarsTable):
         return self._bars_table[row_ind][column_ind]
 
     def get_selection(self, dice_table_elements: list[DiceTableElement]) -> list[tuple[SynchronousBar, ...]]:
-        bars = []
-        for element in dice_table_elements:
-            bars.append(self._bars_table[element.row_ind][element.column_ind])
-        return bars
+        return self._bars_collection.get_synchronous_selection(dice_table_elements)
 
-    def get_duplicates(self) -> list[set[DiceTableElement]]:
+    def get_duplicates(self) -> list[tuple[DiceTableElement, ...]]:
         flat_dice_table = self._flatten_table(self._dice_table.list_rows())
         flat_bars_table = self._flatten_table(self._bars_table)
 
@@ -829,7 +882,7 @@ class SimpleDiceBarsTable(DiceBarsTable):
             table_elements = []
             for flat_index in flat_table_indices:
                 table_elements.append(flat_dice_table[flat_index])
-            duplicate_table_elements.append(set(table_elements))
+            duplicate_table_elements.append(tuple(table_elements))
 
         return duplicate_table_elements
 

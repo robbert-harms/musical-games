@@ -5,6 +5,7 @@ __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
 from pathlib import Path
+from pprint import pprint
 
 from musical_games.dice_games.dice_games import KirnbergerPolonaise
 from musical_games.utils import auto_convert_lilypond_file
@@ -19,14 +20,11 @@ auto_convert_lilypond_file(out_dir / 'overview.ly')
 dice_game.compile_single_bar('polonaise', 1).to_file(out_dir / 'bar_polonaise_1.ly')
 auto_convert_lilypond_file(out_dir / 'bar_polonaise_1.ly')
 
-print(dice_game.get_all_duplicate_dice_table_elements())
+print(dice_game.get_duplicate_dice_table_elements('polonaise'))
 print(dice_game.count_unique_compositions(count_duplicates=True))
 print(dice_game.count_unique_compositions(count_duplicates=False))
 
-print(dice_game.get_random_bar_selection(shuffle_staffs=False, seed=0))
-print(dice_game.get_random_bar_selection(shuffle_staffs=True, seed=0))
-
-dice_game.compile_composition_score(dice_game.get_random_bar_selection(shuffle_staffs=True, seed=0),
+dice_game.compile_composition_score(dice_game.get_random_bar_selection(seed=0, shuffle_staffs=True),
                                     comment='Test', single_page=True).to_file(out_dir / 'composition_pdf.ly')
 auto_convert_lilypond_file(out_dir / 'composition_pdf.ly')
 
@@ -40,4 +38,4 @@ dice_game.compile_composition_audio(
 auto_convert_lilypond_file(
     out_dir / 'composition_midi.ly',
     soundfont=Path('/home/robbert/programming/python/opus_infinity.org/soundfonts/Musyng_Kite.sf2'))
-
+#
