@@ -9,7 +9,7 @@ from pathlib import Path
 from musical_games.dice_games.dice_games import MozartWaltz
 from musical_games.utils import auto_convert_lilypond_file
 
-out_dir = Path('/tmp/test2')
+out_dir = Path('/tmp/test')
 
 dice_game = MozartWaltz()
 

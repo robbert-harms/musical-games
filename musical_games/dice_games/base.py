@@ -69,8 +69,7 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_duplicate_dice_table_elements(self,
-                                          dice_table_name: str_dice_table_name) -> list[tuple[DiceTableElement, ...]]:
+    def get_duplicate_dice_table_elements(self, dice_table_name: str_dice_table_name) -> list[set[DiceTableElement]]:
         """Get a list of all the duplicate bars for a specific dice table.
 
         For a given dice table, this should scan for duplicate measures in the musical entries corresponding to each
@@ -206,10 +205,6 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         self._jinja2_environment = jinja2_environment
         self._default_midi_settings = default_midi_settings
 
-        self._dice_bars_tables = {}
-        for table_name, dice_table in self._dice_tables.items():
-            self._dice_bars_tables[table_name] = SimpleDiceBarsTable(dice_table, self._bar_collections[table_name])
-
     @property
     def author(self) -> str:
         return self._author
@@ -224,9 +219,16 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
     def get_bar_collections(self, dice_table_name: str_dice_table_name) -> BarCollection:
         return self._bar_collections[dice_table_name]
 
-    def get_duplicate_dice_table_elements(self,
-                                          dice_table_name: str_dice_table_name) -> list[tuple[DiceTableElement, ...]]:
-        return self._dice_bars_tables[dice_table_name].get_duplicates()
+    def get_duplicate_dice_table_elements(self, dice_table_name: str_dice_table_name) -> list[set[DiceTableElement]]:
+        flat_dice_table = self._dice_tables[dice_table_name].get_elements()
+        bars = self._bar_collections[dice_table_name].get_synchronous_selection(flat_dice_table)
+
+        bars_grouped = {}
+        for dice_table_element, bar in zip(flat_dice_table, bars):
+            bar_elements = bars_grouped.setdefault(bar, set())
+            bar_elements.add(dice_table_element)
+
+        return [v for k, v in bars_grouped.items() if len(v) > 1]
 
     def count_unique_compositions(self, count_duplicates=False) -> int:
         def count_unique_bars(table_name: str, throw_ind: int):
@@ -564,7 +566,6 @@ class SimpleBarCollection(BarCollection):
         return bars
 
 
-
 class DiceTable(metaclass=ABCMeta):
     """Representation of a dice table used in playing the dice games.
 
@@ -603,6 +604,14 @@ class DiceTable(metaclass=ABCMeta):
 
         Returns:
             The dice table element
+        """
+
+    @abstractmethod
+    def get_elements(self) -> list[DiceTableElement]:
+        """Get a list of all the dice table elements.
+
+        Returns:
+            A list of all the dice table elements
         """
 
     @abstractmethod
@@ -778,6 +787,13 @@ class SimpleDiceTable(DiceTable):
     def get_element(self, row: int, column: int) -> DiceTableElement:
         return self.table[row][column]
 
+    def get_elements(self) -> list[DiceTableElement]:
+        elements = []
+        for row in self.table:
+            for element in row:
+                elements.append(element)
+        return elements
+
     def list_rows(self) -> list[list[DiceTableElement]]:
         return self.table
 
@@ -804,121 +820,6 @@ class SimpleDiceTable(DiceTable):
             dice_throw = random.randint(0, max_val)
             selected_elements.append(self.get_element(dice_throw, throw_ind))
         return selected_elements
-
-
-class DiceBarsTable(metaclass=ABCMeta):
-    """Representation of a table filled with measures.
-
-    A dice table lists all the bar indices chosen at random for each dice throw. The bar collection lists all the
-    synchronous bars belonging to such a dice table. This table combines these two as a look-up table in which
-    each entry in the look-up table is a tuple of synchronous bars as selected by the dice table elements.
-    """
-
-    @abstractmethod
-    def get_entry(self, row_ind: int, column_ind: int) -> tuple[SynchronousBar, ...]:
-        """Get the synchronous bars related to this table entry.
-
-        Args:
-            row_ind: the row index
-            column_ind: the column index
-
-        Returns:
-            The tuple of synchronous bars at that entry. Most dice table games have only
-            one bar per entry, some have two.
-        """
-
-    @abstractmethod
-    def get_selection(self, dice_table_elements: list[DiceTableElement]) -> list[tuple[SynchronousBar, ...]]:
-        """For each element in the list of dice table elements, lookup the corresponding synchronous bars.
-
-        Args:
-            dice_table_elements: a selection of dice table elements
-
-        Returns:
-            The tuplets of synchronous bars at each location.
-        """
-
-    @abstractmethod
-    def get_duplicates(self) -> list[tuple[DiceTableElement, ...]]:
-        """Get a list of dice table elements whose corresponding bars are duplicates of each other.
-
-        Returns:
-            A list with the sets of duplicates
-        """
-
-
-class SimpleDiceBarsTable(DiceBarsTable):
-
-    def __init__(self, dice_table: DiceTable, bars_collection: BarCollection):
-        """Implements the dice bars table.
-
-        Args:
-            dice_table: the dice table
-            bars_collection: the corresponding collection of bars.
-        """
-        self._dice_table = dice_table
-        self._bars_collection = bars_collection
-        self._bars_table = self._convert_dice_table(self._dice_table, self._bars_collection)
-
-    def get_entry(self, row_ind: int, column_ind: int) -> tuple[SynchronousBar, ...]:
-        return self._bars_table[row_ind][column_ind]
-
-    def get_selection(self, dice_table_elements: list[DiceTableElement]) -> list[tuple[SynchronousBar, ...]]:
-        return self._bars_collection.get_synchronous_selection(dice_table_elements)
-
-    def get_duplicates(self) -> list[tuple[DiceTableElement, ...]]:
-        flat_dice_table = self._flatten_table(self._dice_table.list_rows())
-        flat_bars_table = self._flatten_table(self._bars_table)
-
-        bars_grouped_by_index = {}
-        for flat_ind, bar_items in enumerate(flat_bars_table):
-            bar_indices = bars_grouped_by_index.setdefault(bar_items, set())
-            bar_indices.add(flat_ind)
-
-        flat_table_duplicates = [v for k, v in bars_grouped_by_index.items() if len(v) > 1]
-
-        duplicate_table_elements = []
-        for flat_table_indices in flat_table_duplicates:
-            table_elements = []
-            for flat_index in flat_table_indices:
-                table_elements.append(flat_dice_table[flat_index])
-            duplicate_table_elements.append(tuple(table_elements))
-
-        return duplicate_table_elements
-
-    @staticmethod
-    def _flatten_table(table: list[list[Any]]) -> list[list[Any]]:
-        """Flatten one of the tables."""
-        elements = []
-        for row in table:
-            for element in row:
-                elements.append(element)
-        return elements
-
-    @staticmethod
-    def _convert_dice_table(dice_table: DiceTable,
-                            bars_collection: BarCollection) -> list[list[tuple[SynchronousBar, ...]]]:
-        """Convert the dice table to a table of bars using the bar collection.
-
-        This looks up each entry in the dice table, gets the bar indices in that entry, retrieves those entries
-        from the bar collection and puts all of these in a new table with the same shape as the dice table.
-
-        Args:
-            dice_table: the dice table
-            bars_collection: the collection of synchronous bars.
-        """
-        bars_table = []
-        for dice_table_row in dice_table.list_rows():
-            bars_in_row = []
-            for dice_table_element in dice_table_row:
-                bar_indices = dice_table_element.get_bar_indices()
-
-                synchronous_bars = []
-                for bar_index in bar_indices:
-                    synchronous_bars.append(bars_collection.get_synchronous_bar(bar_index))
-                bars_in_row.append(tuple(synchronous_bars))
-            bars_table.append(bars_in_row)
-        return bars_table
 
 
 class LilypondScore(metaclass=ABCMeta):

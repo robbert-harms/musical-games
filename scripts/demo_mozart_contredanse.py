@@ -9,11 +9,11 @@ from pathlib import Path
 from musical_games.dice_games.dice_games import MozartContredanse
 from musical_games.utils import auto_convert_lilypond_file
 
-out_dir = Path('/tmp/test2')
+out_dir = Path('/tmp/test')
 
 dice_game = MozartContredanse()
 
-dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
+dice_game.compile_bars_overview(single_page=False).to_file(out_dir / 'overview.ly')
 auto_convert_lilypond_file(out_dir / 'overview.ly')
 
 dice_game.compile_single_bar('contredanse', 11).to_file(out_dir / 'bar_contredanse_1.ly')
