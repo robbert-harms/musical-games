@@ -58,14 +58,14 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_bar_collections(self, dice_table_name: str_dice_table_name) -> BarCollection:
-        """Get the collection of bars belonging to a specific dice table.
+    def get_bar_collections(self) -> dict[str_dice_table_name, BarCollection]:
+        """Get the collection of bars for each dice table.
 
         Args:
             dice_table_name: the name of the dice table
 
         Returns:
-            The collection of bars for that dice table as a bar collection object.
+            The collection of bars for each dice table as a bar collection object.
         """
 
     @abstractmethod
@@ -150,6 +150,26 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def compile_single_dice_table_element(self,
+                                          table_name: str_dice_table_name,
+                                          dice_table_element: DiceTableElement) -> LilypondScore:
+        """Get a lilypond score with only the bar or bars selected by the given dice table element.
+
+        Since some dice tables have select more than one bar per element, we have this method in addition to
+        :meth:`compile_single_bar`. The latter only selects one specific bar, this selects all the bars selected
+        by the dice table element.
+
+        Args:
+            table_name: the specific dice table to use. Names should match those of the method :meth:`get_dice_tables`.
+            dice_table_element: the specific dice table element for which to look up the bars.
+                Should be an element of the referred table.
+
+        Returns:
+            A lilypond score for the dice table element.
+        """
+
+
+    @abstractmethod
     def compile_composition_score(self,
                                   bar_selection: BarSelection,
                                   comment: str | None = None,
@@ -216,8 +236,8 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
     def get_dice_tables(self) -> dict[str_dice_table_name, DiceTable]:
         return self._dice_tables
 
-    def get_bar_collections(self, dice_table_name: str_dice_table_name) -> BarCollection:
-        return self._bar_collections[dice_table_name]
+    def get_bar_collections(self) -> dict[str_dice_table_name, BarCollection]:
+        return self._bar_collections
 
     def get_duplicate_dice_table_elements(self, dice_table_name: str_dice_table_name) -> list[set[DiceTableElement]]:
         flat_dice_table = self._dice_tables[dice_table_name].get_elements()
@@ -300,6 +320,13 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         template = self._jinja2_environment.get_template('single_bar.ly')
         synchronous_bar = self._bar_collections[table_name].get_synchronous_bar(bar_ind)
         return SimpleLilypondScore(template.render(table_name=table_name, synchronous_bar=synchronous_bar))
+
+    def compile_single_dice_table_element(self,
+                                          table_name: str_dice_table_name,
+                                          dice_table_element: DiceTableElement) -> LilypondScore:
+        template = self._jinja2_environment.get_template('single_dice_table_element.ly')
+        synchronous_bars = self._bar_collections[table_name].get_synchronous_selection([dice_table_element])[0]
+        return SimpleLilypondScore(template.render(table_name=table_name, synchronous_bars=synchronous_bars))
 
     def compile_composition_score(self,
                                   bar_selection: BarSelection,
@@ -397,6 +424,24 @@ class BarCollection(metaclass=ABCMeta):
 
     The bars are expected to be stored in a dictionary mapping bar indices to bars.
     """
+
+    @property
+    @abstractmethod
+    def nmr_bars(self) -> int:
+        """The number of bars in this bar collection.
+
+        Returns:
+            The number of bars in this bar collection (0-indiced).
+        """
+
+    @property
+    @abstractmethod
+    def maximum_bar_ind(self) -> int:
+        """The maximum bar index, 1 + number of bars.
+
+        Returns:
+            The maximum bar index. Since the bars start counting at 1, this is one more than the number of bars.
+        """
 
     @abstractmethod
     def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBar]:
@@ -528,6 +573,14 @@ class SimpleBarCollection(BarCollection):
         bar_collection: the collection of synchronous bars indexed by their bar index and staff name.
     """
     bar_collection: dict[int_bar_index, dict[str_staff_name, Bar]]
+
+    @property
+    def nmr_bars(self) -> int:
+        return len(self.bar_collection)
+
+    @property
+    def maximum_bar_ind(self) -> int:
+        return self.nmr_bars + 1
 
     def get_synchronous_bars(self) -> dict[int_bar_index, SynchronousBar]:
         return {bar_index: SimpleSynchronousBar(frozendict(bars)) for bar_index, bars in self.bar_collection.items()}

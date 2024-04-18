@@ -16,7 +16,8 @@ from musical_games.external.lilypond import typeset_lilypond, LilypondTypesetRes
 
 def auto_convert_lilypond_file(lilypond_in: Path, soundfont: Path | None = None, output_basename: Path | None = None,
                                pdf: bool = True, png: bool = True, ps: bool = False, mp3: bool = True,
-                               ogg: bool = True, midi_gain: float | None = None) -> AutoConvertLilypondResults:
+                               ogg: bool = True, midi_gain: float | None = None,
+                               trim_png: bool = True) -> AutoConvertLilypondResults:
     """Converts a lilypond file to pdf, png, midi, wav, mp3 and ogg.
 
     Given a lilypond file we create some common output files you are typically interested in.
@@ -31,6 +32,7 @@ def auto_convert_lilypond_file(lilypond_in: Path, soundfont: Path | None = None,
         mp3: if we want mp3 output, only applicable if the lilypond has midi output defined
         ogg: if we want ogg output, only applicable if the lilypond has midi output defined
         midi_gain: the gain for use during the midi to wav conversion
+        trim_png: if we want to automatically trim the png outputs
 
     Returns:
         Information about the file names that were outputted
@@ -38,7 +40,7 @@ def auto_convert_lilypond_file(lilypond_in: Path, soundfont: Path | None = None,
     if not output_basename:
         output_basename = lilypond_in.parent / lilypond_in.stem
 
-    typeset_results = typeset_lilypond(lilypond_in, output_basename, pdf=pdf, png=png, ps=ps)
+    typeset_results = typeset_lilypond(lilypond_in, output_basename, pdf=pdf, png=png, ps=ps, trim_png=trim_png)
 
     wav_list = []
     mp3_list = []

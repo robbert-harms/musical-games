@@ -5,7 +5,6 @@ __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
 from pathlib import Path
-from pprint import pprint
 
 from musical_games.dice_games.dice_games import KirnbergerPolonaise
 from musical_games.utils import auto_convert_lilypond_file
@@ -19,6 +18,11 @@ auto_convert_lilypond_file(out_dir / 'overview.ly')
 
 dice_game.compile_single_bar('polonaise', 1).to_file(out_dir / 'bar_polonaise_1.ly')
 auto_convert_lilypond_file(out_dir / 'bar_polonaise_1.ly')
+
+dice_game.compile_single_dice_table_element('polonaise',
+                                            dice_game.get_dice_tables()['polonaise'].get_elements()[0]).to_file(
+    out_dir / 'single_dice_table_element_polonaise_0.ly')
+auto_convert_lilypond_file(out_dir / 'single_dice_table_element_polonaise_0.ly')
 
 print(dice_game.get_duplicate_dice_table_elements('polonaise'))
 print(dice_game.count_unique_compositions(count_duplicates=True))

@@ -22,6 +22,10 @@ auto_convert_lilypond_file(out_dir / 'bar_treble_1.ly')
 dice_game.compile_single_bar('bass', 1).to_file(out_dir / 'bar_bass_1.ly')
 auto_convert_lilypond_file(out_dir / 'bar_bass_1.ly')
 
+dice_game.compile_single_dice_table_element('treble', dice_game.get_dice_tables()['treble'].get_elements()[0]).to_file(
+    out_dir / 'single_dice_table_element_0.ly')
+auto_convert_lilypond_file(out_dir / 'single_dice_table_element_0.ly')
+
 pprint(dice_game.get_duplicate_dice_table_elements('treble'))
 pprint(dice_game.get_duplicate_dice_table_elements('bass'))
 print(dice_game.count_unique_compositions(count_duplicates=True))
