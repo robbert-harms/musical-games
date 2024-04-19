@@ -2,6 +2,15 @@
 Changelog
 *********
 
+v0.7.1 (2024-04-19)
+===================
+
+Added
+-----
+- Adds functionality for rendering a single dice table element.
+- Adds support for dice games selecting multiple measures per dice throw.
+
+
 v0.7.0 (2024-04-16)
 ===================
 
