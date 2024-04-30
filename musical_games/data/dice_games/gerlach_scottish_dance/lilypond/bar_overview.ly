@@ -8,7 +8,7 @@
 }
 \header{
     title = "Scottish dance"
-    composer = "Stadler"
+    composer = "Gerlach"
     tagline = ##f
 }
 \score {
