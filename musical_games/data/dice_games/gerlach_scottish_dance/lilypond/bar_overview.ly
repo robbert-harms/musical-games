@@ -3,7 +3,7 @@
     print-all-headers = ##t
     \BLOCK{ if render_settings['single_page'] }
         system-system-spacing = #'((basic-distance . 15))
-        paper-height = 1500\mm  %% default is 297 for a4
+        paper-height = 1600\mm  %% default is 297 for a4
     \BLOCK{ endif }
 }
 \header{
