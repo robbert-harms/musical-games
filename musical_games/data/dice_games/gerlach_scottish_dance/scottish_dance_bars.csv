@@ -156,7 +156,7 @@
 "155","\tuplet 3/2 {\stemDown e''8 [\stemDown g''8 \stemDown c''8] } a''4","\stemDown c8 [\stemDown <c' e'>8] \stemDown <c' e'>8 [\stemDown <c' e'>8]"
 "156","\stemDown g''16 [\stemDown a''16 \stemDown bes''16 \stemDown c'''16] \stemDown a''8 [\stemDown f''8]","{<<{\voiceOne r8 <g c'>8 r8 <a c'>8} \new Voice {\voiceTwo e4 f4}>>}"
 "157","\stemDown a''8 [\stemDown a'''8] a''4","\stemDown <a c'>8 [\stemDown e8] a,4"
-"158","\stemDown cis'''16 [\stemDown d'''16 \stemDown e'''16 \stemDown f'''16] \stemDown c'''8 [\stemDown e''8]","\clef ""treble"" \stemUp <bes d' g'>8 [\stemUp <b d' gis'>8] \stemUp <c' f' a'>8 [\stemUp <c' g' bes'>8]"
+"158","\stemDown cis'''16 [\stemDown d'''16 \stemDown e'''16 \stemDown f'''16] \stemDown c'''8 [\stemDown e''8]","\clef ""treble"" \stemUp <bes d' g'>8 [\stemUp <b d' gis'>8] \stemUp <c' f' a'>8 [\stemUp <c' gis' bes'>8]"
 "159","\stemDown c''8 [\stemDown b''8] \stemDown a''8 [\stemDown c''8]","\stemDown e8 [\stemDown <c' e'>8] \stemDown f8 [\stemDown <a f'>8]"
 "160","\stemDown c'''8 [\stemDown d'''16 \stemDown c'''16] \stemDown b''8 [\stemDown e''8]","{<<{\voiceOne r8 <c' e'>8 r8 <d' e'>8} \new Voice {\voiceTwo a4 gis4}>>}"
 "161","\stemDown a''8 [\stemDown gis''16 \stemDown a''16] \stemDown b''8 [\stemDown e''8]","{<<{\voiceOne r8 <b d'>8 r8 <gis d' e'>8} \new Voice {\voiceTwo f4 e4}>>}"
