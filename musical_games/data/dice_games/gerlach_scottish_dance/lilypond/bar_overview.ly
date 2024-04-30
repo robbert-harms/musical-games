@@ -52,10 +52,11 @@
                                         time-signature))
                 \BLOCK{ for bar_ind, bar in bar_collections['dance'].get_bars('piano_left_hand').items() }
                     \BLOCK{ if bar.lilypond_str.startswith('\clef') }
-                    \set Staff.forceClef = ##t \VAR{bar.lilypond_str}
+                        \set Staff.forceClef = ##t
+                        \VAR{bar.lilypond_str}
                         \BLOCK{ if not bar_collections['dance'].get_bars('piano_left_hand')[bar_ind + 1].lilypond_str.startswith('\clef') }
-                        \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
-                        \clef "bass"
+                            \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
+                            \clef "bass"
                         \BLOCK{ endif }
                     \BLOCK{ else }
                     \VAR{bar.lilypond_str}

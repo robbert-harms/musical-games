@@ -17,7 +17,7 @@
             {
                 \key c \major
                 \time 2/4
-                \tempo 4 = 100
+                \tempo 4 = 70
                 \override Score.RehearsalMark.direction = #down
             }
             {
@@ -45,7 +45,7 @@
             {
                 \key c \major
                 \time 2/4
-                \tempo 4 = 100
+                \tempo 4 = 70
                 \override Score.RehearsalMark.direction = #down
             }
             {
@@ -147,7 +147,7 @@
             {
                 \key c \major
                 \time 2/4
-                \tempo 4 = 100
+                \tempo 4 = 70
                 \override Score.RehearsalMark.direction = #down
             }
             {
@@ -169,7 +169,7 @@
             {
                 \key c \major
                 \time 2/4
-                \tempo 4 = 100
+                \tempo 4 = 70
                 \override Score.RehearsalMark.direction = #down
             }
             {
