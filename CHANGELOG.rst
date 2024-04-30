@@ -2,6 +2,14 @@
 Changelog
 *********
 
+v0.8.0 (2024-04-30)
+===================
+
+Added
+-----
+- Adds Gerlach's Scottish Dance. Might need some more work concerning the clef changes.
+
+
 v0.7.1 (2024-04-19)
 ===================
 
