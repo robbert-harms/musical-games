@@ -272,3 +272,47 @@ class StadlerMenuetTrio(SimpleDiceGame):
 
         super().__init__('Stadler', 'Menuet and Trio', dice_tables, bar_collections,
                          jinja2_environment, midi_settings)
+
+
+class GerlachScottishDance(SimpleDiceGame):
+
+    def __init__(self):
+        """Implementation of a Scottish dance dice game by Gerlach."""
+        dice_tables = {
+            'dance': SimpleDiceTable.from_lists([
+                [(65, 14), (29, 17), (108, 96), (37, 50), (41, 35), (92, 139), (49, 90), (11, 59)],
+                [(77, 109), (9, 28), (48, 99), (21, 7), (6, 80), (1, 47), (107, 31), (127, 51)],
+                [(15, 87), (55, 95), (144, 74), (104, 120), (130, 100), (71, 150), (111, 69), (72, 102)],
+                [(89, 12), (75, 3), (66, 175), (20, 70), (149, 46), (117, 94), (19, 86), (128, 52)],
+                [(40, 98), (36, 10), (78, 44), (33, 136), (39, 110), (143, 30), (58, 67), (22, 91)],
+                [(8, 88), (101, 32), (60, 4), (106, 93), (105, 45), (112, 27), (61, 119), (103, 48)]]),
+            'trio': SimpleDiceTable.from_lists([
+                [(13, 85), (126, 180), (125, 68), (177, 192), (187, 63), (24, 97), (145, 185), (137, 176)],
+                [(165, 113), (23, 76), (82, 2), (154, 190), (5, 84), (161, 182), (174, 116), (54, 124)],
+                [(43, 57), (135, 188), (56, 18), (189, 163), (25, 38), (166, 122), (179, 123), (169, 53)],
+                [(181, 129), (131, 186), (115, 170), (62, 178), (183, 132), (168, 171), (81, 151), (158, 64)],
+                [(134, 26), (118, 184), (160, 140), (114, 34), (42, 164), (146, 83), (141, 162), (73, 153)],
+                [(79, 191), (121, 155), (138, 156), (16, 173), (133, 167), (142, 172), (147, 159), (152, 157)]]),
+        }
+
+        csv_reader = SimpleBarCollectionCSVReader()
+        bars = csv_reader.read_csv(resources.files('musical_games') /
+                                   'data/dice_games/gerlach_scottish_dance/scottish_dance_bars.csv')
+
+        bar_collections = {'dance': bars,
+                           'trio': bars}
+
+        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/gerlach_scottish_dance/lilypond')
+        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
+        jinja2_environment = jinja2.Environment(**env_options)
+
+        midi_settings = SimpleMidiSettings(
+            {'dance': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'},
+             'trio': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'}},
+            {'dance': {'piano_right_hand': 0, 'piano_left_hand': 0},
+             'trio': {'piano_right_hand': 0, 'piano_left_hand': 0}},
+            {'dance': {'piano_right_hand': 1, 'piano_left_hand': 0.75},
+             'trio': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
+
+        super().__init__('Gerlach', 'Scottish dance', dice_tables, bar_collections,
+                         jinja2_environment, midi_settings)
