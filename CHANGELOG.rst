@@ -2,6 +2,16 @@
 Changelog
 *********
 
+v0.8.1 (2024-05-01)
+===================
+
+Other
+-----
+- Improved the lilypond designs.
+- In Gerlach, fixed some errors and made the clef change only local to the one specific bar.
+- Removed stem position overwrites in the Gerlach bars.
+
+
 v0.8.0 (2024-04-30)
 ===================
 
