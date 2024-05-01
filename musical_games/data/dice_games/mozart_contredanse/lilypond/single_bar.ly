@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##f
     paper-height = 50\mm
@@ -19,10 +19,10 @@
         <<
             {
                 \key c\major
-                \time 2/4
             }
             {
                 \clef treble
+                \time 2/4
                 \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
                 \bar "|."
             }
@@ -31,10 +31,10 @@
         <<
             {
                 \key c\major
-                \time 2/4
             }
             {
                 \clef bass
+                \time 2/4
                 \BLOCK{ if synchronous_bar.get_bar('piano_left_hand_alternative').lilypond_str != '' }
                     <<{\voiceOne \VAR{synchronous_bar.get_bar('piano_left_hand').lilypond_str}} \new Voice {\voiceTwo \VAR{synchronous_bar.get_bar('piano_left_hand_alternative').lilypond_str}}>>
                 \BLOCK{ else }

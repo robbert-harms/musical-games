@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \include "articulate.ly"
 \score {
     \unfoldRepeats

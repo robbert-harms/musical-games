@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##t
     \BLOCK{ if render_settings['single_page'] }
@@ -24,10 +24,10 @@
             {
                 \override Score.BarNumber.break-visibility = ##(#t #t #t)
                 \key c \major
-                \time 2/4
             }
             {
                 \clef treble
+                \time 2/4
                 \BLOCK{ for bar in bar_collections['dance'].get_bars('piano_right_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
@@ -39,10 +39,10 @@
             {
                 \override Score.BarNumber.break-visibility = ##(#t #t #t)
                 \key c \major
-                \time 2/4
             }
             {
                 \clef bass
+                \time 2/4
                 \override Score.BreakAlignment #'break-align-orders =
                       #(make-vector 3 '(span-bar
                                         breathing-sign

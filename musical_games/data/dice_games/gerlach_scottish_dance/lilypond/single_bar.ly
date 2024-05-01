@@ -8,6 +8,9 @@
     title = ""
     tagline = ##f
 }
+
+\BLOCK{ include 'clef_changes.ly' }
+
 \score {
     \new PianoStaff
     <<
@@ -15,10 +18,10 @@
         <<
             {
                 \key c \major
-                \time 2/4
             }
             {
                 \clef treble
+                \time 2/4
                 \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
                 \bar "|."
             }
@@ -27,10 +30,14 @@
         <<
             {
                 \key c \major
-                \time 2/4
             }
             {
-                \clef bass
+                \BLOCK{ if synchronous_bar.get_bar('piano_left_hand').lilypond_str.startswith('\clef "treble"') }
+                    \bassToTreble
+                \BLOCK{ else }
+                    \clef bass
+                \BLOCK{ endif }
+                \time 2/4
                 \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
                 \bar "|."
             }

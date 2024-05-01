@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##t
     score-markup-spacing = #'((basic-distance . 10))
@@ -26,12 +26,12 @@
             \set Staff.instrumentName = #"Violin #1 "
             {
                 \key d\major
-                \time 3/4
                 \tempo 4 = 70
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef treble
+                \time 3/4
                 \BLOCK{ for bar_index in range(14) }
                     \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_1').lilypond_str}
                 \BLOCK{ endfor }
@@ -43,12 +43,12 @@
             \set Staff.instrumentName = #"Violin #2 "
             {
                 \key d\major
-                \time 3/4
                 \tempo 4 = 70
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef treble
+                \time 3/4
                 \BLOCK{ for bar_index in range(14) }
                     \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_2').lilypond_str}
                 \BLOCK{ endfor }
@@ -62,12 +62,12 @@
             <<
                 {
                     \key d\major
-                    \time 3/4
                     \tempo 4 = 70
                     \override Score.RehearsalMark.direction = #down
                 }
                 {
                     \clef treble
+                    \time 3/4
                     \BLOCK{ for bar_index in range(14) }
                         \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_right_hand').lilypond_str}
                     \BLOCK{ endfor }
@@ -78,12 +78,12 @@
             <<
                 {
                     \key d\major
-                    \time 3/4
                     \tempo 4 = 70
                     \override Score.RehearsalMark.direction = #down
                 }
                 {
                     \clef bass
+                    \time 3/4
                     \BLOCK{ for bar_index in range(14) }
                         \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_left_hand').lilypond_str}
                         \BLOCK{ if bar_index == 1}

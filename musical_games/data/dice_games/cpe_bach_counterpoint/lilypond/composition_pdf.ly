@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
 	page-count = 1
     print-all-headers = ##t
@@ -56,12 +56,12 @@
         <<
             {
                 \key c\major
-                \time 4/4
                 \tempo 4 = 100
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef treble
+                \time 4/4
                 \BLOCK{ for synchronous_bar in composition_bars['treble'] }
                     \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
@@ -72,12 +72,12 @@
         <<
             {
                 \key c\major
-                \time 4/4
                 \tempo 4 = 100
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef bass
+                \time 4/4
                 \BLOCK{ for synchronous_bar in composition_bars['bass'] }
                     \VAR{synchronous_bar.get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }

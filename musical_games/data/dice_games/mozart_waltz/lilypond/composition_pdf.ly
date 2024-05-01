@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##t
     score-markup-spacing = #'((basic-distance . 10))
@@ -56,12 +56,12 @@
         <<
             {
                 \key c\major
-                \time 3/8
                 \tempo 8 = 110
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef treble
+                \time 3/8
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(7) }
                         \VAR{composition_bars['waltz'][bar_index].get_bar('piano_right_hand').lilypond_str}
@@ -81,12 +81,12 @@
         <<
             {
                 \key c\major
-                \time 3/8
                 \tempo 8 = 110
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef bass
+                \time 3/8
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(7) }
 		                \VAR{composition_bars['waltz'][bar_index].get_bar('piano_left_hand').lilypond_str}

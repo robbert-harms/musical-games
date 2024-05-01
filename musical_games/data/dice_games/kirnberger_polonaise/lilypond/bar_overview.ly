@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##t
 
@@ -24,12 +24,12 @@
             \set Staff.instrumentName = #"Violin #1 "
             {
                 \override Score.BarNumber.break-visibility = ##(#t #t #t)
-                \key d\major
-                \time 3/4
                 \override Score.RehearsalMark.direction = #down
+                \key d\major
             }
             {
                 \clef treble
+                \time 3/4
                 \BLOCK{ for bar in bar_collections['polonaise'].get_bars('violin_1').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
@@ -41,12 +41,12 @@
             \set Staff.instrumentName = #"Violin #2 "
             {
                 \override Score.BarNumber.break-visibility = ##(#t #t #t)
-                \key d\major
-                \time 3/4
                 \override Score.RehearsalMark.direction = #down
+                \key d\major
             }
             {
                 \clef treble
+                \time 3/4
                 \BLOCK{ for bar in bar_collections['polonaise'].get_bars('violin_2').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
@@ -60,12 +60,12 @@
             <<
                 {
                     \override Score.BarNumber.break-visibility = ##(#t #t #t)
-                    \key d\major
-                    \time 3/4
                     \override Score.RehearsalMark.direction = #down
+                    \key d\major
                 }
                 {
                     \clef treble
+                    \time 3/4
                     \BLOCK{ for bar in bar_collections['polonaise'].get_bars('piano_right_hand').values() }
                         \VAR{bar.lilypond_str}
                     \BLOCK{ endfor }
@@ -76,12 +76,12 @@
             <<
                 {
                     \override Score.BarNumber.break-visibility = ##(#t #t #t)
-                    \key d\major
-                    \time 3/4
                     \override Score.RehearsalMark.direction = #down
+                    \key d\major
                 }
                 {
                     \clef bass
+                    \time 3/4
                     \BLOCK{ for bar in bar_collections['polonaise'].get_bars('piano_left_hand').values() }
                         \VAR{bar.lilypond_str}
                     \BLOCK{ endfor }

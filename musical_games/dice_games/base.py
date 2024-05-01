@@ -225,6 +225,8 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         self._jinja2_environment = jinja2_environment
         self._default_midi_settings = default_midi_settings
 
+    @classmethod
+
     @property
     def author(self) -> str:
         return self._author
@@ -343,6 +345,27 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         template = self._jinja2_environment.get_template('composition_midi.ly')
         composition_bars = self.bar_selection_to_bars(bar_selection)
         return SimpleLilypondScore(template.render(composition_bars=composition_bars, midi_settings=midi_settings))
+
+    @staticmethod
+    def _generate_jinja2_environment(data_name: str) -> jinja2.Environment:
+        """Generate a standard jinja2 environment for a musical game.
+
+        This assumes the lilypond templates for the dice game are kept in the package in the data directory:
+        ``data/dice_games/<data_name>/lilypond``. In addition, it will add the lilypond utility directory to the
+        loader.
+
+        Args:
+            data_name: the data name of this dice games' data
+
+        Returns:
+            A jinj2 environment to provide to the dice game.
+        """
+        template_loader = jinja2.ChoiceLoader([
+            jinja2.PackageLoader('musical_games', f'data/dice_games/{data_name}/lilypond'),
+            jinja2.PackageLoader('musical_games', 'data/lilypond_utils'),
+        ])
+        env_options = SimpleDiceGame._standard_jinja2_environment_options() | {'loader': template_loader}
+        return jinja2.Environment(**env_options)
 
     @staticmethod
     def _standard_jinja2_environment_options():

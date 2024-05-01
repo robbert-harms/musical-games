@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##f
     paper-height = 50\mm
@@ -15,10 +15,10 @@
         <<
             {
                 \key c\major
-                \time 4/4
             }
             {
                 \clef \VAR{ table_name }
+                \time 4/4
                 \BLOCK{ for synchronous_bar in synchronous_bars }
                 \VAR{ synchronous_bar.get_bars()[0].lilypond_str }
                 \BLOCK{ endfor }

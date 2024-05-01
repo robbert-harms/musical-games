@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##f
     paper-height = 50\mm
@@ -16,14 +16,13 @@
             {
                 \BLOCK{ if table_name == 'menuet' }
                     \key d\major
-                    \time 3/4
                 \BLOCK{ else }
                     \key g\major
-                    \time 3/4
                 \BLOCK{ endif }
             }
             {
                 \clef treble
+                \time 3/4
                 \BLOCK{ for synchronous_bar in synchronous_bars }
                 \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
                 \BLOCK{ endfor }
@@ -35,14 +34,13 @@
             {
                 \BLOCK{ if table_name == 'menuet' }
                     \key d\major
-                    \time 3/4
                 \BLOCK{ else }
                     \key g\major
-                    \time 3/4
                 \BLOCK{ endif }
             }
             {
                 \clef bass
+                \time 3/4
                 \BLOCK{ for synchronous_bar in synchronous_bars }
                 \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
                 \BLOCK{ endfor }

@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
 	print-all-headers = ##t
     score-markup-spacing = #'((basic-distance . 10))
@@ -25,12 +25,12 @@
         <<
             {
                 \key d\major
-                \time 3/4
                 \tempo 4 = 100
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef treble
+                \time 3/4
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8) }
                         \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
@@ -47,12 +47,12 @@
         <<
             {
                 \key d\major
-                \time 3/4
                 \tempo 4 = 100
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef bass
+                \time 3/4
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(8) }
 		                \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
@@ -84,12 +84,12 @@
         <<
             {
                 \key g\major
-                \time 3/4
                 \tempo 4 = 80
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef treble
+                \time 3/4
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8) }
                         \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
@@ -106,12 +106,12 @@
         <<
             {
                 \key g\major
-                \time 3/4
                 \tempo 4 = 80
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef bass
+                \time 3/4
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(8) }
 		                \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}

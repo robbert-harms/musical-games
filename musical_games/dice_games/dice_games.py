@@ -42,16 +42,13 @@ class CPEBachCounterpoint(SimpleDiceGame):
                 [8, 17, 26, 35, 44, 53],
                 [9, 18, 27, 36, 45, 54]]),
         }
+        data_name = 'cpe_bach_counterpoint'
 
         csv_reader = SimpleBarCollectionCSVReader()
         treble_bars = csv_reader.read_csv(resources.files('musical_games')
-                                          / 'data/dice_games/cpe_bach_counterpoint/bars_treble.csv')
+                                          / f'data/dice_games/{data_name}/bars_treble.csv')
         bass_bars = csv_reader.read_csv(resources.files('musical_games')
-                                        / 'data/dice_games/cpe_bach_counterpoint/bars_bass.csv')
-
-        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/cpe_bach_counterpoint/lilypond')
-        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        jinja2_environment = jinja2.Environment(**env_options)
+                                        / f'data/dice_games/{data_name}/bars_bass.csv')
 
         midi_settings = SimpleMidiSettings(
             {'treble': {'piano_right_hand': 'acoustic grand'}, 'bass': {'piano_left_hand': 'acoustic grand'}},
@@ -59,7 +56,7 @@ class CPEBachCounterpoint(SimpleDiceGame):
             {'treble': {'piano_right_hand': 1}, 'bass': {'piano_left_hand': 0.75}})
 
         super().__init__('C.P.E. Bach', 'Counterpoint', dice_tables, {'treble': treble_bars, 'bass': bass_bars},
-                         jinja2_environment, midi_settings)
+                         self._generate_jinja2_environment(data_name), midi_settings)
 
 
 class KirnbergerMenuetTrio(SimpleDiceGame):
@@ -85,16 +82,13 @@ class KirnbergerMenuetTrio(SimpleDiceGame):
                 [39, 28, 18, 35, 89, 75, 61, 96, 7, 91, 70, 1, 74, 44, 52, 50],
                 [59, 71, 37, 16, 86, 49, 77, 20, 38, 68, 19, 29, 80, 36, 34, 9]]),
         }
+        data_name = 'kirnberger_menuet_trio'
 
         csv_reader = SimpleBarCollectionCSVReader()
         bar_collections = {'menuet': csv_reader.read_csv(resources.files('musical_games') /
-                                                         'data/dice_games/kirnberger_menuet_trio/menuet_bars.csv'),
+                                                         f'data/dice_games/{data_name}/menuet_bars.csv'),
                            'trio': csv_reader.read_csv(resources.files('musical_games') /
-                                                       'data/dice_games/kirnberger_menuet_trio/trio_bars.csv')}
-
-        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/kirnberger_menuet_trio/lilypond')
-        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        jinja2_environment = jinja2.Environment(**env_options)
+                                                       f'data/dice_games/{data_name}/trio_bars.csv')}
 
         midi_settings = SimpleMidiSettings(
             {'menuet': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'},
@@ -105,7 +99,7 @@ class KirnbergerMenuetTrio(SimpleDiceGame):
              'trio': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
 
         super().__init__('Kirnberger', 'Menuet and Trio', dice_tables, bar_collections,
-                         jinja2_environment, midi_settings)
+                         self._generate_jinja2_environment(data_name), midi_settings)
 
 
 class KirnbergerPolonaise(SimpleDiceGame):
@@ -129,14 +123,11 @@ class KirnbergerPolonaise(SimpleDiceGame):
                 [138, 151, 118, 124, 141, 127, 142, 149, 97, 134, 120, 100, 119, 132],
                 [144, 153, 146, 128, 150, 154, 152, 102, 135, 148, 136, 108, 130, 139]])
         }
+        data_name = 'kirnberger_polonaise'
 
         csv_reader = SimpleBarCollectionCSVReader()
         bar_collections = {'polonaise': csv_reader.read_csv(resources.files('musical_games') /
-                                                            'data/dice_games/kirnberger_polonaise/polonaise_bars.csv')}
-
-        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/kirnberger_polonaise/lilypond')
-        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        jinja2_environment = jinja2.Environment(**env_options)
+                                                            f'data/dice_games/{data_name}/polonaise_bars.csv')}
 
         midi_settings = SimpleMidiSettings(
             {'polonaise': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand',
@@ -147,7 +138,7 @@ class KirnbergerPolonaise(SimpleDiceGame):
                            'violin_1': 0.8625, 'violin_2': 0.8625}})
 
         super().__init__('Kirnberger', 'Polonaise', dice_tables, bar_collections,
-                         jinja2_environment, midi_settings)
+                         self._generate_jinja2_environment(data_name), midi_settings)
 
 
 class MozartContredanse(SimpleDiceGame):
@@ -168,14 +159,11 @@ class MozartContredanse(SimpleDiceGame):
                 [85, 45, 90, 158, 82, 123, 78, 58, 61, 34, 119, 46, 59, 54, 60, 47],
                 [145, 97, 6, 121, 56, 67, 63, 16, 50, 79, 175, 76, 113, 88, 53, 118]])
         }
+        data_name = 'mozart_contredanse'
 
         csv_reader = SimpleBarCollectionCSVReader()
         bar_collections = {'contredanse': csv_reader.read_csv(resources.files('musical_games') /
-                                                        'data/dice_games/mozart_contredanse/contredanse_bars.csv')}
-
-        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/mozart_contredanse/lilypond')
-        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        jinja2_environment = jinja2.Environment(**env_options)
+                                                        f'data/dice_games/{data_name}/contredanse_bars.csv')}
 
         midi_settings = SimpleMidiSettings(
             {'contredanse': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'}},
@@ -183,7 +171,8 @@ class MozartContredanse(SimpleDiceGame):
             {'contredanse': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
 
         super().__init__('Mozart', 'Contredanse', dice_tables, bar_collections,
-                         jinja2_environment, midi_settings)
+                         self._generate_jinja2_environment(data_name), midi_settings)
+
 
 class MozartWaltz(SimpleDiceGame):
 
@@ -203,14 +192,11 @@ class MozartWaltz(SimpleDiceGame):
                 [3, 87, 165, 61, 135, 47, 147, 33, 102, 4, 31, 164, 144, 59, 173, 78],
                 [54, 130, 10, 103, 28, 37, 106, 5, 35, 20, 108, 92, 12, 124, 44, 131]])
         }
+        data_name = 'mozart_waltz'
 
         csv_reader = SimpleBarCollectionCSVReader()
         bar_collections = {'waltz': csv_reader.read_csv(resources.files('musical_games') /
-                                                        'data/dice_games/mozart_waltz/waltz_bars.csv')}
-
-        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/mozart_waltz/lilypond')
-        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        jinja2_environment = jinja2.Environment(**env_options)
+                                                        f'data/dice_games/{data_name}/waltz_bars.csv')}
 
         midi_settings = SimpleMidiSettings(
             {'waltz': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'}},
@@ -218,7 +204,7 @@ class MozartWaltz(SimpleDiceGame):
             {'waltz': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
 
         super().__init__('Mozart', 'Waltz', dice_tables, bar_collections,
-                         jinja2_environment, midi_settings)
+                         self._generate_jinja2_environment(data_name), midi_settings)
 
 
 class StadlerMenuetTrio(SimpleDiceGame):
@@ -251,16 +237,13 @@ class StadlerMenuetTrio(SimpleDiceGame):
                 [83, 3, 28, 53, 37, 17, 44, 70, 63, 85, 32, 96, 12, 23, 50, 91],
                 [18, 45, 62, 38, 4, 27, 52, 94, 11, 92, 24, 86, 51, 60, 78, 31]]),
         }
+        data_name = 'stadler_menuet_trio'
 
         csv_reader = SimpleBarCollectionCSVReader()
         bar_collections = {'menuet': csv_reader.read_csv(resources.files('musical_games') /
-                                                         'data/dice_games/stadler_menuet_trio/menuet_bars.csv'),
+                                                         f'data/dice_games/{data_name}/menuet_bars.csv'),
                            'trio': csv_reader.read_csv(resources.files('musical_games') /
-                                                       'data/dice_games/stadler_menuet_trio/trio_bars.csv')}
-
-        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/stadler_menuet_trio/lilypond')
-        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        jinja2_environment = jinja2.Environment(**env_options)
+                                                       f'data/dice_games/{data_name}/trio_bars.csv')}
 
         midi_settings = SimpleMidiSettings(
             {'menuet': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'},
@@ -271,7 +254,7 @@ class StadlerMenuetTrio(SimpleDiceGame):
              'trio': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
 
         super().__init__('Stadler', 'Menuet and Trio', dice_tables, bar_collections,
-                         jinja2_environment, midi_settings)
+                         self._generate_jinja2_environment(data_name), midi_settings)
 
 
 class GerlachScottishDance(SimpleDiceGame):
@@ -294,17 +277,14 @@ class GerlachScottishDance(SimpleDiceGame):
                 [(134, 26), (118, 184), (160, 140), (114, 34), (42, 164), (146, 83), (141, 162), (73, 153)],
                 [(79, 191), (121, 155), (138, 156), (16, 173), (133, 167), (142, 172), (147, 159), (152, 157)]]),
         }
+        data_name = 'gerlach_scottish_dance'
 
         csv_reader = SimpleBarCollectionCSVReader()
         bars = csv_reader.read_csv(resources.files('musical_games') /
-                                   'data/dice_games/gerlach_scottish_dance/scottish_dance_bars.csv')
+                                   f'data/dice_games/{data_name}/scottish_dance_bars.csv')
 
         bar_collections = {'dance': bars,
                            'trio': bars}
-
-        template_loader = jinja2.PackageLoader('musical_games', f'data/dice_games/gerlach_scottish_dance/lilypond')
-        env_options = self._standard_jinja2_environment_options() | {'loader': template_loader}
-        jinja2_environment = jinja2.Environment(**env_options)
 
         midi_settings = SimpleMidiSettings(
             {'dance': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'},
@@ -315,4 +295,4 @@ class GerlachScottishDance(SimpleDiceGame):
              'trio': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
 
         super().__init__('Gerlach', 'Scottish dance', dice_tables, bar_collections,
-                         jinja2_environment, midi_settings)
+                         self._generate_jinja2_environment(data_name), midi_settings)

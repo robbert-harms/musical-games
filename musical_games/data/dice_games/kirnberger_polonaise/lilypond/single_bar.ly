@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##f
     paper-height = 100\mm
@@ -16,10 +16,10 @@
             \set Staff.instrumentName = #"Violin #1 "
             {
                 \key d\major
-                \time 3/4
             }
             {
                 \clef treble
+                \time 3/4
                 \VAR{ synchronous_bar.get_bar('violin_1').lilypond_str }
                 \bar "|."
             }
@@ -29,10 +29,10 @@
             \set Staff.instrumentName = #"Violin #2 "
             {
                 \key d\major
-                \time 3/4
             }
             {
                 \clef treble
+                \time 3/4
                 \VAR{ synchronous_bar.get_bar('violin_2').lilypond_str }
                 \bar "|."
             }
@@ -44,10 +44,10 @@
             <<
                 {
                     \key d\major
-                    \time 3/4
                 }
                 {
                     \clef treble
+                    \time 3/4
                     \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
                     \bar "|."
                 }
@@ -56,10 +56,10 @@
             <<
                 {
                     \key d\major
-                    \time 3/4
                 }
                 {
                     \clef bass
+                    \time 3/4
                     \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
                     \bar "|."
                 }

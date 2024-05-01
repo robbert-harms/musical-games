@@ -1,4 +1,4 @@
-\version "2.19.81"
+\version "2.22.1"
 \paper {
     print-all-headers = ##t
     \BLOCK{ if render_settings['single_page'] }
@@ -24,10 +24,10 @@
             {
                 \override Score.BarNumber.break-visibility = ##(#t #t #t)
                 \key c\major
-                \time 4/4
             }
             {
                 \clef treble
+                \time 4/4
                 \BLOCK{ for bar in bar_collections['treble'].get_bars('piano_right_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
@@ -39,10 +39,10 @@
             {
                 \override Score.BarNumber.break-visibility = ##(#t #t #t)
                 \key c\major
-                \time 4/4
             }
             {
                 \clef bass
+                \time 4/4
                 \BLOCK{ for bar in bar_collections['bass'].get_bars('piano_left_hand').values() }
                     \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
