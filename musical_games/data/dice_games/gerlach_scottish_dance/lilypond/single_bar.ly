@@ -34,8 +34,10 @@
             {
                 \BLOCK{ if synchronous_bar.get_bar('piano_left_hand').lilypond_str.startswith('\clef "treble"') }
                     \bassToTreble
+                \BLOCK{ elif synchronous_bar.get_bar('piano_left_hand').lilypond_str.startswith('\clef "bass"') }
+                    \bassToBass
                 \BLOCK{ else }
-                    \clef bass
+                    \bass
                 \BLOCK{ endif }
                 \time 2/4
                 \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }

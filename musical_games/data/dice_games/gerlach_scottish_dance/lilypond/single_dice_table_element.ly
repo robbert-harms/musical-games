@@ -32,17 +32,12 @@
         <<
             {
                 \key c \major
-                \override Score.BreakAlignment #'break-align-orders =
-                      #(make-vector 3 '(span-bar
-                                        breathing-sign
-                                        staff-bar
-                                        key
-                                        clef
-                                        time-signature))
             }
             {
                 \BLOCK{ if synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').lilypond_str.startswith('\clef "treble"') }
                     \bassToTreble
+                \BLOCK{ elif synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').lilypond_str.startswith('\clef "bass"') }
+                    \bassToBass
                 \BLOCK{ else }
                     \clef bass
                 \BLOCK{ endif }
@@ -55,6 +50,7 @@
                     \set Staff.forceClef = ##t
                     \VAR{ bar.lilypond_str }
                     \BLOCK{ if has_next and not synchronous_bars[loop.index0 + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
+                        \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
                         \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
                         \clef "bass"
                     \BLOCK{ endif }

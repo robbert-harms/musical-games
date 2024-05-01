@@ -43,18 +43,12 @@
             {
                 \clef bass
                 \time 2/4
-                \override Score.BreakAlignment #'break-align-orders =
-                      #(make-vector 3 '(span-bar
-                                        breathing-sign
-                                        staff-bar
-                                        key
-                                        clef
-                                        time-signature))
                 \BLOCK{ for bar_ind, bar in bar_collections['dance'].get_bars('piano_left_hand').items() }
                     \BLOCK{ if bar.lilypond_str.startswith('\clef') }
                         \set Staff.forceClef = ##t
                         \VAR{bar.lilypond_str}
                         \BLOCK{ if not bar_collections['dance'].get_bars('piano_left_hand')[bar_ind + 1].lilypond_str.startswith('\clef') }
+                            \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
                             \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
                             \clef "bass"
                         \BLOCK{ endif }
