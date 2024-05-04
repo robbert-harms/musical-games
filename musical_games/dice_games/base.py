@@ -46,6 +46,25 @@ class DiceGame(metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def get_dice_table_names(self) -> list[str_dice_table_name]:
+        """Get a list of dice table names in this dice game.
+
+        Returns:
+            A list of the dice table names supported by this dice game.
+        """
+
+    @abstractmethod
+    def get_staff_names(self) -> dict[str_dice_table_name, list[str_staff_name]]:
+        """For each dice table name, get the staff names in the corresponding bar collection.
+
+        This is a convenience method for getting the staff names a dice table can select. Each dice table is connected
+        to a bar collection. Each of those bar collections may have one or more staffs associated with it.
+
+        Returns:
+            A dictionary mapping dice table names to list of staff names.
+        """
+
+    @abstractmethod
     def get_dice_tables(self) -> dict[str_dice_table_name, DiceTable]:
         """Get dice tables in this dice game.
 
@@ -60,9 +79,6 @@ class DiceGame(metaclass=ABCMeta):
     @abstractmethod
     def get_bar_collections(self) -> dict[str_dice_table_name, BarCollection]:
         """Get the collection of bars for each dice table.
-
-        Args:
-            dice_table_name: the name of the dice table
 
         Returns:
             The collection of bars for each dice table as a bar collection object.
@@ -225,8 +241,6 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         self._jinja2_environment = jinja2_environment
         self._default_midi_settings = default_midi_settings
 
-    @classmethod
-
     @property
     def author(self) -> str:
         return self._author
@@ -234,6 +248,12 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
     @property
     def title(self) -> str:
         return self._title
+
+    def get_dice_table_names(self) -> list[str_dice_table_name]:
+        return list(self._dice_tables.keys())
+
+    def get_staff_names(self) -> dict[str_dice_table_name, list[str_staff_name]]:
+        return {k: bc.get_staff_names() for k, bc in self._bar_collections.items()}
 
     def get_dice_tables(self) -> dict[str_dice_table_name, DiceTable]:
         return self._dice_tables

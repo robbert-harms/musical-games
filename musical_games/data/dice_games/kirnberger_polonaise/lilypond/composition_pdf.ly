@@ -6,7 +6,7 @@
     system-system-spacing = #'((basic-distance . 15))
 
     \BLOCK{ if render_settings['single_page'] }
-        paper-height = 370\mm  %% default is 297 for a4
+        paper-height = 410\mm  %% default is 297 for a4
     \BLOCK{ endif }
 }
 \header{
@@ -102,5 +102,11 @@
 }
 
 \BLOCK{ if render_settings['comment'] is not none }
-    \markup {\fill-line \italic {"" "" "\VAR{ render_settings['comment'] }"}}
+    \BLOCK{ if '\n' in render_settings['comment'] }
+    \BLOCK{ for line in render_settings['comment'].split('\n') }
+        \markup {\fill-line \italic {"" "" "\VAR{ line }"}}
+    \BLOCK{ endfor }
+    \BLOCK{ else }
+        \markup {\fill-line \italic {"" "" "\VAR{ render_settings['comment'] }"}}
+    \BLOCK{ endif }
 \BLOCK{ endif }
