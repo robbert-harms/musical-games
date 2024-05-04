@@ -2,6 +2,18 @@
 Changelog
 *********
 
+v0.8.2 (2024-05-04)
+===================
+
+Changed
+-------
+- Updates the lilypond files to have split lines in the pdf output.
+
+Other
+-----
+- In the Mozart parts, removed the left_hand_alternative as a separate staff and merged it with the left_hand staff. The processing happens now in the template. The reason for this is that it made Opus-Infinity easier to program.
+
+
 v0.8.1 (2024-05-01)
 ===================
 
