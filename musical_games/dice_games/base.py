@@ -282,7 +282,7 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
         table_counts = []
         for table_name, table in self._dice_tables.items():
             if count_duplicates:
-                table_counts.append(table.max_dice_value ** table.nmr_throws)
+                table_counts.append(table.nmr_dice_values ** table.nmr_throws)
             else:
                 table_counts.append(reduce(mul, [count_unique_bars(table_name, throw_ind)
                                                  for throw_ind in range(table.nmr_throws)]))
@@ -672,18 +672,40 @@ class DiceTable(metaclass=ABCMeta):
 
     @property
     @abstractmethod
+    def shape(self) -> tuple[int, int]:
+        """Get the shape of this dice table.
+
+        Returns:
+            A tuple with the number of rows and columns.
+        """
+
+    @property
+    @abstractmethod
+    def max_measures_per_throw(self) -> int:
+        """Get the maximum number of measures selected in the entire dice table.
+
+        Some dice tables select more than one measure per dice table element. This gets the maximum in the entire table.
+        """
+
+    @property
+    @abstractmethod
     def nmr_dices(self) -> int:
         """Get the number of dices this table needs."""
 
     @property
     @abstractmethod
-    def max_measures_per_throw(self) -> int:
-        """Get the maximum of measures selected per dice throw."""
+    def min_dice_value(self) -> int:
+        """Get the minimum dice value needed to select rows from this dice table."""
 
     @property
     @abstractmethod
     def max_dice_value(self) -> int:
-        """Get the maximum dice value needed to select row from this dice table."""
+        """Get the maximum dice value needed to select rows from this dice table."""
+
+    @property
+    @abstractmethod
+    def nmr_dice_values(self) -> int:
+        """Get the number of dice values this table expects."""
 
     @property
     @abstractmethod
@@ -869,12 +891,24 @@ class SimpleDiceTable(DiceTable):
         return cls(table, max_measures_per_throw)
 
     @property
+    def shape(self) -> tuple[int, int]:
+        return len(self.table), len(self.table[0])
+
+    @property
     def nmr_dices(self) -> int:
-        return math.ceil(self.max_dice_value / 6)
+        return math.ceil(len(self.table) / 6)
+
+    @property
+    def min_dice_value(self) -> int:
+        return self.nmr_dices
 
     @property
     def max_dice_value(self) -> int:
-        return len(self.table)
+        return len(self.table) + (self.nmr_dices - 1)
+
+    @property
+    def nmr_dice_values(self) -> int:
+        return self.max_dice_value - (self.nmr_dices - 1)
 
     @property
     def nmr_throws(self) -> int:
@@ -910,7 +944,7 @@ class SimpleDiceTable(DiceTable):
 
     def get_random_selection(self, seed: int = None) -> list[DiceTableElement]:
         random.seed(seed)
-        max_val = self.max_dice_value - 1
+        max_val = self.shape[0] - 1
         selected_elements = []
         for throw_ind in range(self.nmr_throws):
             dice_throw = random.randint(0, max_val)

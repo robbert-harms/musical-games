@@ -14,7 +14,7 @@ dice_game = GerlachScottishDance()
 
 dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
 auto_convert_lilypond_file(out_dir / 'overview.ly')
-#
+
 dice_game.compile_single_bar('dance', 6).to_file(out_dir / 'bar_dance_6.ly')
 auto_convert_lilypond_file(out_dir / 'bar_dance_6.ly')
 dice_game.compile_single_bar('trio', 158).to_file(out_dir / 'bar_trio_158.ly')
