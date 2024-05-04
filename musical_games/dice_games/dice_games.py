@@ -4,6 +4,7 @@ __maintainer__ = 'Robbert Harms'
 __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
+import re
 from importlib import resources
 
 import jinja2
@@ -170,8 +171,14 @@ class MozartContredanse(SimpleDiceGame):
             {'contredanse': {'piano_right_hand': 0, 'piano_left_hand': 0}},
             {'contredanse': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
 
+        def split_voices(voices):
+            return re.findall(r'<<{\\voiceOne ([^}]*)} \\new Voice {\\voiceTwo ([^}]*)}>>', voices)[0]
+
+        jinja2_env = self._generate_jinja2_environment(data_name)
+        jinja2_env.globals['split_voices'] = split_voices
+
         super().__init__('Mozart', 'Contredanse', dice_tables, bar_collections,
-                         self._generate_jinja2_environment(data_name), midi_settings)
+                         jinja2_env, midi_settings)
 
 
 class MozartWaltz(SimpleDiceGame):
@@ -203,8 +210,14 @@ class MozartWaltz(SimpleDiceGame):
             {'waltz': {'piano_right_hand': 0, 'piano_left_hand': 0}},
             {'waltz': {'piano_right_hand': 1, 'piano_left_hand': 0.75}})
 
+        def split_voices(voices):
+            return re.findall(r'<<{\\voiceOne ([^}]*)} \\new Voice {\\voiceTwo ([^}]*)}>>', voices)[0]
+
+        jinja2_env = self._generate_jinja2_environment(data_name)
+        jinja2_env.globals['split_voices'] = split_voices
+
         super().__init__('Mozart', 'Waltz', dice_tables, bar_collections,
-                         self._generate_jinja2_environment(data_name), midi_settings)
+                         jinja2_env, midi_settings)
 
 
 class StadlerMenuetTrio(SimpleDiceGame):

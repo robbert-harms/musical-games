@@ -45,11 +45,7 @@
                 \clef bass
                 \time 3/8
                 \BLOCK{ for bar_ind, bar in bar_collections['waltz'].get_bars('piano_left_hand').items() }
-                    \BLOCK{ if bar_collections['waltz'].get_bar('piano_left_hand_alternative', bar_ind).lilypond_str != '' }
-                        <<{\voiceOne \VAR{bar.lilypond_str}} \new Voice {\voiceTwo \VAR{bar_collections['waltz'].get_bar('piano_left_hand_alternative', bar_ind).lilypond_str}}>>
-                    \BLOCK{ else }
-                        \VAR{bar.lilypond_str}
-                    \BLOCK{ endif }
+                    \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
             }

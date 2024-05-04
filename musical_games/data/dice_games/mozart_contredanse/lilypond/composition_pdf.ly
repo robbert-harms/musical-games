@@ -68,7 +68,10 @@
                     \BLOCK{ endfor }
                 }
 
-                \alternative { {\VAR{composition_bars['contredanse'][7].get_bar('piano_right_hand').lilypond_str}} {\VAR{composition_bars['contredanse'][7].get_bar('piano_right_hand').lilypond_str}} }
+                \alternative {
+                    {\VAR{composition_bars['contredanse'][7].get_bar('piano_right_hand').lilypond_str}}
+                    {\VAR{composition_bars['contredanse'][7].get_bar('piano_right_hand').lilypond_str}}
+                }
 
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8, 16) }
@@ -93,7 +96,10 @@
     		        \BLOCK{ endfor }
 	        	}
 
-                \alternative { {\VAR{composition_bars['contredanse'][7].get_bar('piano_left_hand').lilypond_str}} {\VAR{composition_bars['contredanse'][7].get_bar('piano_left_hand_alternative').lilypond_str}} }
+                \alternative {
+                    {\VAR{split_voices(composition_bars['contredanse'][7].get_bar('piano_left_hand').lilypond_str)[0]}}
+                    {\VAR{split_voices(composition_bars['contredanse'][7].get_bar('piano_left_hand').lilypond_str)[1]}}
+                }
 
 		        \repeat volta 2{
     		        \BLOCK{ for bar_index in range(8, 16) }
