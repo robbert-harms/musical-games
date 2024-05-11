@@ -2,6 +2,14 @@
 Changelog
 *********
 
+v0.8.6 (2024-05-11)
+===================
+
+Changed
+-------
+- Changed the order of the midi converters to have timidity first. This because in fluidsynth 2.3.1 there is a strange pauze at the end of the tracks.
+
+
 v0.8.5 (2024-05-11)
 ===================
 
