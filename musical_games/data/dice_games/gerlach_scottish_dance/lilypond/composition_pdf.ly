@@ -13,6 +13,9 @@
     composer = "Gerlach"
     tagline = ##f
 }
+
+\BLOCK{ include 'clef_changes.ly' }
+
 \score {
     \header {
         piece = \markup { \fontsize #1 "Scottish Dance" }
@@ -117,12 +120,11 @@
 		            \BLOCK{ for bar_index in range(8) }
 		                \BLOCK{ set bar = composition_bars['trio'][bar_index].get_bar('piano_left_hand') }
 		                \BLOCK{ if bar.lilypond_str.startswith('\clef') }
-                            \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
+                            \clefAfterBarOnce
+                            \set Staff.forceClef = ##t
                             \VAR{bar.lilypond_str}
                             \BLOCK{ if bar_index != 7 and not composition_bars['trio'][bar_index + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
-                                \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
-                                \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
-                                \clef "bass"
+                                \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
                             \BLOCK{ endif }
                         \BLOCK{ else }
                         \VAR{bar.lilypond_str}
@@ -134,12 +136,11 @@
     		        \BLOCK{ for bar_index in range(8, 16) }
     		            \BLOCK{ set bar = composition_bars['trio'][bar_index].get_bar('piano_left_hand') }
 		                \BLOCK{ if bar.lilypond_str.startswith('\clef') }
-		                    \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
+		                    \clefAfterBarOnce
+		                    \set Staff.forceClef = ##t
 		                    \VAR{bar.lilypond_str}
-                            \BLOCK{ if not composition_bars['trio'][bar_index + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
-                                \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
-                                \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
-                                \clef "bass"
+                            \BLOCK{ if bar_index != 15 and not composition_bars['trio'][bar_index + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
+                                \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
                             \BLOCK{ endif }
                         \BLOCK{ else }
                         \VAR{bar.lilypond_str}

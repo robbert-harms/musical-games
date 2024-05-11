@@ -46,13 +46,14 @@
                 \BLOCK{ for synchronous_bar in synchronous_bars }
                 \BLOCK{ set bar = synchronous_bar.get_bar('piano_left_hand') }
                 \BLOCK{ set has_next = loop.index0 != synchronous_bars|length - 1 }
+                \BLOCK{ if has_next }
+                \BLOCK{ set next_bar = synchronous_bars[loop.index0 + 1].get_bar('piano_left_hand') }
+                \BLOCK{ endif }
                 \BLOCK{ if bar.lilypond_str.startswith('\clef') }
                     \set Staff.forceClef = ##t
                     \VAR{ bar.lilypond_str }
-                    \BLOCK{ if has_next and not synchronous_bars[loop.index0 + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
-                        \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
-                        \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
-                        \clef "bass"
+                    \BLOCK{ if has_next and not next_bar.lilypond_str.startswith('\clef') }
+                       \clefAfterBarOnce \clefBracketed "bass"
                     \BLOCK{ endif }
                 \BLOCK{ else }
                     \VAR{ bar.lilypond_str }

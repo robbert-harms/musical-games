@@ -58,3 +58,14 @@ bassToBass = {
   \once \override Staff.TimeSignature.stencil = #(lambda (grob)
     (append-markup grob (ly:time-signature::print grob)))
 }
+
+
+clefAfterBarOnce = {
+    \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
+}
+
+% A function for clef changes defined by the editor
+clefBracketed = #(define-music-function (clef) (string?) #{
+    \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
+    \clef #clef
+#})

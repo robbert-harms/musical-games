@@ -11,6 +11,9 @@
     composer = "Gerlach"
     tagline = ##f
 }
+
+\BLOCK{ include 'clef_changes.ly' }
+
 \score {
     \header {
         piece = \markup { \fontsize #1 "Scottish dance & Trio" }
@@ -44,14 +47,15 @@
                 \clef bass
                 \time 2/4
                 \BLOCK{ for bar_ind, bar in bar_collections['dance'].get_bars('piano_left_hand').items() }
-                    \BLOCK{ if bar.lilypond_str.startswith('\clef') }
+                    \BLOCK{ if bar.lilypond_str.startswith('\clef "treble"') or bar.lilypond_str.startswith('\clefBracketed "treble"')}
                         \set Staff.forceClef = ##t
                         \VAR{bar.lilypond_str}
                         \BLOCK{ if not bar_collections['dance'].get_bars('piano_left_hand')[bar_ind + 1].lilypond_str.startswith('\clef') }
-                            \once \override Score.BreakAlignment #'break-align-orders = #(make-vector 3 '(span-bar breathing-sign staff-bar key clef time-signature))
-                            \once \override Staff.Clef.stencil = #(lambda (grob) (bracketify-stencil (ly:clef::print grob) Y 0.2 0.2 0.1))
-                            \clef "bass"
+                            \clefBracketed "bass"
                         \BLOCK{ endif }
+                    \BLOCK{ elif bar.lilypond_str.startswith('\clef "bass"') }
+                        \set Staff.forceClef = ##t
+                        \VAR{bar.lilypond_str}
                     \BLOCK{ else }
                     \VAR{bar.lilypond_str}
                     \BLOCK{endif}
