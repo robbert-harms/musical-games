@@ -12,30 +12,30 @@ out_dir = Path('/tmp/test')
 
 dice_game = GerlachScottishDance()
 
-# dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
-# auto_convert_lilypond_file(out_dir / 'overview.ly')
+dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
+auto_convert_lilypond_file(out_dir / 'overview.ly')
 
-# dice_game.compile_single_bar('dance', 6).to_file(out_dir / 'bar_dance_6.ly')
-# auto_convert_lilypond_file(out_dir / 'bar_dance_6.ly')
-# dice_game.compile_single_bar('trio', 158).to_file(out_dir / 'bar_trio_158.ly')
-# auto_convert_lilypond_file(out_dir / 'bar_trio_158.ly')
+dice_game.compile_single_bar('dance', 6).to_file(out_dir / 'bar_dance_6.ly')
+auto_convert_lilypond_file(out_dir / 'bar_dance_6.ly')
+dice_game.compile_single_bar('trio', 158).to_file(out_dir / 'bar_trio_158.ly')
+auto_convert_lilypond_file(out_dir / 'bar_trio_158.ly')
 
-# dice_game.compile_single_dice_table_element('dance',
-#                                             dice_game.get_dice_tables()['dance'].get_elements()[0]).to_file(
-#     out_dir / 'single_dice_table_element_dance_0.ly')
-# auto_convert_lilypond_file(out_dir / 'single_dice_table_element_dance_0.ly')
-#
-# dice_game.compile_single_dice_table_element('trio',
-#                                             dice_game.get_dice_tables()['trio'].get_element(3, 7)).to_file(
-#     out_dir / 'single_dice_table_element_trio_3_7.ly')
-# auto_convert_lilypond_file(out_dir / 'single_dice_table_element_trio_3_7.ly')
+dice_game.compile_single_dice_table_element('dance',
+                                            dice_game.get_dice_tables()['dance'].get_elements()[0]).to_file(
+    out_dir / 'single_dice_table_element_dance_0.ly')
+auto_convert_lilypond_file(out_dir / 'single_dice_table_element_dance_0.ly')
 
-# print(dice_game.get_duplicate_dice_table_elements('dance'))
-# print(dice_game.get_duplicate_dice_table_elements('trio'))
-# print(dice_game.count_unique_compositions(count_duplicates=True))
-# print(dice_game.count_unique_compositions(count_duplicates=False))
-#
-bar_selection = dice_game.get_random_bar_selection(seed=2)
+dice_game.compile_single_dice_table_element('trio',
+                                            dice_game.get_dice_tables()['trio'].get_element(3, 7)).to_file(
+    out_dir / 'single_dice_table_element_trio_3_7.ly')
+auto_convert_lilypond_file(out_dir / 'single_dice_table_element_trio_3_7.ly')
+
+print(dice_game.get_duplicate_dice_table_elements('dance'))
+print(dice_game.get_duplicate_dice_table_elements('trio'))
+print(dice_game.count_unique_compositions(count_duplicates=True))
+print(dice_game.count_unique_compositions(count_duplicates=False))
+
+bar_selection = dice_game.get_random_bar_selection(seed=1)
 
 dice_game.compile_composition_score(bar_selection,
                                     comment='Test', single_page=True).to_file(out_dir / 'composition_pdf.ly')

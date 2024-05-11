@@ -1,6 +1,8 @@
 \version "2.22.1"
 \include "articulate.ly"
 
+\BLOCK{ include 'clef_changes.ly' }
+
 % dance with repeats
 \score {
     \unfoldRepeats
