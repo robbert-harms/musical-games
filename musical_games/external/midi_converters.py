@@ -58,7 +58,7 @@ class AutoMidiToWavFactory(MidiToWavFactory, ApplicableExternalFunctionFactory):
 
         If no suitable tool can be found, a `MissingDependencyError` may be raised.
         """
-        super().__init__([FluidSynth, Timidity])
+        super().__init__([Timidity, FluidSynth])
         self._soundfont: Path | None = None
 
     def set_soundfont(self, soundfont: Path | None):
