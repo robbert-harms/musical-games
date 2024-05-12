@@ -127,16 +127,17 @@ class Timidity(MidiToWav):
             # Never kill voices to save CPU
             opt -k0
 
-            # Sustain fades after three seconds (3000ms)
+            # Sustain fades after three seconds (1500ms)
             opt -m3000
         ''')
         if self._soundfont:
             self._timidity_config += f'soundfont {str(self._soundfont)}'
 
     def call(self, midi_in: Path, wav_out: Path, gain: float | None = None) -> None:
+        gain = gain or 0.1
         wav_out.parent.mkdir(parents=True, exist_ok=True)
 
         with tempfile.NamedTemporaryFile('w') as tmp_file:
             tmp_file.write(self._timidity_config)
             tmp_file.flush()
-            run_command(['timidity', '-c', tmp_file.name, '--output-24bit', '-A120', '-Ow', '-o', wav_out, midi_in])
+            run_command(['timidity', '-c', tmp_file.name, '--output-24bit', f'-A{gain*2000}', '-Ow', '-o', wav_out, midi_in])
