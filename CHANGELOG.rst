@@ -2,6 +2,18 @@
 Changelog
 *********
 
+v0.8.7 (2024-05-13)
+===================
+
+Added
+-----
+- Adds annotation data to the bars, enabling more information in the renderers.
+
+Other
+-----
+- Increased volume of timidity conversion.
+
+
 v0.8.6 (2024-05-11)
 ===================
 
