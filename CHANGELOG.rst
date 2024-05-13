@@ -2,6 +2,14 @@
 Changelog
 *********
 
+v0.8.9 (2024-05-13)
+===================
+
+Fixed
+-----
+- Fixed repeated bass clef in Gerlach compositions.
+
+
 v0.8.7 (2024-05-13)
 ===================
 
