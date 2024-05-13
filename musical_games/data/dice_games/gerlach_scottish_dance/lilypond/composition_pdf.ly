@@ -117,34 +117,38 @@
                 \clef bass
                 \time 2/4
 		        \repeat volta 2{
+		            \BLOCK{ set loop_data = namespace(previous_bar=None) }
 		            \BLOCK{ for bar_index in range(8) }
 		                \BLOCK{ set bar = composition_bars['trio'][bar_index].get_bar('piano_left_hand') }
-		                \BLOCK{ if bar.lilypond_str.startswith('\clef') }
+		                \BLOCK{ if bar.get_annotation().has_clef_change }
                             \clefAfterBarOnce
                             \set Staff.forceClef = ##t
                             \VAR{bar.lilypond_str}
-                            \BLOCK{ if bar_index != 7 and not composition_bars['trio'][bar_index + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
-                                \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
-                            \BLOCK{ endif }
+                        \BLOCK{ elif loop_data.previous_bar is not none and loop_data.previous_bar.get_annotation().has_clef_change }
+                            \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
+                            \VAR{bar.lilypond_str}
                         \BLOCK{ else }
-                        \VAR{bar.lilypond_str}
+                            \VAR{bar.lilypond_str}
                         \BLOCK{endif}
+                        \BLOCK{ set loop_data.previous_bar = bar}
     		        \BLOCK{ endfor }
 	        	}
 	        	\clef bass
 		        \repeat volta 2{
+		            \BLOCK{ set loop_data = namespace(previous_bar=None) }
     		        \BLOCK{ for bar_index in range(8, 16) }
     		            \BLOCK{ set bar = composition_bars['trio'][bar_index].get_bar('piano_left_hand') }
-		                \BLOCK{ if bar.lilypond_str.startswith('\clef') }
-		                    \clefAfterBarOnce
-		                    \set Staff.forceClef = ##t
-		                    \VAR{bar.lilypond_str}
-                            \BLOCK{ if bar_index != 15 and not composition_bars['trio'][bar_index + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
-                                \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
-                            \BLOCK{ endif }
+		                \BLOCK{ if bar.get_annotation().has_clef_change }
+                            \clefAfterBarOnce
+                            \set Staff.forceClef = ##t
+                            \VAR{bar.lilypond_str}
+                        \BLOCK{ elif loop_data.previous_bar is not none and loop_data.previous_bar.get_annotation().has_clef_change }
+                            \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
+                            \VAR{bar.lilypond_str}
                         \BLOCK{ else }
-                        \VAR{bar.lilypond_str}
+                            \VAR{bar.lilypond_str}
                         \BLOCK{endif}
+                        \BLOCK{ set loop_data.previous_bar = bar}
     		        \BLOCK{ endfor }
 	        	}
 		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "D.C. al Fine"}

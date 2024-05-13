@@ -34,9 +34,9 @@
                 \key c \major
             }
             {
-                \BLOCK{ if synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').lilypond_str.startswith('\clef "treble"') }
+                \BLOCK{ if synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').get_annotation().clef == 'treble' }
                     \bassToTreble
-                \BLOCK{ elif synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').lilypond_str.startswith('\clef "bass"') }
+                \BLOCK{ elif synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').get_annotation().clef == 'bass' }
                     \bassToBass
                 \BLOCK{ else }
                     \clef bass
@@ -49,10 +49,10 @@
                 \BLOCK{ if has_next }
                 \BLOCK{ set next_bar = synchronous_bars[loop.index0 + 1].get_bar('piano_left_hand') }
                 \BLOCK{ endif }
-                \BLOCK{ if bar.lilypond_str.startswith('\clef') }
+                \BLOCK{ if bar.get_annotation().has_clef_change }
                     \set Staff.forceClef = ##t
                     \VAR{ bar.lilypond_str }
-                    \BLOCK{ if has_next and not next_bar.lilypond_str.startswith('\clef') }
+                    \BLOCK{ if has_next and not next_bar.get_annotation().has_clef_change }
                        \clefAfterBarOnce \clefBracketed "bass"
                     \BLOCK{ endif }
                 \BLOCK{ else }

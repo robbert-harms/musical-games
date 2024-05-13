@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __author__ = 'Robbert Harms'
 __date__ = '2024-04-11'
 __maintainer__ = 'Robbert Harms'
@@ -9,7 +11,8 @@ from abc import ABCMeta, abstractmethod
 from importlib.abc import Traversable
 from pathlib import Path
 
-from musical_games.dice_games.base import BarCollection, SimpleBar, SimpleBarCollection
+from musical_games.dice_games.base import BarCollection, SimpleBar, SimpleBarCollection, BarAnnotation, int_bar_index, \
+    str_staff_name
 
 
 class BarCollectionCSVWriter(metaclass=ABCMeta):
@@ -25,18 +28,18 @@ class BarCollectionCSVWriter(metaclass=ABCMeta):
         """
 
 
-class BarCollectionCSVReader(metaclass=ABCMeta):
-    """A CSV reader for a bar collection."""
+class BarCollectionLoader(metaclass=ABCMeta):
+    """Definition of a bar collection loader.
+
+    Bar collection may be stored in different formats, implementing classes may specify these further.
+    """
 
     @abstractmethod
-    def read_csv(self, csv_in: Path | Traversable) -> BarCollection:
-        """Read a bar collection from a CSV.
-
-        Args:
-            csv_in: the CSV file to read
+    def load_data(self) -> BarCollection:
+        """Load the bar collection.
 
         Returns:
-            The bar collection loaded from the indicated CSv.
+            The loaded bar collection.
         """
 
 
@@ -56,16 +59,35 @@ class SimpleBarCollectionCSVWriter(BarCollectionCSVWriter):
                 bar_writer.writerow(row)
 
 
-class SimpleBarCollectionCSVReader(BarCollectionCSVReader):
-    """A simple CSV reader for bar collections.
+class CSVBarCollectionLoader(BarCollectionLoader):
 
-    We try to automatically detect multi-voice bars, by looking for '<<' and '>>'.
-    """
+    def __init__(self,
+                 bar_data_csv: Path | Traversable,
+                 annotation_data_csv: Path | Traversable | None = None,
+                 annotation_loader: AnnotationLoader | None = None):
+        """Load a bar collection for a CSV file.
 
-    def read_csv(self, csv_in: Path | Traversable) -> BarCollection:
+       When using this bar collection loader, bar's data are stored in CSV files, with for each synchronous bar,
+       for each staff the lilypond score data. A separate file with annotations may additionally be loaded.
+       This annotation file should have the same number of bars and staffs as the bar data, but contains a string
+       of annotation data which can be loaded by the annotation loader.
+
+       Args:
+           bar_data_csv: path reference to the bar's data to load
+           annotation_data_csv: reference to the annotation data to load
+           annotation_loader: the factory method for the annotations's data.
+       """
+        self._bar_data_csv = bar_data_csv
+        self._annotation_data_csv = annotation_data_csv
+        self._annotation_loader = annotation_loader
+
+    def load_data(self) -> BarCollection:
+        annotations = None
+        if self._annotation_data_csv is not None:
+            annotations = self._load_annotations()
+
         synchronous_bars = {}
-
-        with open(csv_in, 'r', newline='') as csvfile:
+        with open(self._bar_data_csv, 'r', newline='') as csvfile:
             bar_reader = csv.reader(csvfile, dialect='unix')
 
             staff_names = None
@@ -74,8 +96,48 @@ class SimpleBarCollectionCSVReader(BarCollectionCSVReader):
                     staff_names = row[1:]
                 else:
                     bars = []
-                    for bar_str in row[1:]:
-                        bars.append(SimpleBar(bar_str))
+                    for staff_ind, bar_str in enumerate(row[1:]):
+                        annotation = None
+                        if annotations is not None:
+                            annotation = annotations[int(row[0])][staff_names[staff_ind]]
+
+                        bars.append(SimpleBar(bar_str, annotation=annotation))
                     synchronous_bars[int(row[0])] = dict(zip(staff_names, bars))
 
         return SimpleBarCollection(synchronous_bars)
+
+    def _load_annotations(self) -> dict[int_bar_index, dict[str_staff_name, BarAnnotation]]:
+        """Load the annotations for each bar of each staff."""
+        annotations_data = {}
+
+        with open(self._annotation_data_csv, 'r', newline='') as csvfile:
+            annotation_reader = csv.reader(csvfile, dialect='unix')
+
+            staff_names = None
+            for row_ind, row in enumerate(annotation_reader):
+                if row_ind == 0:
+                    staff_names = row[1:]
+                else:
+                    annotations = []
+                    for annotation_str in row[1:]:
+                        annotations.append(self._annotation_loader.load_annotation(annotation_str))
+                    annotations_data[int(row[0])] = dict(zip(staff_names, annotations))
+
+        return annotations_data
+
+
+class AnnotationLoader(metaclass=ABCMeta):
+    """Factory class for annotation data.
+
+    An instance of this class is needed when bar annotations need to be loaded by a BarCollectionLoader.
+    """
+
+    def load_annotation(self, input_data: str) -> BarAnnotation:
+        """Load a bar annotation from input data.
+
+        Args:
+            input_data: a string of input data
+
+        Returns:
+            An instantiated bar annotation object.
+        """

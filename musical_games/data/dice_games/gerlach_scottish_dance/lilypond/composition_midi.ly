@@ -120,29 +120,13 @@
                 \time 2/4
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(8) }
-		                \BLOCK{ set bar = composition_bars['trio'][bar_index].get_bar('piano_left_hand') }
-		                \BLOCK{ if bar.lilypond_str.startswith('\clef') }
-                            \VAR{bar.lilypond_str}
-                            \BLOCK{ if bar_index != 7 and not composition_bars['trio'][bar_index + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
-                                \clef "bass"
-                            \BLOCK{ endif }
-                        \BLOCK{ else }
-                        \VAR{bar.lilypond_str}
-                        \BLOCK{endif}
+    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 	        	\clef bass
 		        \repeat volta 2{
     		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \BLOCK{ set bar = composition_bars['trio'][bar_index].get_bar('piano_left_hand') }
-		                \BLOCK{ if bar.lilypond_str.startswith('\clef') }
-		                    \VAR{bar.lilypond_str}
-                            \BLOCK{ if bar_index != 15 and not composition_bars['trio'][bar_index + 1].get_bar('piano_left_hand').lilypond_str.startswith('\clef') }
-                                \clef "bass"
-                            \BLOCK{ endif }
-                        \BLOCK{ else }
-                        \VAR{bar.lilypond_str}
-                        \BLOCK{endif}
+    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
             }

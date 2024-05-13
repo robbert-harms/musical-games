@@ -46,19 +46,18 @@
             {
                 \clef bass
                 \time 2/4
+                \BLOCK{ set loop_data = namespace(previous_bar=None) }
                 \BLOCK{ for bar_ind, bar in bar_collections['dance'].get_bars('piano_left_hand').items() }
-                    \BLOCK{ if bar.lilypond_str.startswith('\clef "treble"') or bar.lilypond_str.startswith('\clefBracketed "treble"')}
+                    \BLOCK{ if bar.get_annotation().has_clef_change }
                         \set Staff.forceClef = ##t
                         \VAR{bar.lilypond_str}
-                        \BLOCK{ if not bar_collections['dance'].get_bars('piano_left_hand')[bar_ind + 1].lilypond_str.startswith('\clef') }
-                            \clefBracketed "bass"
-                        \BLOCK{ endif }
-                    \BLOCK{ elif bar.lilypond_str.startswith('\clef "bass"') }
-                        \set Staff.forceClef = ##t
+                    \BLOCK{ elif loop_data.previous_bar is not none and loop_data.previous_bar.get_annotation().has_clef_change }
+                        \clefBracketed "bass"
                         \VAR{bar.lilypond_str}
                     \BLOCK{ else }
-                    \VAR{bar.lilypond_str}
+                        \VAR{bar.lilypond_str}
                     \BLOCK{endif}
+                    \BLOCK{ set loop_data.previous_bar = bar }
                 \BLOCK{ endfor }
                 \bar "|"
             }

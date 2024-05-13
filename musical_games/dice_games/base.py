@@ -417,6 +417,27 @@ class Bar(metaclass=ABCMeta):
             A lilypond string of a single bar.
         """
 
+    @abstractmethod
+    def get_annotation(self) -> BarAnnotation:
+        """Get annotation data for this bar.
+
+        In addition to the raw lilypond data, it is convenient to store some annotation data next to it. The exact
+        data may be dice game dependent, as long as is it inherits from :class:`BarAnnotation`.
+
+        Returns:
+            A bar annotation object.
+        """
+
+
+class BarAnnotation(metaclass=ABCMeta):
+    """Annotation data for a single bar.
+
+    A :class:`Bar` object contains a lilypond string representing the musical data for that bar. In addition, we may
+    store annotation data covering data about the lilypond data.
+
+    The exact implementation may be different for each dice game.
+    """
+
 
 class SynchronousBar(metaclass=ABCMeta):
     """Representation of a list of bars played synchronously across staffs.
@@ -575,8 +596,13 @@ class SimpleBar(Bar):
 
     Args:
         lilypond_str: the lilypond string representation of this bar
+        annotation: optional bar annotation object.
     """
     lilypond_str: str
+    annotation: BarAnnotation | None = None
+
+    def get_annotation(self) -> BarAnnotation:
+        return self.annotation
 
 
 @dataclass(frozen=True, slots=True)

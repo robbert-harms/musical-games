@@ -4,13 +4,13 @@ __maintainer__ = 'Robbert Harms'
 __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
+import json
 import re
+from dataclasses import dataclass
 from importlib import resources
 
-import jinja2
-
-from musical_games.dice_games.base import (SimpleDiceTable, SimpleMidiSettings, SimpleDiceGame)
-from musical_games.dice_games.data_csv import SimpleBarCollectionCSVReader
+from musical_games.dice_games.base import (SimpleDiceTable, SimpleMidiSettings, SimpleDiceGame, BarAnnotation)
+from musical_games.dice_games.data_csv import CSVBarCollectionLoader, AnnotationLoader
 
 
 class CPEBachCounterpoint(SimpleDiceGame):
@@ -45,11 +45,10 @@ class CPEBachCounterpoint(SimpleDiceGame):
         }
         data_name = 'cpe_bach_counterpoint'
 
-        csv_reader = SimpleBarCollectionCSVReader()
-        treble_bars = csv_reader.read_csv(resources.files('musical_games')
-                                          / f'data/dice_games/{data_name}/bars_treble.csv')
-        bass_bars = csv_reader.read_csv(resources.files('musical_games')
-                                        / f'data/dice_games/{data_name}/bars_bass.csv')
+        treble_bars = CSVBarCollectionLoader(resources.files('musical_games')
+                                             / f'data/dice_games/{data_name}/bars_treble.csv').load_data()
+        bass_bars = CSVBarCollectionLoader(resources.files('musical_games')
+                                           / f'data/dice_games/{data_name}/bars_bass.csv').load_data()
 
         midi_settings = SimpleMidiSettings(
             {'treble': {'piano_right_hand': 'acoustic grand'}, 'bass': {'piano_left_hand': 'acoustic grand'}},
@@ -85,11 +84,10 @@ class KirnbergerMenuetTrio(SimpleDiceGame):
         }
         data_name = 'kirnberger_menuet_trio'
 
-        csv_reader = SimpleBarCollectionCSVReader()
-        bar_collections = {'menuet': csv_reader.read_csv(resources.files('musical_games') /
-                                                         f'data/dice_games/{data_name}/menuet_bars.csv'),
-                           'trio': csv_reader.read_csv(resources.files('musical_games') /
-                                                       f'data/dice_games/{data_name}/trio_bars.csv')}
+        bar_collections = {'menuet': CSVBarCollectionLoader(resources.files('musical_games') /
+                                                            f'data/dice_games/{data_name}/menuet_bars.csv').load_data(),
+                           'trio': CSVBarCollectionLoader(resources.files('musical_games') /
+                                                          f'data/dice_games/{data_name}/trio_bars.csv').load_data()}
 
         midi_settings = SimpleMidiSettings(
             {'menuet': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'},
@@ -126,9 +124,10 @@ class KirnbergerPolonaise(SimpleDiceGame):
         }
         data_name = 'kirnberger_polonaise'
 
-        csv_reader = SimpleBarCollectionCSVReader()
-        bar_collections = {'polonaise': csv_reader.read_csv(resources.files('musical_games') /
-                                                            f'data/dice_games/{data_name}/polonaise_bars.csv')}
+        bar_collections = {
+            'polonaise': CSVBarCollectionLoader(resources.files('musical_games') /
+                                                f'data/dice_games/{data_name}/polonaise_bars.csv').load_data()
+        }
 
         midi_settings = SimpleMidiSettings(
             {'polonaise': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand',
@@ -162,9 +161,10 @@ class MozartContredanse(SimpleDiceGame):
         }
         data_name = 'mozart_contredanse'
 
-        csv_reader = SimpleBarCollectionCSVReader()
-        bar_collections = {'contredanse': csv_reader.read_csv(resources.files('musical_games') /
-                                                        f'data/dice_games/{data_name}/contredanse_bars.csv')}
+        bar_collections = {
+            'contredanse': CSVBarCollectionLoader(resources.files('musical_games') /
+                                                  f'data/dice_games/{data_name}/contredanse_bars.csv').load_data()
+        }
 
         midi_settings = SimpleMidiSettings(
             {'contredanse': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'}},
@@ -201,9 +201,8 @@ class MozartWaltz(SimpleDiceGame):
         }
         data_name = 'mozart_waltz'
 
-        csv_reader = SimpleBarCollectionCSVReader()
-        bar_collections = {'waltz': csv_reader.read_csv(resources.files('musical_games') /
-                                                        f'data/dice_games/{data_name}/waltz_bars.csv')}
+        bar_collections = {'waltz': CSVBarCollectionLoader(resources.files('musical_games') /
+                                                           f'data/dice_games/{data_name}/waltz_bars.csv').load_data()}
 
         midi_settings = SimpleMidiSettings(
             {'waltz': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'}},
@@ -252,11 +251,10 @@ class StadlerMenuetTrio(SimpleDiceGame):
         }
         data_name = 'stadler_menuet_trio'
 
-        csv_reader = SimpleBarCollectionCSVReader()
-        bar_collections = {'menuet': csv_reader.read_csv(resources.files('musical_games') /
-                                                         f'data/dice_games/{data_name}/menuet_bars.csv'),
-                           'trio': csv_reader.read_csv(resources.files('musical_games') /
-                                                       f'data/dice_games/{data_name}/trio_bars.csv')}
+        bar_collections = {'menuet': CSVBarCollectionLoader(resources.files('musical_games') /
+                                                            f'data/dice_games/{data_name}/menuet_bars.csv').load_data(),
+                           'trio': CSVBarCollectionLoader(resources.files('musical_games') /
+                                                          f'data/dice_games/{data_name}/trio_bars.csv').load_data()}
 
         midi_settings = SimpleMidiSettings(
             {'menuet': {'piano_right_hand': 'acoustic grand', 'piano_left_hand': 'acoustic grand'},
@@ -292,9 +290,13 @@ class GerlachScottishDance(SimpleDiceGame):
         }
         data_name = 'gerlach_scottish_dance'
 
-        csv_reader = SimpleBarCollectionCSVReader()
-        bars = csv_reader.read_csv(resources.files('musical_games') /
-                                   f'data/dice_games/{data_name}/scottish_dance_bars.csv')
+        csv_reader = CSVBarCollectionLoader(
+            resources.files('musical_games') / f'data/dice_games/{data_name}/scottish_dance_bars.csv',
+            annotation_data_csv=resources.files('musical_games') /
+                                f'data/dice_games/{data_name}/scottish_dance_bars_annotations.csv',
+            annotation_loader=GerlachScottishDance.GerlachAnnotationLoader()
+        )
+        bars = csv_reader.load_data()
 
         bar_collections = {'dance': bars,
                            'trio': bars}
@@ -309,3 +311,24 @@ class GerlachScottishDance(SimpleDiceGame):
 
         super().__init__('Gerlach', 'Scottish dance', dice_tables, bar_collections,
                          self._generate_jinja2_environment(data_name), midi_settings)
+
+    @dataclass(frozen=True, slots=True)
+    class GerlachAnnotation(BarAnnotation):
+        """Annotation for a bar in the Gerlach dice game.
+
+        The only annotation is the presence of a clef change at the beginning of a bar.
+
+        Args:
+            has_clef_change: if the annotated bar has a clef change at the beginning
+            clef: a string literal if there is a clef change at the beginning of this bar
+        """
+        has_clef_change: bool
+        clef: str | None
+
+    class GerlachAnnotationLoader(AnnotationLoader):
+
+        def load_annotation(self, input_data: str) -> BarAnnotation:
+            if input_data == '':
+                return GerlachScottishDance.GerlachAnnotation(False, None)
+            else:
+                return GerlachScottishDance.GerlachAnnotation(True, json.loads(input_data)['clef'])

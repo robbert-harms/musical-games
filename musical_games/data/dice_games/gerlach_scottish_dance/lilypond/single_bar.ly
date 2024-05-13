@@ -32,9 +32,9 @@
                 \key c \major
             }
             {
-                \BLOCK{ if synchronous_bar.get_bar('piano_left_hand').lilypond_str.startswith('\clef "treble"') }
+                \BLOCK{ if synchronous_bar.get_bar('piano_left_hand').get_annotation().clef == 'treble' }
                     \bassToTreble
-                \BLOCK{ elif synchronous_bar.get_bar('piano_left_hand').lilypond_str.startswith('\clef "bass"') }
+                \BLOCK{ elif synchronous_bar.get_bar('piano_left_hand').get_annotation().clef == 'bass' }
                     \bassToBass
                 \BLOCK{ else }
                     \bass
