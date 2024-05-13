@@ -35,7 +35,7 @@ print(dice_game.get_duplicate_dice_table_elements('trio'))
 print(dice_game.count_unique_compositions(count_duplicates=True))
 print(dice_game.count_unique_compositions(count_duplicates=False))
 
-bar_selection = dice_game.get_random_bar_selection(seed=1)
+bar_selection = dice_game.get_random_bar_selection(seed=10)
 
 dice_game.compile_composition_score(bar_selection,
                                     comment='Test', single_page=True).to_file(out_dir / 'composition_pdf.ly')

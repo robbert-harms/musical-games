@@ -124,7 +124,9 @@
                             \clefAfterBarOnce
                             \set Staff.forceClef = ##t
                             \VAR{bar.lilypond_str}
-                        \BLOCK{ elif loop_data.previous_bar is not none and loop_data.previous_bar.get_annotation().has_clef_change }
+                        \BLOCK{ elif loop_data.previous_bar is not none
+                                        and loop_data.previous_bar.get_annotation().has_clef_change
+                                        and loop_data.previous_bar.get_annotation().clef == 'treble' }
                             \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
                             \VAR{bar.lilypond_str}
                         \BLOCK{ else }
@@ -142,7 +144,9 @@
                             \clefAfterBarOnce
                             \set Staff.forceClef = ##t
                             \VAR{bar.lilypond_str}
-                        \BLOCK{ elif loop_data.previous_bar is not none and loop_data.previous_bar.get_annotation().has_clef_change }
+                        \BLOCK{ elif loop_data.previous_bar is not none
+                                        and loop_data.previous_bar.get_annotation().has_clef_change
+                                        and loop_data.previous_bar.get_annotation().clef == 'treble' }
                             \set Staff.forceClef = ##t \clefAfterBarOnce \clefBracketed "bass"
                             \VAR{bar.lilypond_str}
                         \BLOCK{ else }
