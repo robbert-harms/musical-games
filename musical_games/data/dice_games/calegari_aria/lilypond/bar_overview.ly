@@ -3,7 +3,7 @@
     print-all-headers = ##t
     \BLOCK{ if render_settings['single_page'] }
         system-system-spacing = #'((basic-distance . 15))
-        paper-height = 1400\mm  %% default is 297 for a4
+        paper-height = 3400\mm  %% default is 297 for a4
     \BLOCK{ endif }
 }
 \header{
@@ -11,6 +11,16 @@
     composer = "Calegari"
     tagline = ##f
 }
+
+sopranovarCClef = {
+    \set Staff.clefGlyph = "clefs.varC"
+    \set Staff.clefPosition = 4
+    \set Staff.middleCPosition = 4
+    \set Staff.middleCClefPosition = 4
+    \set Staff.clefPosition = -4
+    \set Staff.middleCPosition = -6
+}
+
 \score {
     \header {
         piece = \markup { \fontsize #1 "Primary bars" }
@@ -23,14 +33,11 @@
             \set Staff.instrumentName = #"Chant"
             {
                 \override Score.BarNumber.break-visibility = ##(#t #t #t)
-                \override Score.RehearsalMark.direction = #down
-                \key f\major
-            }
-            {
-                \clef treble
+                \key g\major
+                \sopranovarCClef
                 \time 4/4
                 \BLOCK{ for bar in bar_collections['part_one'].get_bars('chant').values() }
-                    \VAR{bar.lilypond_str}
+                    \set Score.currentBarNumber = #\VAR{loop.index} \VAR{bar.lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|"
             }
@@ -41,11 +48,7 @@
             \new Staff
             <<
                 {
-                    \override Score.BarNumber.break-visibility = ##(#t #t #t)
-                    \override Score.RehearsalMark.direction = #down
-                    \key f\major
-                }
-                {
+                    \key g\major
                     \clef treble
                     \time 4/4
                     \BLOCK{ for bar in bar_collections['part_one'].get_bars('piano_right_hand').values() }
@@ -57,11 +60,7 @@
             \new Staff
             <<
                 {
-                    \override Score.BarNumber.break-visibility = ##(#t #t #t)
-                    \override Score.RehearsalMark.direction = #down
-                    \key f\major
-                }
-                {
+                    \key g\major
                     \clef bass
                     \time 4/4
                     \BLOCK{ for bar in bar_collections['part_one'].get_bars('piano_left_hand').values() }
@@ -72,7 +71,4 @@
             >>
         >>
     >>
-    \layout {
-        indent = #0
-    }
 }

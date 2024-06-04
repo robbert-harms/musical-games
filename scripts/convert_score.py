@@ -11,7 +11,7 @@ import pandas as pd
 
 from musical_games.dice_games.dice_games import CalegariAria
 
-with open('/home/robbert/Downloads/calegari/Cal-b1-11.ly', 'r') as f:
+with open('/home/robbert/Documents/projects/opus-infinity/Würfelspiele/Calegari/aria/Cal-j1-11.ly', 'r') as f:
     lines = f.readlines()
 
 def get_group_data():
@@ -63,6 +63,8 @@ def split_on_indicator(text):
     bars = {}
     for bar_ind, bar_index in bar_indices.items():
         bar = text[bar_index[0]:bar_index[1]].strip()
+        if bar.startswith('}'):
+            bar = bar[1:].strip()
         bars[bar_ind] = bar
     return bars
 
@@ -89,11 +91,12 @@ bars_per_group = {}
 for key, single_group in group_data.items():
     bars_per_group[key] = separate_bars(single_group)
 
-col = CalegariAria().get_dice_tables()['part_one'].get_column(1)
+col = CalegariAria().get_dice_tables()['part_two'].get_column(1)
 col_ind = [el.get_bar_indices()[0] for el in col]
 
 bar_items = {'chant': bars_per_group['PartPOneVoiceOne'],
-              'piano_right_hand': merge_voices(bars_per_group['PartPTwoVoiceOne'], bars_per_group['PartPOneVoiceOne']),
+              # 'piano_right_hand': merge_voices(bars_per_group['PartPTwoVoiceOne'], bars_per_group['PartPTwoVoiceTwo']),
+            'piano_right_hand': bars_per_group['PartPTwoVoiceOne'],
               'piano_left_hand': bars_per_group['PartPThreeVoiceOne']}
 
 
@@ -103,14 +106,17 @@ for ind, col_el in enumerate(col_ind):
                            'piano_right_hand': bar_items['piano_right_hand'][ind + 1],
                            'piano_left_hand': bar_items['piano_left_hand'][ind + 1]}
 
-csv_data = pd.read_csv('/home/robbert/programming/python/musical-games/musical_games/data/dice_games/calegari_aria/bars_aria.csv')
-
-for bar_index, bars in final_items.items():
-    row = csv_data[csv_data['bar_index'] == bar_index]
-    row['chant'] = bars['chant']
-    row['piano_right_hand'] = bars['piano_right_hand']
-    row['piano_left_hand'] = bars['piano_left_hand']
-    csv_data[csv_data['bar_index'] == bar_index] = row
-
-
-csv_data.to_csv('/home/robbert/programming/python/musical-games/musical_games/data/dice_games/calegari_aria/bars_aria.csv', index=False)
+pprint(final_items)
+#
+# csv_f = '/home/robbert/programming/python/musical-games/musical_games/data/dice_games/calegari_aria/bars_aria.csv'
+# csv_data = pd.read_csv(csv_f)
+#
+# for bar_index, bars in final_items.items():
+#     row = csv_data[csv_data['bar_index'] == bar_index]
+#     row['chant'] = 's1'
+#     row['piano_right_hand'] = bars['piano_right_hand']
+#     row['piano_left_hand'] = bars['piano_left_hand']
+#     csv_data[csv_data['bar_index'] == bar_index] = row
+#
+#
+# csv_data.to_csv(csv_f, index=False)
