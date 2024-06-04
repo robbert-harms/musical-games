@@ -1,0 +1,139 @@
+\version "2.22.1"
+\paper {
+	page-count = 1
+    print-all-headers = ##t
+    score-markup-spacing = #'((basic-distance . 10))
+    markup-system-spacing = #'((minimum-distance = 0))
+}
+\header{
+    title = "Menuet and Trio"
+    composer = "Kirnberger"
+    tagline = ##f
+}
+\score {
+    \header {
+        piece = \markup { \fontsize #1 "Menuet" }
+        title = ""
+        composer = ""
+    }
+    \new PianoStaff
+    <<
+        \new Staff
+        <<
+            {
+                \key d\major
+                \tempo 4 = 100
+                \override Score.RehearsalMark.direction = #down
+            }
+            {
+                \clef treble
+                \time 3/4
+                \repeat volta 2{
+                    \BLOCK{ for bar_index in range(8) }
+                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ endfor }
+                }
+                \repeat volta 2{
+                    \BLOCK{ for bar_index in range(8, 16) }
+                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ endfor }
+                }
+            }
+        >>
+        \new Staff
+        <<
+            {
+                \key d\major
+                \tempo 4 = 100
+                \override Score.RehearsalMark.direction = #down
+            }
+            {
+                \clef bass
+                \time 3/4
+		        \repeat volta 2{
+		            \BLOCK{ for bar_index in range(8) }
+		                \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		        \BLOCK{ endfor }
+	        	}
+		        \repeat volta 2{
+    		        \BLOCK{ for bar_index in range(8, 16) }
+    		            \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		        \BLOCK{ endfor }
+	        	}
+		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "Fine"}
+            }
+        >>
+    >>
+    \layout {
+        indent = 0\mm
+    }
+}
+
+\score {
+    \header {
+        piece = \markup { \fontsize #1 "Trio" }
+        title = ""
+        composer = ""
+    }
+    \new PianoStaff
+    <<
+        \new Staff
+        <<
+            {
+                \key d\minor
+                \tempo 4 = 80
+                \override Score.RehearsalMark.direction = #down
+            }
+            {
+                \clef treble
+                \time 3/4
+                \repeat volta 2{
+                    \BLOCK{ for bar_index in range(8) }
+                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ endfor }
+                }
+                \repeat volta 2{
+                    \BLOCK{ for bar_index in range(8, 16) }
+                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ endfor }
+                }
+            }
+        >>
+        \new Staff
+        <<
+            {
+                \key d\minor
+                \tempo 4 = 80
+                \override Score.RehearsalMark.direction = #down
+            }
+            {
+                \clef bass
+                \time 3/4
+		        \repeat volta 2{
+		            \BLOCK{ for bar_index in range(8) }
+		                \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		        \BLOCK{ endfor }
+	        	}
+		        \repeat volta 2{
+    		        \BLOCK{ for bar_index in range(8, 16) }
+    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		        \BLOCK{ endfor }
+	        	}
+		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "D.C. al Fine"}
+            }
+        >>
+    >>
+    \layout {
+        indent = 0\mm
+    }
+}
+
+\BLOCK{ if render_settings['comment'] is not none }
+    \BLOCK{ if '\n' in render_settings['comment'] }
+    \BLOCK{ for line in render_settings['comment'].split('\n') }
+        \markup {\fill-line \italic {"" "" "\VAR{ line }"}}
+    \BLOCK{ endfor }
+    \BLOCK{ else }
+        \markup {\fill-line \italic {"" "" "\VAR{ render_settings['comment'] }"}}
+    \BLOCK{ endif }
+\BLOCK{ endif }

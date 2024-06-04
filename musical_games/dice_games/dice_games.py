@@ -332,3 +332,59 @@ class GerlachScottishDance(SimpleDiceGame):
                 return GerlachScottishDance.GerlachAnnotation(False, None)
             else:
                 return GerlachScottishDance.GerlachAnnotation(True, json.loads(input_data)['clef'])
+
+
+class CalegariAria(SimpleDiceGame):
+
+    def __init__(self):
+        """Implementation of an Aria by Calegari."""
+        dice_tables = {
+            'part_one': SimpleDiceTable.from_lists([
+                [150, 142, 18, 85, 62, 3, 152, 94],
+                [71, 89, 149, 137, 113, 56, 5, 132],
+                [81, 13, 111, 10, 96, 154, 27, 179],
+                [140, 184, 55, 2, 9, 175, 73, 90],
+                [180, 34, 59, 98, 141, 166, 78, 143],
+                [122, 127, 174, 192, 24, 46, 107, 183],
+                [82, 15, 112, 58, 133, 118, 16, 105],
+                [43, 38, 136, 116, 170, 193, 129, 92],
+                [44, 181, 39, 109, 29, 63, 197, 172],
+                [160, 48, 73, 182, 80, 42, 138, 4],
+                [104, 68, 114, 47, 124, 86, 52, 162]]),
+            'part_two': SimpleDiceTable.from_lists([
+                [25, 120, 187, 102, 33, 157, 189, 108, 146, 148],
+                [19, 171, 88, 28, 126, 35, 65, 64, 20, 61],
+                [178, 99, 185, 97, 23, 147, 50, 117, 125, 159],
+                [176, 17, 95, 195, 163, 6, 131, 144, 53, 169],
+                [30, 177, 101, 11, 32, 165, 26, 123, 190, 69],
+                [135, 134, 151, 54, 115, 36, 1, 60, 103, 45],
+                [161, 153, 87, 41, 188, 155, 194, 198, 77, 164],
+                [130, 37, 139, 57, 67, 168, 83, 75, 70, 119],
+                [49, 173, 128, 79, 156, 51, 84, 8, 167, 14],
+                [40, 12, 121, 158, 91, 110, 31, 66, 100, 22],
+                [186, 21, 191, 76, 145, 74, 93, 106, 196, 7],
+            ]),
+        }
+        data_name = 'calegari_aria'
+
+        bars = CSVBarCollectionLoader(resources.files('musical_games') /
+                               f'data/dice_games/{data_name}/bars_aria.csv').load_data()
+
+        bar_collections = {
+            'part_one': bars,
+            'part_two': bars}
+
+        midi_settings = SimpleMidiSettings(
+            {'part_one': {'chant': 'Choir Aahs',
+                          'piano_right_hand': 'acoustic grand',
+                          'piano_left_hand': 'acoustic grand'},
+             'part_two': {'chant': 'Choir Aahs',
+                          'piano_right_hand': 'acoustic grand',
+                          'piano_left_hand': 'acoustic grand'}},
+            {'part_one': {'chant': 0, 'piano_right_hand': 0, 'piano_left_hand': 0},
+             'part_two': {'chant': 0, 'piano_right_hand': 0, 'piano_left_hand': 0}},
+            {'part_one': {'chant': 1, 'piano_right_hand': 0.8, 'piano_left_hand': 0.6},
+             'part_two': {'chant': 1, 'piano_right_hand': 0.8, 'piano_left_hand': 0.6}})
+
+        super().__init__('Calegari', 'Aria', dice_tables, bar_collections,
+                         self._generate_jinja2_environment(data_name), midi_settings)
