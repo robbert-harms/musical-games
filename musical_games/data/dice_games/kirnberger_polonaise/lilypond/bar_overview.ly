@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##t
 
@@ -30,8 +31,10 @@
             {
                 \clef treble
                 \time 3/4
-                \BLOCK{ for bar in bar_collections['polonaise'].get_bars('violin_1').values() }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for bar_sequence in bar_collections['polonaise'].get_bar_sequences('violin_1').values() }
+                    \BLOCK{ for bar in bar_sequence.get_bars() }
+                        \VAR{bar.lilypond_str}
+                    \BLOCK{ endfor }
                 \BLOCK{ endfor }
                 \bar "|"
             }
@@ -47,8 +50,10 @@
             {
                 \clef treble
                 \time 3/4
-                \BLOCK{ for bar in bar_collections['polonaise'].get_bars('violin_2').values() }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for bar_sequence in bar_collections['polonaise'].get_bar_sequences('violin_2').values() }
+                    \BLOCK{ for bar in bar_sequence.get_bars() }
+                        \VAR{bar.lilypond_str}
+                    \BLOCK{ endfor }
                 \BLOCK{ endfor }
                 \bar "|"
             }
@@ -66,8 +71,10 @@
                 {
                     \clef treble
                     \time 3/4
-                    \BLOCK{ for bar in bar_collections['polonaise'].get_bars('piano_right_hand').values() }
-                        \VAR{bar.lilypond_str}
+                    \BLOCK{ for bar_sequence in bar_collections['polonaise'].get_bar_sequences('piano_right_hand').values() }
+                        \BLOCK{ for bar in bar_sequence.get_bars() }
+                            \VAR{bar.lilypond_str}
+                        \BLOCK{ endfor }
                     \BLOCK{ endfor }
                     \bar "|"
                 }
@@ -82,8 +89,10 @@
                 {
                     \clef bass
                     \time 3/4
-                    \BLOCK{ for bar in bar_collections['polonaise'].get_bars('piano_left_hand').values() }
-                        \VAR{bar.lilypond_str}
+                    \BLOCK{ for bar_sequence in bar_collections['polonaise'].get_bar_sequences('piano_left_hand').values() }
+                        \BLOCK{ for bar in bar_sequence.get_bars() }
+                            \VAR{bar.lilypond_str}
+                        \BLOCK{ endfor }
                     \BLOCK{ endfor }
                     \bar "|"
                 }

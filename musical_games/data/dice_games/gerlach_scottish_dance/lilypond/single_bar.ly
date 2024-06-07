@@ -1,4 +1,5 @@
 \version "2.19.81"
+\language "nederlands"
 \paper {
     print-all-headers = ##f
     paper-height = 50\mm
@@ -22,7 +23,7 @@
             {
                 \clef treble
                 \time 2/4
-                \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
+                \VAR{ synchronous_bar_sequence.get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>
@@ -32,15 +33,15 @@
                 \key c \major
             }
             {
-                \BLOCK{ if synchronous_bar.get_bar('piano_left_hand').get_annotation().clef == 'treble' }
+                \BLOCK{ if synchronous_bar_sequence.get_bar_sequence('piano_left_hand').get_bars()[0].get_annotation().clef == 'treble' }
                     \bassToTreble
-                \BLOCK{ elif synchronous_bar.get_bar('piano_left_hand').get_annotation().clef == 'bass' }
+                \BLOCK{ elif synchronous_bar_sequence.get_bar_sequence('piano_left_hand').get_bars()[0].get_annotation().clef == 'bass' }
                     \bassToBass
                 \BLOCK{ else }
                     \bass
                 \BLOCK{ endif }
                 \time 2/4
-                \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
+                \VAR{ synchronous_bar_sequence.get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>

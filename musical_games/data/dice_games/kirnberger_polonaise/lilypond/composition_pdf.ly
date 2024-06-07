@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##t
     score-markup-spacing = #'((basic-distance . 10))
@@ -33,7 +34,7 @@
                 \clef treble
                 \time 3/4
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_1').lilypond_str}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar_sequence('violin_1').get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -50,7 +51,7 @@
                 \clef treble
                 \time 3/4
                 \BLOCK{ for bar_index in range(14) }
-                    \VAR{composition_bars['polonaise'][bar_index].get_bar('violin_2').lilypond_str}
+                    \VAR{composition_bars['polonaise'][bar_index].get_bar_sequence('violin_2').get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -69,7 +70,7 @@
                     \clef treble
                     \time 3/4
                     \BLOCK{ for bar_index in range(14) }
-                        \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                        \VAR{composition_bars['polonaise'][bar_index].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}
                     \BLOCK{ endfor }
                     \bar "|."
                 }
@@ -85,7 +86,7 @@
                     \clef bass
                     \time 3/4
                     \BLOCK{ for bar_index in range(14) }
-                        \VAR{composition_bars['polonaise'][bar_index].get_bar('piano_left_hand').lilypond_str}
+                        \VAR{composition_bars['polonaise'][bar_index].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str}
                         \BLOCK{ if bar_index == 1}
                             \mark \markup { \musicglyph #"scripts.segno" }
                         \BLOCK{ elif bar_index == 5 }

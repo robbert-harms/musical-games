@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \include "articulate.ly"
 
 % menuet with repeats

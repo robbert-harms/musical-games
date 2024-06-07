@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \include "articulate.ly"
 \score {
     \unfoldRepeats
@@ -21,7 +22,7 @@
             {
                 \clef treble
                 \BLOCK{ for synchronous_bar in composition_bars['treble'] }
-                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
+                    \VAR{synchronous_bar.get_bars()[0].get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -43,7 +44,7 @@
             {
                 \clef bass
                 \BLOCK{ for synchronous_bar in composition_bars['bass'] }
-                    \VAR{synchronous_bar.get_bars()[0].lilypond_str}
+                    \VAR{synchronous_bar.get_bars()[0].get_bars()[0].lilypond_str}
                 \BLOCK{ endfor }
                 \bar "|."
             }

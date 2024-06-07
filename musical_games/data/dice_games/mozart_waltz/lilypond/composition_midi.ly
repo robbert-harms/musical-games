@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \include "articulate.ly"
 \score {
     \unfoldRepeats
@@ -22,18 +23,18 @@
                 \clef treble
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(7) }
-                        \VAR{composition_bars['waltz'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                        \VAR{composition_bars['waltz'][bar_index].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}
                     \BLOCK{ endfor }
                 }
 
                 \alternative {
-                    {\VAR{composition_bars['waltz'][7].get_bar('piano_right_hand').lilypond_str}}
-                    {\VAR{composition_bars['waltz'][7].get_bar('piano_right_hand').lilypond_str}}
+                    {\VAR{composition_bars['waltz'][7].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}}
+                    {\VAR{composition_bars['waltz'][7].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}}
                 }
 
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{composition_bars['waltz'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                        \VAR{composition_bars['waltz'][bar_index].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}
                     \BLOCK{ endfor }
                 }
             }
@@ -56,18 +57,18 @@
                 \clef bass
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(7) }
-		                \VAR{composition_bars['waltz'][bar_index].get_bar('piano_left_hand').lilypond_str}
+		                \VAR{composition_bars['waltz'][bar_index].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 
                 \alternative {
-                    {\VAR{split_voices(composition_bars['waltz'][7].get_bar('piano_left_hand').lilypond_str)[0]}}
-                    {\VAR{split_voices(composition_bars['waltz'][7].get_bar('piano_left_hand').lilypond_str)[1]}}
+                    {\VAR{split_voices(composition_bars['waltz'][7].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str)[0]}}
+                    {\VAR{split_voices(composition_bars['waltz'][7].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str)[1]}}
                 }
 
 		        \repeat volta 2{
     		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{composition_bars['waltz'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		            \VAR{composition_bars['waltz'][bar_index].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
             }

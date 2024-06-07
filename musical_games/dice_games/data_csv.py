@@ -12,7 +12,7 @@ from importlib.abc import Traversable
 from pathlib import Path
 
 from musical_games.dice_games.base import BarCollection, SimpleBar, SimpleBarCollection, BarAnnotation, int_bar_index, \
-    str_staff_name
+    str_staff_name, SimpleBarSequence
 
 
 class BarCollectionCSVWriter(metaclass=ABCMeta):
@@ -54,7 +54,7 @@ class SimpleBarCollectionCSVWriter(BarCollectionCSVWriter):
 
             bar_writer.writerow(['bar_index'] + staff_names)
 
-            for bar_index, synchronous_bars in bar_collection.get_synchronous_bars().items():
+            for bar_index, synchronous_bars in bar_collection.get_synchronous_bar_sequences().items():
                 row = [bar_index] + [bar.lilypond_str for bar in synchronous_bars.get_bars()]
                 bar_writer.writerow(row)
 
@@ -101,7 +101,7 @@ class CSVBarCollectionLoader(BarCollectionLoader):
                         if annotations is not None:
                             annotation = annotations[int(row[0])][staff_names[staff_ind]]
 
-                        bars.append(SimpleBar(bar_str, annotation=annotation))
+                        bars.append(SimpleBarSequence((SimpleBar(bar_str, annotation=annotation),)))
                     synchronous_bars[int(row[0])] = dict(zip(staff_names, bars))
 
         return SimpleBarCollection(synchronous_bars)

@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##t
     \BLOCK{ if render_settings['single_page'] }

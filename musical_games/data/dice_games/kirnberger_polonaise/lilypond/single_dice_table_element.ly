@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##f
     paper-height = 100\mm
@@ -20,9 +21,7 @@
             {
                 \clef treble
                 \time 3/4
-                \BLOCK{ for synchronous_bar in synchronous_bars }
-                \VAR{ synchronous_bar.get_bar('violin_1').lilypond_str }
-                \BLOCK{ endfor }
+                \VAR{ synchronous_bar_sequence.get_bar_sequence('violin_1').get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>
@@ -35,9 +34,7 @@
             {
                 \clef treble
                 \time 3/4
-                \BLOCK{ for synchronous_bar in synchronous_bars }
-                \VAR{ synchronous_bar.get_bar('violin_2').lilypond_str }
-                \BLOCK{ endfor }
+                \VAR{ synchronous_bar_sequence.get_bar_sequence('violin_2').get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>
@@ -52,9 +49,7 @@
                 {
                     \clef treble
                     \time 3/4
-                    \BLOCK{ for synchronous_bar in synchronous_bars }
-                    \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
-                    \BLOCK{ endfor }
+                    \VAR{ synchronous_bar_sequence.get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str }
                     \bar "|."
                 }
             >>
@@ -66,9 +61,7 @@
                 {
                     \clef bass
                     \time 3/4
-                    \BLOCK{ for synchronous_bar in synchronous_bars }
-                    \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
-                    \BLOCK{ endfor }
+                    \VAR{ synchronous_bar_sequence.get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str }
                     \bar "|."
                 }
             >>

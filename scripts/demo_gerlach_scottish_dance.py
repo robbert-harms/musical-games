@@ -5,6 +5,7 @@ __email__ = 'robbert@xkls.nl'
 __licence__ = 'LGPL v3'
 
 from pathlib import Path
+
 from musical_games.dice_games.dice_games import GerlachScottishDance
 from musical_games.utils import auto_convert_lilypond_file
 
@@ -50,4 +51,3 @@ dice_game.compile_composition_audio(bar_selection,
 auto_convert_lilypond_file(
     out_dir / 'composition_midi.ly',
     soundfont=Path('/home/robbert/programming/python/opus_infinity.org/soundfonts/Musyng_Kite.sf2'))
-

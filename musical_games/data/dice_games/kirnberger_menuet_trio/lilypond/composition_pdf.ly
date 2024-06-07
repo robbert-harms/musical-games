@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
 	page-count = 1
     print-all-headers = ##t
@@ -30,12 +31,12 @@
                 \time 3/4
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8) }
-                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                        \VAR{composition_bars['menuet'][bar_index].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}
                     \BLOCK{ endfor }
                 }
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                        \VAR{composition_bars['menuet'][bar_index].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}
                     \BLOCK{ endfor }
                 }
             }
@@ -52,12 +53,12 @@
                 \time 3/4
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(8) }
-		                \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
+		                \VAR{composition_bars['menuet'][bar_index].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \repeat volta 2{
     		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		            \VAR{composition_bars['menuet'][bar_index].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "Fine"}
@@ -89,12 +90,12 @@
                 \time 3/4
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8) }
-                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                        \VAR{composition_bars['trio'][bar_index].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}
                     \BLOCK{ endfor }
                 }
                 \repeat volta 2{
                     \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                        \VAR{composition_bars['trio'][bar_index].get_bar_sequence('piano_right_hand').get_bars()[0].lilypond_str}
                     \BLOCK{ endfor }
                 }
             }
@@ -111,12 +112,12 @@
                 \time 3/4
 		        \repeat volta 2{
 		            \BLOCK{ for bar_index in range(8) }
-		                \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
+		                \VAR{composition_bars['trio'][bar_index].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \repeat volta 2{
     		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		            \VAR{composition_bars['trio'][bar_index].get_bar_sequence('piano_left_hand').get_bars()[0].lilypond_str}
     		        \BLOCK{ endfor }
 	        	}
 		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "D.C. al Fine"}

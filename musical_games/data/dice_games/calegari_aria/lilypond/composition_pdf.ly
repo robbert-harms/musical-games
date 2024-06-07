@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
 	page-count = 1
     print-all-headers = ##t

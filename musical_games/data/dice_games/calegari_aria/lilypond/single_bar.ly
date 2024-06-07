@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##f
     paper-height = 50\mm

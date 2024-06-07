@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##f
     paper-height = 50\mm
@@ -22,8 +23,8 @@
             {
                 \clef treble
                 \time 2/4
-                \BLOCK{ for synchronous_bar in synchronous_bars }
-                \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
+                \BLOCK{ for bar in synchronous_bar_sequence.get_bar_sequence('piano_right_hand').get_bars() }
+                \VAR{ bar.lilypond_str }
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -34,20 +35,20 @@
                 \key c \major
             }
             {
-                \BLOCK{ if synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').get_annotation().clef == 'treble' }
+                \BLOCK{ set bars = synchronous_bar_sequence.get_bar_sequence('piano_left_hand').get_bars() }
+                \BLOCK{ if bars|length > 0 and bars[0].get_annotation().clef == 'treble' }
                     \bassToTreble
-                \BLOCK{ elif synchronous_bars|length > 0 and synchronous_bars[0].get_bar('piano_left_hand').get_annotation().clef == 'bass' }
+                \BLOCK{ elif bars|length > 0 and bars[0].get_annotation().clef == 'bass' }
                     \bassToBass
                 \BLOCK{ else }
                     \clef bass
                 \BLOCK{ endif }
                 \time 2/4
 
-                \BLOCK{ for synchronous_bar in synchronous_bars }
-                \BLOCK{ set bar = synchronous_bar.get_bar('piano_left_hand') }
-                \BLOCK{ set has_next = loop.index0 != synchronous_bars|length - 1 }
+                \BLOCK{ for bar in bars }
+                \BLOCK{ set has_next = loop.index0 != bars|length - 1 }
                 \BLOCK{ if has_next }
-                \BLOCK{ set next_bar = synchronous_bars[loop.index0 + 1].get_bar('piano_left_hand') }
+                \BLOCK{ set next_bar = bars[loop.index0 + 1] }
                 \BLOCK{ endif }
                 \BLOCK{ if bar.get_annotation().has_clef_change }
                     \set Staff.forceClef = ##t

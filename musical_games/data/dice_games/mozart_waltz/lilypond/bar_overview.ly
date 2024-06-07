@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##t
 
@@ -29,8 +30,10 @@
             {
                 \clef treble
                 \time 3/8
-                \BLOCK{ for bar in bar_collections['waltz'].get_bars('piano_right_hand').values() }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for bar_sequence in bar_collections['waltz'].get_bar_sequences('piano_right_hand').values() }
+                    \BLOCK{ for bar in bar_sequence.get_bars() }
+                        \VAR{bar.lilypond_str}
+                    \BLOCK{ endfor }
                 \BLOCK{ endfor }
                 \bar "|"
             }
@@ -44,8 +47,10 @@
             {
                 \clef bass
                 \time 3/8
-                \BLOCK{ for bar_ind, bar in bar_collections['waltz'].get_bars('piano_left_hand').items() }
-                    \VAR{bar.lilypond_str}
+                \BLOCK{ for bar_sequence in bar_collections['waltz'].get_bar_sequences('piano_left_hand').values() }
+                    \BLOCK{ for bar in bar_sequence.get_bars() }
+                        \VAR{bar.lilypond_str}
+                    \BLOCK{ endfor }
                 \BLOCK{ endfor }
                 \bar "|"
             }

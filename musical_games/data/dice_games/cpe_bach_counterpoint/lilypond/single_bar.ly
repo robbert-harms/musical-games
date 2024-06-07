@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \paper {
     print-all-headers = ##f
     paper-height = 50\mm
@@ -19,7 +20,7 @@
             {
                 \clef \VAR{ table_name }
                 \time 4/4
-                \VAR{ synchronous_bar.get_bars()[0].lilypond_str }
+                \VAR{ synchronous_bar_sequence.get_bars()[0].get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>

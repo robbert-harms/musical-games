@@ -42,4 +42,3 @@ dice_game.compile_composition_audio(
 auto_convert_lilypond_file(
     out_dir / 'composition_midi.ly',
     soundfont=Path('/home/robbert/programming/python/opus_infinity.org/soundfonts/Musyng_Kite.sf2'))
-#

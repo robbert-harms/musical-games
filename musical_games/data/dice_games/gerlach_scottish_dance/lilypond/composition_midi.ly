@@ -1,4 +1,5 @@
 \version "2.22.1"
+\language "nederlands"
 \include "articulate.ly"
 
 \BLOCK{ include 'clef_changes.ly' }
@@ -25,13 +26,17 @@
                 \clef treble
                 \time 2/4
                 \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8) }
-                        \VAR{composition_bars['dance'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ for bar_index in range(4) }
+                        \BLOCK{for bar in composition_bars['dance'][bar_index].get_bar_sequence('piano_right_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
                     \BLOCK{ endfor }
                 }
                 \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{composition_bars['dance'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ for bar_index in range(4, 8) }
+                        \BLOCK{for bar in composition_bars['dance'][bar_index].get_bar_sequence('piano_right_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
                     \BLOCK{ endfor }
                 }
             }
@@ -53,14 +58,18 @@
                 \clef bass
                 \time 2/4
 		        \repeat volta 2{
-		            \BLOCK{ for bar_index in range(8) }
-		                \VAR{composition_bars['dance'][bar_index].get_bar('piano_left_hand').lilypond_str}
+		            \BLOCK{ for bar_index in range(4) }
+		                \BLOCK{for bar in composition_bars['dance'][bar_index].get_bar_sequence('piano_left_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
     		        \BLOCK{ endfor }
 	        	}
 	        	\clef bass
 		        \repeat volta 2{
-    		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{composition_bars['dance'][bar_index].get_bar('piano_left_hand').lilypond_str}
+    		        \BLOCK{ for bar_index in range(4, 8) }
+    		            \BLOCK{for bar in composition_bars['dance'][bar_index].get_bar_sequence('piano_left_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
     		        \BLOCK{ endfor }
 	        	}
             }
@@ -91,13 +100,17 @@
                 \clef treble
                 \time 2/4
                 \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8) }
-                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ for bar_index in range(4) }
+                        \BLOCK{for bar in composition_bars['trio'][bar_index].get_bar_sequence('piano_right_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
                     \BLOCK{ endfor }
                 }
                 \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                    \BLOCK{ for bar_index in range(4, 8) }
+                        \BLOCK{for bar in composition_bars['trio'][bar_index].get_bar_sequence('piano_right_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
                     \BLOCK{ endfor }
                 }
             }
@@ -119,15 +132,19 @@
                 \clef bass
                 \time 2/4
 		        \repeat volta 2{
-		            \BLOCK{ for bar_index in range(8) }
-    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
-    		        \BLOCK{ endfor }
+		            \BLOCK{ for bar_index in range(4) }
+                        \BLOCK{for bar in composition_bars['trio'][bar_index].get_bar_sequence('piano_left_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
+                    \BLOCK{ endfor }
 	        	}
 	        	\clef bass
 		        \repeat volta 2{
-    		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
-    		        \BLOCK{ endfor }
+    		        \BLOCK{ for bar_index in range(4, 8) }
+                        \BLOCK{for bar in composition_bars['trio'][bar_index].get_bar_sequence('piano_left_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
+                    \BLOCK{ endfor }
 	        	}
             }
         >>
@@ -156,8 +173,10 @@
             {
                 \clef treble
                 \time 2/4
-                \BLOCK{ for bar_index in range(16) }
-                    \VAR{composition_bars['dance'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                \BLOCK{ for bar_index in range(8) }
+                    \BLOCK{for bar in composition_bars['dance'][bar_index].get_bar_sequence('piano_right_hand').get_bars()}
+                        \VAR{ bar.lilypond_str }
+                    \BLOCK{ endfor }
                 \BLOCK{ endfor }
                 \bar "|."
             }
@@ -178,8 +197,10 @@
             {
                 \clef bass
                 \time 2/4
-                \BLOCK{ for bar_index in range(16) }
-                    \VAR{composition_bars['dance'][bar_index].get_bar('piano_left_hand').lilypond_str}
+                \BLOCK{ for bar_index in range(8) }
+                    \BLOCK{for bar in composition_bars['dance'][bar_index].get_bar_sequence('piano_left_hand').get_bars()}
+                        \VAR{ bar.lilypond_str }
+                    \BLOCK{ endfor }
                 \BLOCK{ endfor }
                 \bar "|."
             }
