@@ -10,7 +10,6 @@
     tagline = ##f
 }
 \score {
-    \new PianoStaff
     <<
         \new Staff
         <<

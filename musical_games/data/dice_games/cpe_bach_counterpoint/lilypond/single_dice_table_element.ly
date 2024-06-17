@@ -20,7 +20,7 @@
             {
                 \clef \VAR{ table_name }
                 \time 4/4
-                \VAR{ synchronous_bar_sequence.get_bars()[0].get_bars()[0].lilypond_str }
+                \VAR{ synchronous_bar_sequence.get_synchronous_bars()[0].get_bars()[0].lilypond_str }
                 \bar "|."
             }
         >>

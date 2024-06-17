@@ -1,132 +1,106 @@
 \version "2.22.1"
 \language "nederlands"
 \paper {
-	page-count = 1
     print-all-headers = ##t
     score-markup-spacing = #'((basic-distance . 10))
     markup-system-spacing = #'((minimum-distance = 0))
+    system-system-spacing = #'((basic-distance . 15))
+
+    \BLOCK{ if render_settings['single_page'] }
+        paper-height = 400\mm  %% default is 297 for a4
+    \BLOCK{ endif }
 }
 \header{
-    title = "Menuet and Trio"
-    composer = "Kirnberger"
+    title = "Aria"
+    composer = "Calegari"
     tagline = ##f
-}
-\score {
-    \header {
-        piece = \markup { \fontsize #1 "Menuet" }
-        title = ""
-        composer = ""
-    }
-    \new PianoStaff
-    <<
-        \new Staff
-        <<
-            {
-                \key d\major
-                \tempo 4 = 100
-                \override Score.RehearsalMark.direction = #down
-            }
-            {
-                \clef treble
-                \time 3/4
-                \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8) }
-                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
-                    \BLOCK{ endfor }
-                }
-                \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{composition_bars['menuet'][bar_index].get_bar('piano_right_hand').lilypond_str}
-                    \BLOCK{ endfor }
-                }
-            }
-        >>
-        \new Staff
-        <<
-            {
-                \key d\major
-                \tempo 4 = 100
-                \override Score.RehearsalMark.direction = #down
-            }
-            {
-                \clef bass
-                \time 3/4
-		        \repeat volta 2{
-		            \BLOCK{ for bar_index in range(8) }
-		                \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
-    		        \BLOCK{ endfor }
-	        	}
-		        \repeat volta 2{
-    		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{composition_bars['menuet'][bar_index].get_bar('piano_left_hand').lilypond_str}
-    		        \BLOCK{ endfor }
-	        	}
-		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "Fine"}
-            }
-        >>
-    >>
-    \layout {
-        indent = 0\mm
-    }
 }
 
 \score {
     \header {
-        piece = \markup { \fontsize #1 "Trio" }
+        piece = \markup { \fontsize #1 " " }
         title = ""
         composer = ""
     }
-    \new PianoStaff
     <<
         \new Staff
         <<
+            \set Staff.instrumentName = #"Chant"
             {
-                \key d\minor
-                \tempo 4 = 80
+                \key g\major
+                \tempo 4 = 70
                 \override Score.RehearsalMark.direction = #down
             }
             {
                 \clef treble
-                \time 3/4
-                \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8) }
-                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                \time 4/4
+                \BLOCK{ for bar_index in range(8) }
+                    \BLOCK{for bar in composition_bars['part_one'][bar_index].get_bar_sequence('chant').get_bars()}
+                        \VAR{ bar.lilypond_str }
                     \BLOCK{ endfor }
-                }
-                \repeat volta 2{
-                    \BLOCK{ for bar_index in range(8, 16) }
-                        \VAR{composition_bars['trio'][bar_index].get_bar('piano_right_hand').lilypond_str}
+                \BLOCK{ endfor }
+                \bar "."
+                \BLOCK{ for bar_index in range(10) }
+                    \BLOCK{for bar in composition_bars['part_two'][bar_index].get_bar_sequence('chant').get_bars()}
+                        \VAR{ bar.lilypond_str }
                     \BLOCK{ endfor }
-                }
+                \BLOCK{ endfor }
+                \bar "|."
             }
         >>
-        \new Staff
+        \new PianoStaff
         <<
-            {
-                \key d\minor
-                \tempo 4 = 80
-                \override Score.RehearsalMark.direction = #down
-            }
-            {
-                \clef bass
-                \time 3/4
-		        \repeat volta 2{
-		            \BLOCK{ for bar_index in range(8) }
-		                \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
-    		        \BLOCK{ endfor }
-	        	}
-		        \repeat volta 2{
-    		        \BLOCK{ for bar_index in range(8, 16) }
-    		            \VAR{composition_bars['trio'][bar_index].get_bar('piano_left_hand').lilypond_str}
-    		        \BLOCK{ endfor }
-	        	}
-		        \once \override Score.RehearsalMark #'self-alignment-X = #right \mark \markup {\fontsize #-1 \italic "D.C. al Fine"}
-            }
+            \set PianoStaff.instrumentName = #"Piano"
+            \new Staff
+            <<
+                {
+                    \key g\major
+                    \tempo 4 = 70
+                    \override Score.RehearsalMark.direction = #down
+                }
+                {
+                    \clef treble
+                    \time 4/4
+                    \BLOCK{ for bar_index in range(8) }
+                        \BLOCK{for bar in composition_bars['part_one'][bar_index].get_bar_sequence('piano_right_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
+                    \BLOCK{ endfor }
+                    \bar "."
+                    \BLOCK{ for bar_index in range(10) }
+                        \BLOCK{for bar in composition_bars['part_two'][bar_index].get_bar_sequence('piano_right_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
+                    \BLOCK{ endfor }
+                    \bar "|."
+                }
+            >>
+            \new Staff
+            <<
+                {
+                    \key g\major
+                    \tempo 4 = 70
+                    \override Score.RehearsalMark.direction = #down
+                }
+                {
+                    \clef bass
+                    \time 4/4
+                    \BLOCK{ for bar_index in range(8) }
+                        \BLOCK{for bar in composition_bars['part_one'][bar_index].get_bar_sequence('piano_left_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
+                    \BLOCK{ endfor }
+                    \bar "."
+                    \BLOCK{ for bar_index in range(10) }
+                        \BLOCK{for bar in composition_bars['part_two'][bar_index].get_bar_sequence('piano_left_hand').get_bars()}
+                            \VAR{ bar.lilypond_str }
+                        \BLOCK{ endfor }
+                    \BLOCK{ endfor }
+                    \bar "|."
+                }
+            >>
         >>
     >>
-    \layout {
-        indent = 0\mm
-    }
 }
 
 \BLOCK{ if render_settings['comment'] is not none }

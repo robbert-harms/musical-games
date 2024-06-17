@@ -11,8 +11,10 @@ from abc import ABCMeta, abstractmethod
 from importlib.abc import Traversable
 from pathlib import Path
 
+from frozendict import frozendict
+
 from musical_games.dice_games.base import BarCollection, SimpleBar, SimpleBarCollection, BarAnnotation, int_bar_index, \
-    str_staff_name, SimpleBarSequence
+    str_staff_name, SimpleSynchronousBarSequence, SimpleSynchronousBar
 
 
 class BarCollectionCSVWriter(metaclass=ABCMeta):
@@ -52,11 +54,13 @@ class SimpleBarCollectionCSVWriter(BarCollectionCSVWriter):
         with open(csv_out, 'w', newline='') as csvfile:
             bar_writer = csv.writer(csvfile, dialect='unix')
 
-            bar_writer.writerow(['bar_index'] + staff_names)
+            bar_writer.writerow(['bar_index', 'sequence_index'] + staff_names)
 
-            for bar_index, synchronous_bars in bar_collection.get_synchronous_bar_sequences().items():
-                row = [bar_index] + [bar.lilypond_str for bar in synchronous_bars.get_bars()]
-                bar_writer.writerow(row)
+            for bar_index, synchronous_bar_sequence in bar_collection.get_synchronous_bar_sequences().items():
+                sync_bars = synchronous_bar_sequence.get_synchronous_bars()
+                for sequence_ind, sync_bar in enumerate(sync_bars):
+                    row = [bar_index, sequence_ind] + [bar.lilypond_str for bar in sync_bar.get_bars()]
+                    bar_writer.writerow(row)
 
 
 class CSVBarCollectionLoader(BarCollectionLoader):
@@ -86,25 +90,43 @@ class CSVBarCollectionLoader(BarCollectionLoader):
         if self._annotation_data_csv is not None:
             annotations = self._load_annotations()
 
-        synchronous_bars = {}
-        with open(self._bar_data_csv, 'r', newline='') as csvfile:
+        bars_by_index_and_sequence = {}
+        with (open(self._bar_data_csv, 'r', newline='') as csvfile):
             bar_reader = csv.reader(csvfile, dialect='unix')
 
-            staff_names = None
-            for row_ind, row in enumerate(bar_reader):
-                if row_ind == 0:
-                    staff_names = row[1:]
+            header = next(bar_reader)
+            if header[1] == 'sequence_index':
+                has_sequences = True
+                staff_names = header[2:]
+                first_data_column_ind = 2
+            else:
+                has_sequences = False
+                staff_names = header[1:]
+                first_data_column_ind = 1
+
+            for row in bar_reader:
+                sync_bars = {}
+                for staff_ind, bar_str in enumerate(row[first_data_column_ind:]):
+                    annotation = None
+                    if annotations is not None:
+                        annotation = annotations[int(row[0])][staff_names[staff_ind]]
+
+                    sync_bars[staff_names[staff_ind]] = SimpleBar(bar_str, annotation=annotation)
+
+                if has_sequences:
+                    sequence_ind = row[1]
                 else:
-                    bars = []
-                    for staff_ind, bar_str in enumerate(row[1:]):
-                        annotation = None
-                        if annotations is not None:
-                            annotation = annotations[int(row[0])][staff_names[staff_ind]]
+                    sequence_ind = 0
 
-                        bars.append(SimpleBarSequence((SimpleBar(bar_str, annotation=annotation),)))
-                    synchronous_bars[int(row[0])] = dict(zip(staff_names, bars))
+                sequence_dict = bars_by_index_and_sequence.setdefault(int(row[0]), {})
+                sequence_dict[int(sequence_ind)] = SimpleSynchronousBar(frozendict(sync_bars))
 
-        return SimpleBarCollection(synchronous_bars)
+        bar_collection = {}
+        for bar_index, bar_sequences in bars_by_index_and_sequence.items():
+            bar_collection[bar_index] = SimpleSynchronousBarSequence(
+                tuple(dict(sorted(bar_sequences.items())).values()))
+
+        return SimpleBarCollection(bar_collection)
 
     def _load_annotations(self) -> dict[int_bar_index, dict[str_staff_name, BarAnnotation]]:
         """Load the annotations for each bar of each staff."""

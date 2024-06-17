@@ -321,7 +321,7 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
                 sync_bars = {}
                 for staff_name in staff_names:
                     sync_bars[staff_name] = bar_sequences_per_staff[staff_name][composition_ind]
-                complete_bars.append(SimpleSynchronousBarSequence(frozendict(sync_bars)))
+                complete_bars.append(SimpleSynchronousBarSequence.from_dict_of_bar_sequences(sync_bars))
 
             composition_bars[table_name] = complete_bars
         return composition_bars
@@ -461,15 +461,20 @@ class BarSequence(metaclass=ABCMeta):
             A tuple of bars.
         """
 
+    @abstractmethod
+    def get_bar(self, sequence_ind: int) -> Bar:
+        """Get the bar at the indicated sequence id.
 
-class SynchronousBarSequence(metaclass=ABCMeta):
+        Returns:
+            The bar at the given sequence position.
+        """
+
+
+class SynchronousBar(metaclass=ABCMeta):
     """Representation of a tuple of bars played synchronously across staffs.
 
     Suppose that a piece has a piano and a violin, then at each time point there are three bars being played, left and
     right hand piano and the violin. These synchronous bars are connected in this class.
-
-    Since some dice games need sequential bars to be selected in one dice throw, this class requires sequential bars
-    as input.
     """
 
     @abstractmethod
@@ -481,7 +486,7 @@ class SynchronousBarSequence(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_staffs(self) -> dict[str, BarSequence]:
+    def get_staffs(self) -> dict[str_staff_name, Bar]:
         """Get the collection of bars being played at the same time.
 
         Returns:
@@ -489,7 +494,7 @@ class SynchronousBarSequence(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_bar_sequence(self, staff_name: str_staff_name) -> BarSequence:
+    def get_bar(self, staff_name: str_staff_name) -> Bar:
         """Get a single bar from a single staff.
 
         Args:
@@ -500,19 +505,62 @@ class SynchronousBarSequence(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def get_bars(self) -> list[BarSequence]:
+    def get_bars(self) -> list[Bar]:
         """Get the bars in a list.
 
         Returns:
             The list of bars, in the order defined by the dictionary.
         """
 
+
+class SynchronousBarSequence(metaclass=ABCMeta):
+    """Representation of a tuple of bar sequences played synchronously across staffs.
+
+    This is similar to :class:`SynchronousBar` except that it takes bar sequences as input, not single bars.
+    """
+
+    @property
     @abstractmethod
     def nmr_bars_in_sequence(self) -> int:
         """Check how many bars there are in sequence.
 
         Returns:
             A positive integer with the number of bars in a sequence on one staff.
+        """
+
+    @abstractmethod
+    def get_staff_names(self) -> list[str_staff_name]:
+        """Get the names of the staffs stored in this synchronous bar sequence.
+
+        Returns:
+            The names of the staffs
+        """
+
+    @abstractmethod
+    def get_staffs(self) -> dict[str_staff_name, BarSequence]:
+        """Get the collection of bar sequences being played at the same time.
+
+        Returns:
+            The bar sequences across staves.
+        """
+
+    @abstractmethod
+    def get_synchronous_bars(self) -> list[SynchronousBar]:
+        """Get the bar sequences as a list of synchronous bars.
+
+        Returns:
+            A list of synchronous bars.
+        """
+
+    @abstractmethod
+    def get_bar_sequence(self, staff_name: str_staff_name) -> BarSequence:
+        """Get a single bar sequence from a single staff.
+
+        Args:
+            staff_name: the name of the staff for which you want the bar.
+
+        Returns:
+            The bar sequence of that staff.
         """
 
 
@@ -594,8 +642,8 @@ class BarCollection(metaclass=ABCMeta):
     def get_synchronous_selection(self, dice_table_elements: list[DiceTableElement]) -> list[SynchronousBarSequence]:
         """Convert a selection of dice table elements into a list of synchronous bar sequences.
 
-        Since each dice table element may point to multiple consecutive synchronous bars, we may need to convert
-        to a synchronous bar sequence.
+        If a dice table element points to multiple consecutive synchronous bars, we concatenate these into a
+        synchronous bar sequence.
 
         Args:
             dice_table_elements: the dice table elements we wish to lookup
@@ -669,25 +717,48 @@ class SimpleBarSequence(BarSequence):
     def get_bars(self) -> tuple[Bar, ...]:
         return self.bars
 
+    def get_bar(self, sequence_ind: int) -> Bar:
+        return self.bars[sequence_ind]
+
 
 @dataclass(frozen=True, slots=True)
-class SimpleSynchronousBarSequence(SynchronousBarSequence):
+class SimpleSynchronousBar(SynchronousBar):
     """Representation of a bar across staffs.
 
     Args:
-        bar_sequences: the bar sequences per staff.
+        bars: the bar sequences per staff.
     """
-    bar_sequences: frozendict[str_staff_name, BarSequence]
+    bars: frozendict[str_staff_name, Bar]
 
     def __post_init__(self):
-        if not isinstance(self.bar_sequences, frozendict):
+        if not isinstance(self.bars, frozendict):
             raise ValueError('Expects bars to be of type frozendict.')
+
+    def get_staff_names(self) -> list[str_staff_name]:
+        return list(self.bars.keys())
+
+    def get_staffs(self) -> dict[str_staff_name, Bar]:
+        return dict(self.bars)
+
+    def get_bar(self, staff_name: str_staff_name) -> Bar:
+        return self.bars[staff_name]
+
+    def get_bars(self) -> list[Bar]:
+        return list(self.bars.values())
+
+
+@dataclass(frozen=True, slots=True)
+class SimpleSynchronousBarSequence(SynchronousBarSequence):
+    """Representation of a synchronous bar sequence.
+
+    Args:
+        synchronous_bars: sequence of synchronous bars
+    """
+    synchronous_bars: tuple[SynchronousBar, ...]
 
     @classmethod
     def from_synchronous_bar_sequences(cls, synchronous_bar_sequences: list[SynchronousBarSequence]) -> Self:
-        """Merge a list of synchronous bar sequences.
-
-        For each staff, this will concatenate the bars from each of the bar sequences into a new sequence.
+        """Merge a list of synchronous bar sequences into a single synchronous bar sequence.
 
         Args:
             synchronous_bar_sequences: a list of synchronous bar sequences which we will concatenate.
@@ -695,48 +766,67 @@ class SimpleSynchronousBarSequence(SynchronousBarSequence):
         Returns:
             A new object of this class with the merged bars.
         """
-        if len(synchronous_bar_sequences) == 0:
-            return cls(frozendict())
-
-        staff_names = synchronous_bar_sequences[0].get_staff_names()
-        staff_data = {staff_name: [] for staff_name in staff_names}
-
+        sync_bars = []
         for synchronous_bar_sequence in synchronous_bar_sequences:
-            for staff_name, bar_sequence in synchronous_bar_sequence.get_staffs().items():
-                staff_data[staff_name].append(bar_sequence)
+            sync_bars.extend(synchronous_bar_sequence.get_synchronous_bars())
+        return cls(tuple(sync_bars))
 
-        bar_sequences = {}
-        for staff_name, bars in staff_data.items():
-            bar_sequences[staff_name] = SimpleBarSequence.from_bar_sequences(bars)
-        return cls(frozendict(bar_sequences))
+    @classmethod
+    def from_dict_of_bar_sequences(cls, staff_to_bar_sequences: dict[str_staff_name, BarSequence]) -> Self:
+        """Load a simple synchronous bar from a dictionary of staffs to bar sequences.
+
+        This expects all the bar sequences to be of the same length.
+
+        Args:
+            staff_to_bar_sequences: a dictionary mapping staff names to bar sequences
+
+        Returns:
+            A new object of this class with bars in the right format
+        """
+        if not len(staff_to_bar_sequences):
+            return cls(tuple())
+
+        synchronous_bars = []
+        for ind in range(staff_to_bar_sequences[list(staff_to_bar_sequences.keys())[0]].nmr_of_bars):
+            bars_by_staff = {}
+            for staff_name, bar_sequence in staff_to_bar_sequences.items():
+                bars_by_staff[staff_name] = bar_sequence.get_bar(ind)
+            synchronous_bars.append(SimpleSynchronousBar(frozendict(bars_by_staff)))
+        return cls(tuple(synchronous_bars))
+
+    @property
+    def nmr_bars_in_sequence(self) -> int:
+        return len(self.synchronous_bars)
 
     def get_staff_names(self) -> list[str_staff_name]:
-        return list(self.bar_sequences.keys())
+        if not len(self.synchronous_bars):
+            return []
+        return self.synchronous_bars[0].get_staff_names()
 
     def get_staffs(self) -> dict[str_staff_name, BarSequence]:
-        return dict(self.bar_sequences)
+        return {staff_name: self.get_bar_sequence(staff_name) for staff_name in self.get_staff_names()}
+
+    def get_synchronous_bars(self) -> list[SynchronousBar]:
+        return list(self.synchronous_bars)
 
     def get_bar_sequence(self, staff_name: str_staff_name) -> BarSequence:
-        return self.bar_sequences[staff_name]
-
-    def get_bars(self) -> list[BarSequence]:
-        return list(self.bar_sequences.values())
-
-    def nmr_bars_in_sequence(self) -> int:
-        return self.get_bars()[0].nmr_of_bars
+        bars = []
+        for ind in range(self.nmr_bars_in_sequence):
+            bars.append(self.synchronous_bars[ind].get_bar(staff_name))
+        return SimpleBarSequence(tuple(bars))
 
 
 @dataclass(frozen=True, slots=True)
 class SimpleBarCollection(BarCollection):
     """Representation of a collection of bars contained in a dictionary.
 
-    The bars are stored in a multi-level dictionary, combined into synchronous bars when asked. Furthermore, the bars
-    are stored in a dictionary such that we can store the bars with their dice table label instead of a numerical index.
+    The bars are stored in a dictionary such that we can store the bars with their dice table label instead
+    of a numerical index.
 
     Args:
-        bar_collection: the collection of synchronous bars indexed by their bar index and staff name.
+        bar_collection: the collection of synchronous bar sequences indexed by their bar index.
     """
-    bar_collection: dict[int_bar_index, dict[str_staff_name, BarSequence]]
+    bar_collection: dict[int_bar_index, SynchronousBarSequence]
 
     @property
     def nmr_bars(self) -> int:
@@ -747,20 +837,25 @@ class SimpleBarCollection(BarCollection):
         return self.nmr_bars + 1
 
     def get_synchronous_bar_sequences(self) -> dict[int_bar_index, SynchronousBarSequence]:
-        return {bar_index: SimpleSynchronousBarSequence(frozendict(staffs))
-                for bar_index, staffs in self.bar_collection.items()}
+        return self.bar_collection
 
     def get_synchronous_bar_sequence(self, bar_index: int_bar_index) -> SynchronousBarSequence:
-        return SimpleSynchronousBarSequence(frozendict(self.bar_collection[bar_index]))
+        return self.bar_collection[bar_index]
 
     def get_staff_names(self) -> list[str_staff_name]:
-        return list(self.bar_collection[1].keys())
+        if self.nmr_bars == 0:
+            return []
+        first_sync_bar = self.bar_collection[list(self.bar_collection.keys())[0]]
+        return first_sync_bar.get_staff_names()
 
     def get_bar_sequences(self, staff_name: str_staff_name) -> dict[int_bar_index, BarSequence]:
-        return {bar_index: staffs[staff_name] for bar_index, staffs in self.bar_collection.items()}
+        bar_sequences = {}
+        for bar_index, sync_bar_sequence in self.bar_collection.items():
+            bar_sequences[bar_index] = sync_bar_sequence.get_bar_sequence(staff_name)
+        return bar_sequences
 
     def get_bar_sequence(self, staff_name: str_staff_name, bar_index: int_bar_index) -> BarSequence:
-        return self.bar_collection[bar_index][staff_name]
+        return self.bar_collection[bar_index].get_bar_sequence(staff_name)
 
     def get_synchronous_selection(self, dice_table_elements: list[DiceTableElement]) -> list[SynchronousBarSequence]:
         bars = []
@@ -839,6 +934,20 @@ class DiceTable(metaclass=ABCMeta):
 
         Args:
             row: the row index
+            column: the column index
+
+        Returns:
+            The dice table element
+        """
+
+    @abstractmethod
+    def get_dice_throw(self, dice_number: int, column: int) -> DiceTableElement:
+        """Get the dice table element for the indicated dice value.
+
+        This expects a number in [1, 6] for a single dice, and between [2, 12] for a double dice.
+
+        Args:
+            dice_number: the thrown dice number
             column: the column index
 
         Returns:
@@ -1037,6 +1146,9 @@ class SimpleDiceTable(DiceTable):
 
     def get_element(self, row: int, column: int) -> DiceTableElement:
         return self.table[row][column]
+
+    def get_dice_throw(self, dice_number: int, column: int) -> DiceTableElement:
+        return self.get_element(dice_number - self.nmr_dices, column)
 
     def get_elements(self) -> list[DiceTableElement]:
         elements = []

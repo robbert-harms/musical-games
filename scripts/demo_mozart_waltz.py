@@ -36,7 +36,7 @@ midi_settings = dice_game.get_default_midi_settings()
 my_midi_settings = midi_settings.with_updated_instrument('flute', 'waltz', 'piano_right_hand')
 
 dice_game.compile_composition_audio(
-    dice_game.get_random_bar_selection(seed=0),
+    dice_game.get_random_bar_selection(seed=1, shuffle_staffs=False),
     midi_settings=my_midi_settings).to_file(out_dir / 'composition_midi.ly')
 
 auto_convert_lilypond_file(

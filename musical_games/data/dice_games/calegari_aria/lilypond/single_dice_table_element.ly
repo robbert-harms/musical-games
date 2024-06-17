@@ -2,54 +2,58 @@
 \language "nederlands"
 \paper {
     print-all-headers = ##f
-    paper-height = 50\mm
-    paper-width = 100\mm
+    paper-height = 100\mm
+    paper-width = 150\mm
 }
 \header{
     title = ""
     tagline = ##f
 }
+
+#(add-new-clef "sopranovarC" "clefs.varC" -4 0 0)
+
 \score {
-    \new PianoStaff
     <<
         \new Staff
         <<
+            \set Staff.instrumentName = #"Chant"
             {
-                \BLOCK{ if table_name == 'menuet' }
-                    \key d\major
-                \BLOCK{ else }
-                    \key d\minor
-                \BLOCK{ endif }
-            }
-            {
-                \clef treble
-                \time 3/4
-                \BLOCK{ for synchronous_bar in synchronous_bars }
-                \VAR{ synchronous_bar.get_bar('piano_right_hand').lilypond_str }
+                \key g\major
+                \clef sopranovarC
+                \time 4/4
+                \BLOCK{ for bar in synchronous_bar_sequence.get_bar_sequence('chant').get_bars() }
+                \VAR{ bar.lilypond_str }
                 \BLOCK{ endfor }
                 \bar "|."
             }
         >>
-        \new Staff
+        \new PianoStaff
         <<
-            {
-                \BLOCK{ if table_name == 'menuet' }
-                    \key d\major
-                \BLOCK{ else }
-                    \key d\minor
-                \BLOCK{ endif }
-            }
-            {
-                \clef bass
-                \time 3/4
-                \BLOCK{ for synchronous_bar in synchronous_bars }
-                \VAR{ synchronous_bar.get_bar('piano_left_hand').lilypond_str }
-                \BLOCK{ endfor }
-                \bar "|."
-            }
+            \set PianoStaff.instrumentName = #"Piano"
+            \new Staff
+            <<
+                {
+                    \key g\major
+                    \clef treble
+                    \time 4/4
+                    \BLOCK{ for bar in synchronous_bar_sequence.get_bar_sequence('piano_right_hand').get_bars() }
+                    \VAR{ bar.lilypond_str }
+                    \BLOCK{ endfor }
+                    \bar "|."
+                }
+            >>
+            \new Staff
+            <<
+                {
+                    \key g\major
+                    \clef bass
+                    \time 4/4
+                    \BLOCK{ for bar in synchronous_bar_sequence.get_bar_sequence('piano_left_hand').get_bars() }
+                    \VAR{ bar.lilypond_str }
+                    \BLOCK{ endfor }
+                    \bar "|."
+                }
+            >>
         >>
     >>
-    \layout {
-        indent = 0\mm
-    }
 }
