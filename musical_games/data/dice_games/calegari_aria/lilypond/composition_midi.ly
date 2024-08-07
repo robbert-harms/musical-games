@@ -14,7 +14,7 @@
             {
                 \key g\major
                 \time 4/4
-                \tempo 4 = 70
+                \tempo 4 = 80
             }
             {
                 \clef treble
@@ -42,7 +42,7 @@
             {
                 \key g\major
                 \time 4/4
-                \tempo 4 = 70
+                \tempo 4 = 80
             }
             {
                 \clef treble
@@ -70,7 +70,7 @@
             {
                 \key g\major
                 \time 4/4
-                \tempo 4 = 70
+                \tempo 4 = 80
             }
             {
                 \clef bass

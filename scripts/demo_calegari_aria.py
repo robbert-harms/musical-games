@@ -14,22 +14,22 @@ out_dir = Path('/tmp/test')
 
 dice_game = CalegariAria()
 
-# dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
-# auto_convert_lilypond_file(out_dir / 'overview.ly')
+dice_game.compile_bars_overview(single_page=True).to_file(out_dir / 'overview.ly')
+auto_convert_lilypond_file(out_dir / 'overview.ly')
 
-# dice_game.compile_single_bar('part_one', 1).to_file(out_dir / 'bar_1.ly')
-# auto_convert_lilypond_file(out_dir / 'bar_1.ly')
-# dice_game.compile_single_bar('part_one', 19).to_file(out_dir / 'bar_19.ly')
-# auto_convert_lilypond_file(out_dir / 'bar_19.ly')
-#
-# dice_game.compile_single_dice_table_element('part_one', dice_game.get_dice_tables()['part_one'].get_elements()[0]).to_file(
-#     out_dir / 'single_dice_table_element_0.ly')
-# auto_convert_lilypond_file(out_dir / 'single_dice_table_element_0.ly')
-#
-# print(dice_game.get_duplicate_dice_table_elements('part_one'))
-# print(dice_game.get_duplicate_dice_table_elements('part_two'))
-# print(dice_game.count_unique_compositions(count_duplicates=True))
-# print(dice_game.count_unique_compositions(count_duplicates=False))
+dice_game.compile_single_bar('part_one', 1).to_file(out_dir / 'bar_1.ly')
+auto_convert_lilypond_file(out_dir / 'bar_1.ly')
+dice_game.compile_single_bar('part_one', 19).to_file(out_dir / 'bar_19.ly')
+auto_convert_lilypond_file(out_dir / 'bar_19.ly')
+
+dice_game.compile_single_dice_table_element('part_one', dice_game.get_dice_tables()['part_one'].get_elements()[0]).to_file(
+    out_dir / 'single_dice_table_element_0.ly')
+auto_convert_lilypond_file(out_dir / 'single_dice_table_element_0.ly')
+
+print(dice_game.get_duplicate_dice_table_elements('part_one'))
+print(dice_game.get_duplicate_dice_table_elements('part_two'))
+print(dice_game.count_unique_compositions(count_duplicates=True))
+print(dice_game.count_unique_compositions(count_duplicates=False))
 
 dice_tables = dice_game.get_dice_tables()
 selection = GroupedStaffsBarSelection(
@@ -52,6 +52,11 @@ selection = GroupedStaffsBarSelection(
                   dice_tables['part_two'].get_dice_throw(3, 8),
                   dice_tables['part_two'].get_dice_throw(11, 9)]}
 )
+
+for el in selection.dice_table_elements['part_one']:
+    print(f'dobbelsteen rol: {el.row_ind + 2}, bar index: {el.get_bar_indices()[0]}')
+for el in selection.dice_table_elements['part_two']:
+    print(f'dobbelsteen rol: {el.row_ind + 2}, bar index: {el.get_bar_indices()[0]}')
 
 dice_game.compile_composition_score(selection, single_page=True,
                                     comment='Test').to_file(out_dir / 'composition_pdf.ly')

@@ -383,8 +383,8 @@ class CalegariAria(SimpleDiceGame):
                           'piano_left_hand': 'acoustic grand'}},
             {'part_one': {'chant': 0, 'piano_right_hand': 0, 'piano_left_hand': 0},
              'part_two': {'chant': 0, 'piano_right_hand': 0, 'piano_left_hand': 0}},
-            {'part_one': {'chant': 1, 'piano_right_hand': 0.8, 'piano_left_hand': 0.6},
-             'part_two': {'chant': 1, 'piano_right_hand': 0.8, 'piano_left_hand': 0.6}})
+            {'part_one': {'chant': 1, 'piano_right_hand': 0.9, 'piano_left_hand': 0.8},
+             'part_two': {'chant': 1, 'piano_right_hand': 0.9, 'piano_left_hand': 0.8}})
 
         super().__init__('Calegari', 'Aria', dice_tables, bar_collections,
                          self._generate_jinja2_environment(data_name), midi_settings)

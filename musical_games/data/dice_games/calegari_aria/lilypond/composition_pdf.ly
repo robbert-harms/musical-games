@@ -28,7 +28,7 @@
             \set Staff.instrumentName = #"Chant"
             {
                 \key g\major
-                \tempo 4 = 70
+                \tempo 4 = 80
                 \override Score.RehearsalMark.direction = #down
             }
             {
@@ -55,7 +55,7 @@
             <<
                 {
                     \key g\major
-                    \tempo 4 = 70
+                    \tempo 4 = 80
                     \override Score.RehearsalMark.direction = #down
                 }
                 {
@@ -79,7 +79,7 @@
             <<
                 {
                     \key g\major
-                    \tempo 4 = 70
+                    \tempo 4 = 80
                     \override Score.RehearsalMark.direction = #down
                 }
                 {

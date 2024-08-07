@@ -292,15 +292,15 @@ class SimpleDiceGame(DiceGame, metaclass=ABCMeta):
     def get_random_bar_selection(self, seed: int = None, shuffle_staffs: bool = False) -> BarSelection:
         if shuffle_staffs:
             choices = {}
-            for table_name, dice_table in self._dice_tables.items():
+            for table_ind, (table_name, dice_table) in enumerate(self._dice_tables.items()):
                 choices[table_name] = {}
                 for staff_ind, staff_name in enumerate(self._bar_collections[table_name].get_staff_names()):
-                    choices[table_name][staff_name] = dice_table.get_random_selection(seed + staff_ind)
+                    choices[table_name][staff_name] = dice_table.get_random_selection(seed + table_ind + staff_ind)
             return PerStaffsBarSelection(choices)
         else:
             choices = {}
-            for table_name, dice_table in self._dice_tables.items():
-                choices[table_name] = dice_table.get_random_selection(seed)
+            for table_ind, (table_name, dice_table) in enumerate(self._dice_tables.items()):
+                choices[table_name] = dice_table.get_random_selection(seed + table_ind)
             return GroupedStaffsBarSelection(choices)
 
     def bar_selection_to_bars(self,
