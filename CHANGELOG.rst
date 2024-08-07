@@ -2,6 +2,22 @@
 Changelog
 *********
 
+v0.9.0 (2024-08-07)
+===================
+
+Added
+-----
+- Adds Calegari Aria.
+
+Changed
+-------
+- Modified the random music generator to have a separate seed for each table.
+
+Other
+-----
+- Storing centered text function.
+
+
 v0.8.9 (2024-05-13)
 ===================
 
