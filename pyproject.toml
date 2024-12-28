@@ -3,7 +3,7 @@ name = "musical_games"
 description = "Implementation of musical dice games from the 18th century."
 readme = "README.rst"
 version = "0.9.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 keywords = ["Musical games", "Dice games", "Piano music"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -12,7 +12,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering"
 ]
 license = { file="LICENSE" }
@@ -20,8 +20,8 @@ authors = [
     { name = "Robbert Harms", email = "robbert@xkls.nl" }
 ]
 dependencies = [
-    "Jinja2~=3.1.3",
-    "frozendict~=2.4.1"
+    "Jinja2~=3.1.5",
+    "frozendict~=2.4.6"
 ]
 
 [project.optional-dependencies]
