@@ -3,6 +3,19 @@ Changelog
 *********
 
 
+Version 0.9.2 (2025-01-31)
+==========================
+
+Features
+--------
+- *(changelog)* Moved from gitchangelog to gitt-cliff
+
+Other
+-----
+- Updated the Python requirement for travis.
+
+
+
 Version 0.9.1 (2024-12-28)
 ===================
 - Python version bump.
