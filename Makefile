@@ -111,7 +111,7 @@ docs-man:
 
 .PHONY: docs-changelog
 docs-changelog:
-	gitchangelog
+	 git cliff --prepend CHANGELOG.rst -l -u
 
 
 .PHONY: prepare-release
@@ -123,19 +123,21 @@ prepare-release: clean
     ( \
         printf 'Setting new version: %s \n\n' \
         	"$$NEW_VERSION " \
-	) && sed -i 's/version = \"\(.*\)\"/version = "'$$NEW_VERSION'"/g' pyproject.toml
-	$(MAKE) docs-changelog
-	@echo "Consider manually inspecting CHANGELOG.rst for possible improvements."
+	) && sed -i 's/version = \"\(.*\)\"/version = "'$$NEW_VERSION'"/g' pyproject.toml \
+      && git cliff -l -u --tag $$NEW_VERSION --prepend CHANGELOG.rst \
+      && echo "Please manually inspect CHANGELOG.rst before continuing." \
+      && read ans \
+      && git add -u \
+	  && git diff-index --quiet HEAD || git commit -am "release: New release" \
+	  && git tag -a v$$NEW_VERSION -m "Version $$NEW_VERSION" \
+
 
 .PHONY: release
 release: clean release-git release-pip
 
 .PHONY: release-git
 release-git:
-	git add -u
-	git diff-index --quiet HEAD || git commit -am "New release"
 	git push
-	git tag -a v$(PROJECT_VERSION) -m "Version $(PROJECT_VERSION)"
 	git push origin --tags
 
 .PHONY: release-pip
