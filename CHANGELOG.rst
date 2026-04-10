@@ -3,6 +3,15 @@ Changelog
 *********
 
 
+Version 0.9.3 (2026-04-10)
+==========================
+
+Other
+-----
+- Improves the fluidsynth command such that it will not look for an audio device, which was problematic for running in a docker container.
+
+
+
 Version 0.9.2 (2025-01-31)
 ==========================
 
