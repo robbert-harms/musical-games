@@ -96,9 +96,11 @@ class FluidSynth(MidiToWav):
         gain = gain or 0.1
         wav_out.parent.mkdir(parents=True, exist_ok=True)
         if self._soundfont:
-            run_command(['fluidsynth', '-g', str(gain*10), '-F', wav_out, self._soundfont, midi_in])
+            run_command(['fluidsynth', '-a', 'file', '-n', '-i', '-g', str(gain*10),
+                         '-F', str(wav_out), str(self._soundfont), str(midi_in)])
         else:
-            run_command(['fluidsynth', '-g', str(gain * 10), '-F', wav_out, midi_in])
+            run_command(['fluidsynth', '-a', 'file', '-n', '-i', '-g', str(gain * 10),
+                         '-F', str(wav_out), str(midi_in)])
 
 
 class Timidity(MidiToWav):
@@ -140,4 +142,5 @@ class Timidity(MidiToWav):
         with tempfile.NamedTemporaryFile('w') as tmp_file:
             tmp_file.write(self._timidity_config)
             tmp_file.flush()
-            run_command(['timidity', '-c', tmp_file.name, '--output-24bit', f'-A{gain*2000}', '-Ow', '-o', wav_out, midi_in])
+            run_command(['timidity', '-c', str(tmp_file.name),
+                         '--output-24bit', f'-A{gain*2000}', '-Ow', '-o', str(wav_out), str(midi_in)])
